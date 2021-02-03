@@ -39,6 +39,14 @@
       - smartmontools
       - jq
       - nload
+  tags: base_packages
+
+- name: Install pip packages
+  pip:
+    name: [ "ranger-fm" ]
+    state: latest
+    executable: pip3
+  tags: base_packages
 
 - include_role:
     name: base_system/vim
