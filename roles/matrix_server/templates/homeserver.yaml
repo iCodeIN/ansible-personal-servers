@@ -1,4 +1,4 @@
-{% import "password_gen.jinja2" as gen with context -%}
+{% import 'utils.jinja2' as utils with context -%}
 
 # Configuration file for Synapse.
 #
@@ -682,9 +682,9 @@ caches:
 database:
   name: psycopg2
   args:
-    user: || matrix_server_db.db_user ||
-    password: '|| gen.pw_alt_templating("matrix_server_db") ||'
-    database: || matrix_server_db.db_name ||
+    user: {{ matrix_server_db.db_user }}
+    password: "{{ matrix_server_db_password }}"
+    database: {{ matrix_server_db.db_name }}
     host: db
     cp_min: 5
     cp_max: 10
@@ -994,14 +994,14 @@ url_preview_accept_language:
 # The public URIs of the TURN server to give to clients
 #
 turn_uris:
-  - "turns:|| dns.public.root ||:5349?transport=udp"
-  # - "turns:|| dns.public.root ||:5349?transport=tcp"
-  - "turn:|| dns.public.root ||:3478?transport=udp"
-  # - "turn:|| dns.public.root ||:3478?transport=tcp"
+  - "turns:{{ dns.public.root }}:5349?transport=udp"
+  # - "turns:{{ dns.public.root }}:5349?transport=tcp"
+  - "turn:{{ dns.public.root }}:3478?transport=udp"
+  # - "turn:{{ dns.public.root }}:3478?transport=tcp"
 
 # The shared secret used to compute passwords for the TURN server
 #
-turn_shared_secret: "|| gen.pw_letters_alt('turnserver', 64) ||"
+turn_shared_secret: "{{ matrix_server_turnserver_shared_secret }}"
 
 # The Username and password if the TURN server needs them and
 # does not use a token
@@ -1134,7 +1134,7 @@ account_validity:
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
 #
-registration_shared_secret: "TODO"
+registration_shared_secret: "{{ matrix_server_registration_shared_secret }}"
 
 # Set the number of bcrypt rounds used to generate password hash.
 # Larger numbers increase the work factor needed to generate the hash.
@@ -1349,13 +1349,13 @@ report_stats: true
 # the registration_shared_secret is used, if one is given; otherwise,
 # a secret key is derived from the signing key.
 #
-macaroon_secret_key: "TODO"
+macaroon_secret_key: "{{ matrix_server_macaroon_secret_key }}"
 
 # a secret which is used to calculate HMACs for form values, to stop
 # falsification of values. Must be specified for the User Consent
 # forms to work.
 #
-form_secret: "TODO"
+form_secret: "{{ matrix_server_form_secret }}"
 
 ## Signing Keys ##
 
@@ -1706,13 +1706,13 @@ oidc_config:
       #
       # This must be configured if using the default mapping provider.
       #
-      localpart_template: "{{ user.preferred_username }}"
+      localpart_template: "{{ utils.bopen() }} user.preferred_username {{ utils.bclose() }}"
 
       # Jinja2 template for the display name to set on first login.
       #
       # If unset, no displayname will be set.
       #
-      #display_name_template: "{{ user.given_name }} {{ user.last_name }}"
+      #display_name_template: "{{ utils.bopen() }} user.given_name {{ utils.bclose() }} {{ utils.bopen() }} user.last_name {{ utils.bclose() }}"
 
 
 

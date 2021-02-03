@@ -4,7 +4,7 @@
 - name: Change root password
   user:
     name: root
-    password: "{{ lookup('template', 'standard_pw_gen.jinja2', template_vars=dict(name='root')) | password_hash('sha512') }}"
+    password: "{{ base_system_root_password | password_hash('sha512') }}"
     update_password: on_create
   tags: pw
 

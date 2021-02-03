@@ -108,14 +108,14 @@ services:
 
   static_data:
     image: nginx:latest
-    {{ tf.declare_labels_mount_path_public(static_data_secrets.name, static_data_secrets.path, 80, tf.minimal_middlewares_no_auth + [
+    {{ tf.declare_labels_mount_path_public(static_data_name, static_data_path, 80, tf.minimal_middlewares_no_auth + [
       {
         'mw': tf.strip_path,
-        'args': { 'path': static_data_secrets.path }
+        'args': { 'path': static_data_path }
       },
       {
         'mw': tf.basic_auth,
-        'args': { 'users': static_data_secrets.users }
+        'args': { 'users': static_data_users }
       }
     ] )|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_static_data)|indent(width = 4) }}

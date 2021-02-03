@@ -21,7 +21,7 @@
 - name: Create samba user
   include_tasks: create_user.yml
   vars:
-    item: { name: "{{ fileserver_share_user }}", create_home: yes, groups: sambashare  }
+    item: { name: "{{ fileserver_share_user }}", password: "{{ fileserver_samba_user_password }}", create_home: yes, groups: sambashare  }
 
 - name: Set permissions on share
   file:
@@ -38,7 +38,7 @@
     group: sambashare
 
 - name: Create samba user
-  shell: "echo '{{ lookup('template', 'standard_pw_gen.jinja2', template_vars=dict(name=fileserver_share_user)) }}' > smbpasswd -a {{ fileserver_share_user }}"
+  shell: "echo '{{ fileserver_samba_user_password }}' > smbpasswd -a {{ fileserver_share_user }}"
 
 - name: start and enable smbd and nmbd services
   service:

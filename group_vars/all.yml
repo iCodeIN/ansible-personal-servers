@@ -4,6 +4,7 @@ application_root: /home/pi
 
 timezone: Europe/Zurich
 user: pi
+user_password: "{{ base_system_pi_password }}"
 root_dirs:
   pihole: "{{ application_root }}/pihole"
   maintenance: "{{ application_root }}/maintenance"

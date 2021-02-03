@@ -1,5 +1,3 @@
-{% import "password_gen.jinja2" as gen with context -%}
-
 users:
 {% if is_dev %}
   # password: test
@@ -14,8 +12,8 @@ users:
 
   realmar:
     displayname: 'Realmar'
-    password: '{{ gen.read_from_file("realmar_authelia") }}'
-    email: anastassios.martakos@outlook.com
+    password: '{{ proxy_authelia_realmar_password }}'
+    email: '{{ proxy_authelia_realmar_email }}'
     groups:
       - admins
       - dev

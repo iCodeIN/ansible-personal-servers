@@ -1,0 +1,2 @@
+- include: ../tasks/load_vault.yml
+- include: tasks/collect_system_data.yml

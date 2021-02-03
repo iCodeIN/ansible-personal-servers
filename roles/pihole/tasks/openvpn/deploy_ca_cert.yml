@@ -4,10 +4,7 @@
   changed_when: False
 
 - set_fact:
-    relative_cert_dir: certs/etc-openvpn/pki
-
-- set_fact:
-    cert_dir: "{{ root_path_cmd.stdout }}/roles/pihole/files/openvpn/{{ relative_cert_dir }}"
+    cert_dir: "{{ root_path_cmd.stdout }}/../{{ pihole_vpn_config_ansible_path }}"
 
 - name: Check if there is a pre-generated VPN CA cert
   local_action:
@@ -21,8 +18,8 @@
   register: ca_cert
 
 - name: Copy pre-generated VPN CA cert files
-  copy:
-    src: "openvpn/{{ relative_cert_dir }}"
+  unarchive:
+    src: "{{ cert_dir }}"
     dest: "{{ openvpn.volumes.config.local_folder }}"
     owner: "{{ user }}"
     group: "{{ user }}"
@@ -32,7 +29,7 @@
   block:
   - name: Generate VPN CA Cert password
     set_fact:
-      ca_cert_pw: "{{ lookup('template', 'standard_pw_gen.jinja2', template_vars=dict(name='vpn_ca_cert')) }}"
+      ca_cert_pw: "{{ pihole_vpn_ca_cert_password }}"
 
   - name: Generate VPN CA cert
     expect:

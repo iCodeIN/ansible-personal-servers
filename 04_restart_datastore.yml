@@ -7,7 +7,7 @@
     restart_command: "docker-compose stop && docker-compose rm -f && docker-compose up -d --remove-orphans"
 
   pre_tasks:
-    - include: tasks/collect_system_data.yml
+    - include: tasks/init.yml
       tags: always
 
   tasks:

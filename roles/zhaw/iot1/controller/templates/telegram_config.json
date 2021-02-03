@@ -1,0 +1,4 @@
+{
+  "key": "{{ zhaw_iot1_controller_telegram_key }}",
+  "chat_id": "{{ zhaw_iot1_controller_telegram_chat_id }}"
+}

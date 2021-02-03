@@ -8,7 +8,7 @@
 #
 
   pre_tasks:
-    - include: tasks/collect_system_data.yml
+    - include: tasks/init.yml
       tags: always
 
   roles:

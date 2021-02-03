@@ -1,4 +1,3 @@
-{% import "password_gen.jinja2" as gen with context -%}
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
@@ -16,7 +15,7 @@ services:
     image: postgres:13
     environment:
       POSTGRES_USER: {{ matrix_server_db.db_user }}
-      POSTGRES_PASSWORD: '{{ gen.pw("matrix_server_db") }}'
+      POSTGRES_PASSWORD: '{{ matrix_server_db_password }}'
       POSTGRES_DB: na_default
     {{ dv.volumes_section_complete(vols_db)|indent(width = 4) }}
       - {{ root_dirs.matrix_server }}/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro

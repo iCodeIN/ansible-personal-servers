@@ -2,8 +2,6 @@
 #                   Authelia configuration                    #
 ###############################################################
 
-{% import "password_gen.jinja2" as gen with context -%}
-
 # The host and port to listen on
 host: 0.0.0.0
 port: 9091
@@ -13,7 +11,7 @@ log_level: info
 
 # The secret used to generate JWT tokens when validating user identity by
 # email confirmation.
-jwt_secret: '{{ gen.pw("authelia_jwt_secret") | replace("$", "$$") }}'
+jwt_secret: '{{ proxy_authelia_jwt_secret | replace("$", "$$") }}'
 
 # Default redirection URL
 #
@@ -122,7 +120,7 @@ session:
   name: authelia_session
 
   # The secret to encrypt the session cookie.
-  secret: '{{ gen.pw("authelia_session_secret") | replace("$", "$$") }}'
+  secret: '{{ proxy_authelia_session_secret | replace("$", "$$") }}'
 
   # The time in seconds before the cookie expires and session is reset.
   expiration: 3600 # 1 hour

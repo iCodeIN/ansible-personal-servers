@@ -31,7 +31,6 @@ version: '3'
 #
 
 {% import 'pihole_ipam.jinja2' as pihole_ipam with context -%}
-{% import 'password_gen.jinja2' as gen with context -%}
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
@@ -98,7 +97,7 @@ services:
       - openvpn
     environment:
 {#                 We need to escape $-sign with two $$-signs #}
-      WEBPASSWORD: '{{ gen.pw("web") | replace("$", "$$") }}'
+      WEBPASSWORD: '{{ pihole_web_password | replace("$", "$$") }}'
       TZ: {{ timezone }}
       DNS1: {{ unbound.ipv4 }}#53
       DNS2: "no"

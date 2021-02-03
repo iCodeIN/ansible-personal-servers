@@ -1,7 +1,7 @@
 - name: Create sensor user
   include_tasks: create_user.yml
   vars:
-    item: { name: "{{ sensor_mock_user }}", create_home: yes, groups: []  }
+    item: { name: "{{ sensor_mock_user }}", password: "{{ sensor_mock_user_password }}", create_home: yes, groups: []  }
 
 - block:
   - include_tasks: rsync.yml

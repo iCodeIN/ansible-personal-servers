@@ -4,11 +4,11 @@
 
 - name: Get VPN CA Cert password
   set_fact:
-    ca_cert_pw: "{{ lookup('template', 'standard_pw_gen.jinja2', template_vars=dict(name='vpn_ca_cert')) }}"
+    ca_cert_pw: "{{ vault_pihole_vpn_ca_cert_password }}"
 
-- name: Generate VPN user password
+- name: Get VPN user password
   set_fact:
-    user_cert_pw: "{{ lookup('template', 'standard_pw_gen.jinja2', template_vars=dict(name=vpn_username)) }}"
+    user_cert_pw: "{{ pihole_vpn_user_passwords[vpn_username] }}"
 
 - name: Create VPN user
   expect:

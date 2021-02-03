@@ -6,8 +6,6 @@
   tags: docker_network
 
 - block:
-  - include_vars:
-      file: passwords.yml
   - include_tasks: standard_service.yml
     vars:
       usr: "1000"

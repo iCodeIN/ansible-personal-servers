@@ -1,0 +1,1 @@
+{{ zhaw_iot1_controller_hue_app_key }}

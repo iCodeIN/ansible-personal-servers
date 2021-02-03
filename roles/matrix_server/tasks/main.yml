@@ -17,10 +17,6 @@
     owner: "{{ matrix_server.user }}"
     group: "{{ matrix_server.user }}"
     mode: 0644
-
-    variable_start_string: "||"
-    variable_end_string: "||"
-
   with_items:
     - homeserver.yaml
     - realmar.net.log.config
