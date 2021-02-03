@@ -1,3 +1,0 @@
-dependencies:
-  - role: base_system/full
-    when: not base_system_installed
