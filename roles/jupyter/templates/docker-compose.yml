@@ -2,7 +2,7 @@
 {% import "docker/network.jinja2" as dn with context -%}
 {% import "docker/misc.jinja2" as dm with context -%}
 
-{% set vols = [ jupyter.volumes.data ] %}
+{% set vols = [ jupyter_volumes_data ] %}
 
 version: "3"
 services:
@@ -14,13 +14,13 @@ services:
       - "--NotebookApp.token=''"
       - "--NotebookApp.password=''"
       - "--NotebookApp.base_url='/jupyter/'"
-      - "--MappingKernelManager.cull_idle_timeout={{ jupyter.idle_timeout }}"
+      - "--MappingKernelManager.cull_idle_timeout={{ jupyter_idle_timeout }}"
     {{ lookup('traefik', { 'service_name': 'jupyter', 'port': 8888, 'strip_path': False, 'renderers': { 'redirect' : { "old_path": "/jupyter", "new_path": "/jupyter/lab/" } } })|indent(width = 4) }}
       {{ dm.disable_auto_update()|indent(width = 4) }}
 
     {{ dv.volumes_section_complete(vols)|indent(width = 4) }}
     networks:
-      {{ network_names.discovery }}:
+      {{ network_names_discovery }}:
     {{ dm.common()|indent(width = 4) }}
 
 {{ dn.networks_declaration([ discovery_network ]) }}

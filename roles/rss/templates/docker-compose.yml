@@ -3,8 +3,8 @@
 {% import "docker/misc.jinja2" as dm with context -%}
 
 {% set vols_rss = [
-  freshrss.volumes.data,
-  freshrss.volumes.extensions
+  freshrss_volumes_data,
+  freshrss_volumes_extensions
 ] %}
 
 version: "3"
@@ -30,12 +30,12 @@ services:
       POSTGRES_PASSWORD: '{{ freshrss_db_pasword }}'
       POSTGRES_DB: na_default
       TZ: {{ timezone }}
-    {{ dv.volumes_section_complete([ rss_db.volumes.data ])|indent(width = 4) }}
+    {{ dv.volumes_section_complete([ rss_db_volumes_data ])|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
 {{ dn.discovery_networks_declaration() }}
 
 {% set vols_db = [
-  rss_db.volumes.data
+  rss_db_volumes_data
 ] %}
 {{ dv.volumes_declaration(vols_rss + vols_db) }}

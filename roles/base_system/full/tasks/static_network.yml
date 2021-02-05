@@ -50,7 +50,7 @@
     src: ipv6-sysctl.conf
     dest: /etc/sysctl.d/80-ipv6.conf
     mode: 0644
-  when: host.supports_v6
+  when: host_supports_v6
   tags: net_conf
   notify: restart computer
 

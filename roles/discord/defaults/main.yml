@@ -1,0 +1,10 @@
+music_bot_user: "{{ user }}"
+music_bot_config_folder_name: music_bot
+
+music_bot_container_user: discord
+music_bot_uid: 1000
+music_bot_home: /home/discord
+
+discord_folders_permissions:
+  - folder: "{{ root_dirs_discord }}/config"
+    user: "{{ music_bot_uid }}"

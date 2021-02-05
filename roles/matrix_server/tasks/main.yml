@@ -1,11 +1,11 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ matrix_server.user }}"
-        root_dir: "{{ root_dirs.matrix_server }}"
+        usr: "{{ matrix_server_user }}"
+        root_dir: "{{ root_dirs_matrix_server }}"
         dirs:
-          - "{{ matrix_server.volumes.data.local_folder }}"
-          - "{{ matrix_server_db.volumes.data.local_folder }}"
+          - "{{ matrix_server_volumes_data.local_folder }}"
+          - "{{ matrix_server_db_volumes_data.local_folder }}"
   tags:
     - compose_file
     - matrix_server_compose_file
@@ -13,9 +13,9 @@
 - name: Copy configs
   template:
     src: "{{ item }}"
-    dest: "{{ matrix_server.volumes.data.local_folder }}/{{ item }}"
-    owner: "{{ matrix_server.user }}"
-    group: "{{ matrix_server.user }}"
+    dest: "{{ matrix_server_volumes_data.local_folder }}/{{ item }}"
+    owner: "{{ matrix_server_user }}"
+    group: "{{ matrix_server_user }}"
     mode: 0644
   with_items:
     - homeserver.yaml
@@ -26,9 +26,9 @@
 - name: Copy DB scripts and configs
   template:
     src: "{{ item }}"
-    dest: "{{ root_dirs.matrix_server }}/{{ item }}"
-    owner: "{{ matrix_server.user }}"
-    group: "{{ matrix_server.user }}"
+    dest: "{{ root_dirs_matrix_server }}/{{ item }}"
+    owner: "{{ matrix_server_user }}"
+    group: "{{ matrix_server_user }}"
     mode: 0644
   with_items:
     - init_db.sql

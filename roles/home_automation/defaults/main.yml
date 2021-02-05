@@ -1,0 +1,21 @@
+zigbee2mqtt_volumes_config:
+  name: zigbee2mqtt-data
+  local_folder: "{{ root_dirs_home_automation }}/zigbee2mqtt-data"
+  mount: /app/data
+
+mosquitto_ipv4: 172.16.22.28
+
+mosquitto_volumes_data:
+  name: mosquitto-data
+  local_folder: "{{ root_dirs_home_automation }}/mosquitto-data"
+  mount: /mosquitto/data
+
+mosquitto_volumes_log:
+  name: mosquitto-log
+  local_folder: "{{ root_dirs_home_automation }}/mosquitto-log"
+  mount: /mosquitto/log
+
+home_assistant_volumes_config:
+  name: home_assistant-config
+  local_folder: "{{ root_dirs_home_automation }}/home_assistant-config"
+  mount: /config

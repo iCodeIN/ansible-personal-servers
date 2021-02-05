@@ -16,7 +16,7 @@
     - openssl_csr:
         path: "{{ csr_path }}"
         privatekey_path: "{{ privatekey_path }}"
-        common_name: "{{ common_name if common_name is defined else dns.public.root }}"
+        common_name: "{{ common_name if common_name is defined else dns_public_root }}"
 
     - openssl_certificate:
         path: "{{ pem_path }}"

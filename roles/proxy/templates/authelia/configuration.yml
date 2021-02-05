@@ -23,7 +23,7 @@ jwt_secret: '{{ proxy_authelia_jwt_secret | replace("$", "$$") }}'
 #
 # Note: this parameter is optional. If not provided, user won't
 # be redirected upon successful authentication.
-default_redirection_url: https://{{ dns.public.root }}/
+default_redirection_url: https://{{ dns_public_root }}/
 
 # TOTP Issuer Name
 #
@@ -57,7 +57,7 @@ authentication_backend:
   # more than one instance.
   #
   file:
-    path: {{ authelia.volumes.config.mount }}/users_database.yml
+    path: {{ authelia_volumes_config.mount }}/users_database.yml
 
 # Access Control
 #
@@ -107,7 +107,7 @@ access_control:
         - "^/rss/api/.*$"
       policy: bypass
 
-{% for domain in authelia.protected_domains %}
+{% for domain in authelia_protected_domains %}
     - domain: "{{ domain }}"
       policy: one_factor
 {% endfor %}
@@ -131,7 +131,7 @@ session:
   # The domain to protect.
   # Note: the authenticator must also be in that domain. If empty, the cookie
   # is restricted to the subdomain of the issuer.
-  domain: {{ dns.public.root }}
+  domain: {{ dns_public_root }}
 
 # Configuration of the authentication regulation mechanism.
 #
@@ -156,7 +156,7 @@ regulation:
 storage:
   # The directory where the DB files will be saved
   local:
-    path: {{ authelia.volumes.data.mount }}/db.sqlite3
+    path: {{ authelia_volumes_data.mount }}/db.sqlite3
 
 # Configuration of the notification system.
 #
@@ -166,7 +166,7 @@ storage:
 notifier:
   # For testing purpose, notifications can be sent in a file
   filesystem:
-    filename: {{ authelia.volumes.data.mount }}/notification.txt
+    filename: {{ authelia_volumes_data.mount }}/notification.txt
 
   # Sending an email using a Gmail account is as simple as the next section.
   # You need to create an app password by following: https://support.google.com/accounts/answer/185833?hl=en

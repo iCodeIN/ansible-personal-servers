@@ -2,8 +2,8 @@
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
 
-{% set vols_matrix_server = [ matrix_server.volumes.data ] %}
-{% set vols_db = [ matrix_server_db.volumes.data ] %}
+{% set vols_matrix_server = [ matrix_server_volumes_data ] %}
+{% set vols_db = [ matrix_server_db_volumes_data ] %}
 {% set service_name = 'matrix_synapse' %}
 {% set wk_path = "/.well-known/matrix/" %}
 {% set wk_service_name = "matrix_well_known" %}
@@ -13,13 +13,13 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: {{ matrix_server_db.db_user }}
+      POSTGRES_USER: {{ matrix_server_db_user }}
       POSTGRES_PASSWORD: '{{ matrix_server_db_password }}'
       POSTGRES_DB: na_default
     {{ dv.volumes_section_complete(vols_db)|indent(width = 4) }}
-      - {{ root_dirs.matrix_server }}/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro
+      - {{ root_dirs_matrix_server }}/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro
     networks:
-      {{ matrix_server.networks.name }}:
+      {{ matrix_server_networks.name }}:
     {{ dm.common()|indent(width = 4) }}
 
 {# https://github.com/matrix-org/synapse/tree/master/docker #}
@@ -27,14 +27,14 @@ services:
     image: matrixdotorg/synapse:v1.26.0
     container_name: matrix_server
     environment:
-      UID: '{{ matrix_server.user }}'
-      GID: '{{ matrix_server.user }}'
+      UID: '{{ matrix_server_user }}'
+      GID: '{{ matrix_server_user }}'
       TZ: {{ timezone }}
     {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_matrix_server)|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
-      {{ network_names.datastore }}:
-      {{ matrix_server.networks.name }}:
+      {{ network_names_datastore }}:
+      {{ matrix_server_networks.name }}:
     {{ dm.common()|indent(width = 4) }}
     depends_on:
       - db
@@ -45,7 +45,7 @@ services:
     tmpfs:
       - /var/lib/coturn
     volumes:
-      - {{ root_dirs.matrix_server }}/turnserver.conf:/etc/coturn/turnserver.conf
+      - {{ root_dirs_matrix_server }}/turnserver.conf:/etc/coturn/turnserver.conf
       - {{ global_cert_dir }}/realmar.net.crt:/opt/certificates/realmar.net.crt
       - {{ global_cert_dir }}/realmar.net.pem:/opt/certificates/realmar.net.pem
     {{ dm.common()|indent(width = 4) }}
@@ -66,12 +66,12 @@ services:
     } })|indent(width = 4) }}
     volumes:
 {% for file in [ "well-known_server.json", "well-known_client.json" ] %}
-      - {{ root_dirs.matrix_server }}/{{ file }}:/usr/share/nginx/html/{{ file }}:ro
+      - {{ root_dirs_matrix_server }}/{{ file }}:/usr/share/nginx/html/{{ file }}:ro
 {% endfor %}
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
 {{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
-  {{ matrix_server.networks.name }}:
+  {{ matrix_server_networks.name }}:
 
 {{ dv.volumes_declaration(vols_matrix_server + vols_db) }}

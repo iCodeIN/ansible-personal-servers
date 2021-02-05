@@ -7,8 +7,8 @@ services:
   music_bot:
     image: {{ dm.private_image('music_bot') }}
     volumes:
-      - "{{ root_dirs.discord }}/{{ music_bot.config_folder_name }}/config.txt:{{ music_bot.home }}/config.txt:ro"
-      - "{{ root_dirs.discord }}/{{ music_bot.config_folder_name }}/serversettings.json:{{ music_bot.home }}/serversettings.json:rw"
+      - "{{ root_dirs_discord }}/{{ music_bot_config_folder_name }}/config.txt:{{ music_bot_home }}/config.txt:ro"
+      - "{{ root_dirs_discord }}/{{ music_bot_config_folder_name }}/serversettings.json:{{ music_bot_home }}/serversettings.json:rw"
     {{ dm.disable_auto_update_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 #}
@@ -18,7 +18,7 @@ services:
     user: "1000"
     {{ lookup('traefik', { 'service_name': 'among_us', 'protocol': 'udp', 'port': 22023, 'entrypoints': [ 'among_us' ] })|indent(width = 4) }}
     volumes:
-      - "{{ root_dirs.discord }}/impostor_config.json:/app/config.json:ro"
+      - "{{ root_dirs_discord }}/impostor_config.json:/app/config.json:ro"
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.journald_logging()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}

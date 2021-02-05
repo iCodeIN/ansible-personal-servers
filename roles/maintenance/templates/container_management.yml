@@ -9,7 +9,7 @@ portainer:
   command:
     - "--no-auth"
   {{ lookup('traefik', { 'service_name': 'portainer', 'use_internal': True, 'port': 9000 })|indent(width = 2) }}
-  {{ dv.volumes_section_complete([ portainer.volumes.data ])|indent(width = 2) }}
+  {{ dv.volumes_section_complete([ portainer_volumes_data ])|indent(width = 2) }}
     - /var/run/docker.sock:/var/run/docker.sock
   {{ dn.discovery_network_section()|indent(width = 2) }}
   {{ dm.common()|indent(width = 2) }}

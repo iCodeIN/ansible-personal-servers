@@ -8,7 +8,7 @@
 
 - include_tasks: create_self_signed_cert.yml
   vars:
-    privatekey_path: "{{ tls.self_signed.private_key_dir }}"
-    csr_path: "{{ tls.self_signed.cert_request_dir }}"
-    pem_path: "{{ tls.self_signed.cert_dir }}"
-    common_name: "{{ dns.internal.root if not is_dev else dns.public.root }}"
+    privatekey_path: "{{ tls_self_signed_private_key_dir }}"
+    csr_path: "{{ tls_self_signed_cert_request_dir }}"
+    pem_path: "{{ tls_self_signed_cert_dir }}"
+    common_name: "{{ dns_internal_root if not is_dev else dns_public_root }}"

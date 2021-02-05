@@ -1,0 +1,10 @@
+jupyter_user: "{{ user }}"
+jupyter_container_user: pi
+jupyter_uid: 1000
+jupyter_home: /home/pi
+jupyter_idle_timeout: 600
+
+jupyter_volumes_data:
+  name: jupyter
+  local_folder: "{{ root_dirs_jupyter }}/jupyter-data"
+  mount: /home/pi/data

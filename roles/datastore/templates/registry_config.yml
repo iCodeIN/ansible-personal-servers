@@ -9,7 +9,7 @@ storage:
   cache:
     blobdescriptor: redis
   filesystem:
-    rootdirectory: {{ registry.volumes.data.mount }}
+    rootdirectory: {{ registry_volumes_data.mount }}
 
 http:
   addr: :5000

@@ -2,20 +2,20 @@
   - name: Create discovery network
     include_tasks: docker/network/add_docker_network.yml
     vars:
-      network: "{{ traefik.networks }}"
+      network: "{{ traefik_networks }}"
   tags: docker_network
 
 - block:
   - include_tasks: standard_service.yml
     vars:
       usr: "1000"
-      root_dir: "{{ root_dirs.proxy }}"
+      root_dir: "{{ root_dirs_proxy }}"
       dirs:
-        - "{{ traefik.volumes.dynamic_conf.local_folder }}"
-        - "{{ traefik.volumes.certificates.local_folder }}"
-        - "{{ authelia.volumes.config.local_folder }}"
-        - "{{ authelia.volumes.data.local_folder }}"
-        - "{{ static_data.volumes.data.local_folder }}"
+        - "{{ traefik_volumes_dynamic_conf.local_folder }}"
+        - "{{ traefik_volumes_certificates.local_folder }}"
+        - "{{ authelia_volumes_config.local_folder }}"
+        - "{{ authelia_volumes_data.local_folder }}"
+        - "{{ static_data_volumes_data.local_folder }}"
   tags:
     - compose_file
     - proxy_compose_file
@@ -23,7 +23,7 @@
 - name: Copy traefik config
   template:
     src: tls_conf.yml
-    dest: "{{ traefik.volumes.dynamic_conf.local_folder }}/tls_conf.yml"
+    dest: "{{ traefik_volumes_dynamic_conf.local_folder }}/tls_conf.yml"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
@@ -32,7 +32,7 @@
 - name: Copy authelia config
   template:
     src: "authelia/{{ item }}"
-    dest: "{{ authelia.volumes.config.local_folder }}/{{ item }}"
+    dest: "{{ authelia_volumes_config.local_folder }}/{{ item }}"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
@@ -44,7 +44,7 @@
 - name: Copy nginx config
   template:
     src: nginx.conf
-    dest: "{{ root_dirs.proxy }}/nginx.conf"
+    dest: "{{ root_dirs_proxy }}/nginx.conf"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644

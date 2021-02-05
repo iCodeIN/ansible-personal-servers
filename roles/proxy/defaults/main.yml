@@ -1,0 +1,51 @@
+traefik_lets_encrypt_resolver_name: "{{ letsencrypt_resolver_name }}"
+traefik_lets_encrypt_email: anastassios.martakos@outlook.com
+
+traefik_volumes_dynamic_conf:
+  name:         traefik_dynamic_conf
+  local_folder: "{{ root_dirs_proxy }}/traefik-dynamic-conf-data"
+  mount:        /etc/traefik/dynamic_conf
+
+traefik_volumes_certificates:
+  name:         traefik_certificates
+  local_folder: "{{ root_dirs_proxy }}/traefik-certificates"
+  mount:        /etc/traefik/certs
+
+traefik_networks:
+  v4:
+    subnet:     172.16.20.0/24
+    netaddress: 172.16.20.0
+    netmask:    255.255.255.0
+    gateway:    172.16.20.1
+  name: "{{ network_names_discovery }}"
+
+authelia_protected_domains:
+  - "{{ dns_public_root }}"
+  - "{{ dns_internal_root }}"
+  - "*.{{ dns_public_root }}"
+  - "*.{{ dns_internal_root }}"
+
+authelia_volumes_config:
+  name:         authelia_config
+  local_folder: "{{ root_dirs_proxy }}/authelia-config"
+  mount:        /config
+
+authelia_volumes_data:
+  name:         authelia_data
+  local_folder: "{{ root_dirs_proxy }}/authelia-data"
+  mount:        /app/data
+
+
+static_data_volumes_data:
+  name:         static_data
+  local_folder: "{{ root_dirs_proxy }}/static-data"
+  mount:        /usr/share/nginx/html
+
+
+tls_self_signed_cert:         realmar.net.crt
+tls_self_signed_private_key:  realmar.net.pem
+tls_self_signed_cert_request: realmar.net.csr
+
+tls_self_signed_cert_dir:         "{{ traefik_volumes_certificates.local_folder }}/realmar.net.crt"
+tls_self_signed_private_key_dir:  "{{ traefik_volumes_certificates.local_folder }}/realmar.net.pem"
+tls_self_signed_cert_request_dir: "{{ traefik_volumes_certificates.local_folder }}/realmar.net.csr"

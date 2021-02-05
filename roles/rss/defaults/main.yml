@@ -1,0 +1,16 @@
+freshrss_user: 33
+freshrss_volumes_data:
+  name:         rss_data
+  local_folder: "{{ root_dirs_rss }}/rss-data"
+  mount:        /var/www/FreshRSS/data
+
+freshrss_volumes_extensions:
+  name:         rss_extensions
+  local_folder: "{{ root_dirs_rss }}/rss-extensions"
+  mount:        /var/www/FreshRSS/extensions
+
+rss_db_user: 999
+rss_db_volumes_data:
+  name:         db_data
+  local_folder: "{{ root_dirs_rss }}/db-data"
+  mount:        /var/lib/postgresql/data

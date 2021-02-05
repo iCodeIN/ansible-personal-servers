@@ -1,12 +1,12 @@
 - include_tasks: rsync.yml
   vars:
     src: "syslog-interceptor"
-    dest: "{{ root_dirs.datastore }}"
+    dest: "{{ root_dirs_datastore }}"
 
 - name: Copy Dockerfile
   template:
     src: syslog-interceptor/Dockerfile
-    dest: "{{ root_dirs.datastore }}/syslog-interceptor/Dockerfile"
+    dest: "{{ root_dirs_datastore }}/syslog-interceptor/Dockerfile"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
@@ -14,7 +14,7 @@
 - name: Copy syslog-interceptor config
   template:
     src: syslog-interceptor/config.yml
-    dest: "{{ root_dirs.datastore }}/syslog-interceptor-config.yml"
+    dest: "{{ root_dirs_datastore }}/syslog-interceptor-config.yml"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644

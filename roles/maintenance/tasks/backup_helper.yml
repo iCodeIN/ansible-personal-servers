@@ -2,14 +2,14 @@
   - include_tasks: rsync.yml
     vars:
       src: "backup-helper"
-      dest: "{{ root_dirs.maintenance }}"
+      dest: "{{ root_dirs_maintenance }}"
 
 #- name: Build image
 #  docker_image:
 #    name: backup_helper
 #    source: build
 #    build:
-#      path: "{{ root_dirs.maintenance }}/backup-helper"
+#      path: "{{ root_dirs_maintenance }}/backup-helper"
 #      nocache: yes
 #      rm: yes
 #      pull: yes
@@ -17,33 +17,33 @@
 
 - name: Check backup helper binary exists
   stat:
-    path: "{{ duplicati.volumes.config.local_folder }}/bh"
+    path: "{{ duplicati_volumes_config.local_folder }}/bh"
   register: bh_binary_check
   changed_when: False
 
 - name: Copy binary
   shell:
     cmd: docker run --rm -v $(pwd):/mnt {{ private_docker_registry }}/backup_helper:{{ 'latest' if is_dev else 'aarch64' }} cp -r bh /mnt/.
-    chdir: "{{ root_dirs.maintenance }}/backup-helper"
+    chdir: "{{ root_dirs_maintenance }}/backup-helper"
   when: bh_binary_check.stat.exists
 
 - name: Move binary to the right place
   copy:
     remote_src: True
-    src: "{{ root_dirs.maintenance }}/backup-helper/bh"
-    dest: "{{ duplicati.volumes.config.local_folder }}/bh"
+    src: "{{ root_dirs_maintenance }}/backup-helper/bh"
+    dest: "{{ duplicati_volumes_config.local_folder }}/bh"
     mode: "0755"
   when: bh_binary_check.stat.exists
 
 - name: Delete original binary
   file:
-    path: "{{ root_dirs.maintenance }}/backup-helper/bh"
+    path: "{{ root_dirs_maintenance }}/backup-helper/bh"
     state: absent
 
 - name: Copy start and stop scripts
   template:
     src: "{{ item }}"
-    dest: "{{ duplicati.volumes.config.local_folder }}/{{ item }}"
+    dest: "{{ duplicati_volumes_config.local_folder }}/{{ item }}"
     mode: "0755"
   with_items:
     - start_containers.sh

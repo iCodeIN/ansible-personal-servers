@@ -10,12 +10,12 @@
   file:
     state: directory
     path: "{{ folder.local_folder }}"
-    owner: "{{ pihole.user }}"
+    owner: "{{ pihole_user }}"
     group: "{{ user }}"
   loop:
-    - "{{ pihole.volumes.main }}"
-    - "{{ pihole.volumes.dnsmasq }}"
-    - local_folder: "{{ root_dirs.pihole }}/dhcp-helper"
+    - "{{ pihole_volumes_main }}"
+    - "{{ pihole_volumes_dnsmasq }}"
+    - local_folder: "{{ root_dirs_pihole }}/dhcp-helper"
   loop_control:
     loop_var: folder
   tags: pihole_conf
@@ -23,8 +23,8 @@
 - name: Copy dhcp-helper files
   template:
     src: "pihole/dhcp-helper/Dockerfile"
-    dest: "{{ root_dirs.pihole }}/dhcp-helper/Dockerfile"
-    owner: "{{ pihole.user }}"
+    dest: "{{ root_dirs_pihole }}/dhcp-helper/Dockerfile"
+    owner: "{{ pihole_user }}"
     group: "{{ user }}"
     mode: 0644
   tags:
@@ -34,8 +34,8 @@
 - name: Copy dnsmaq config extension
   template:
     src: "pihole/{{ item }}"
-    dest: "{{ pihole.volumes.dnsmasq.local_folder }}/{{ item }}"
-    owner: "{{ pihole.user }}"
+    dest: "{{ pihole_volumes_dnsmasq.local_folder }}/{{ item }}"
+    owner: "{{ pihole_user }}"
     group: "{{ user }}"
     mode: 0644
   with_items:
@@ -46,8 +46,8 @@
 - name: Copy pihole-FTL.conf file
   template:
     src: pihole/pihole-FTL.conf
-    dest: "{{ pihole.volumes.main.local_folder }}/pihole-FTL.conf"
-    owner: "{{ pihole.user }}"
+    dest: "{{ pihole_volumes_main.local_folder }}/pihole-FTL.conf"
+    owner: "{{ pihole_user }}"
     group: "{{ user }}"
     mode: 0644
   tags: pihole_conf
@@ -55,8 +55,8 @@
 - name: Copy startup.sh file
   template:
     src: pihole/startup.sh
-    dest: "{{ pihole.volumes.main.local_folder }}/startup.sh"
-    owner: "{{ pihole.user }}"
+    dest: "{{ pihole_volumes_main.local_folder }}/startup.sh"
+    owner: "{{ pihole_user }}"
     group: "{{ user }}"
     mode: 0755
   tags:
@@ -73,8 +73,8 @@
 - name: Copy docker-compose.yml file
   template:
     src: docker-compose.yml
-    dest: "{{ root_dirs.pihole }}/docker-compose.yml"
-    owner: "{{ pihole.user }}"
+    dest: "{{ root_dirs_pihole }}/docker-compose.yml"
+    owner: "{{ pihole_user }}"
     group: "{{ user }}"
     mode: 0644
   # notify: restart pihole project

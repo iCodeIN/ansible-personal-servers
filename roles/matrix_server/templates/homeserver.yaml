@@ -682,9 +682,9 @@ caches:
 database:
   name: psycopg2
   args:
-    user: {{ matrix_server_db.db_user }}
+    user: {{ matrix_server_db_user }}
     password: "{{ matrix_server_db_password }}"
-    database: {{ matrix_server_db.db_name }}
+    database: {{ matrix_server_db_user }}
     host: db
     cp_min: 5
     cp_max: 10
@@ -994,10 +994,10 @@ url_preview_accept_language:
 # The public URIs of the TURN server to give to clients
 #
 turn_uris:
-  - "turns:{{ dns.public.root }}:5349?transport=udp"
-  # - "turns:{{ dns.public.root }}:5349?transport=tcp"
-  - "turn:{{ dns.public.root }}:3478?transport=udp"
-  # - "turn:{{ dns.public.root }}:3478?transport=tcp"
+  - "turns:{{ dns_public_root }}:5349?transport=udp"
+  # - "turns:{{ dns_public_root }}:5349?transport=tcp"
+  - "turn:{{ dns_public_root }}:3478?transport=udp"
+  # - "turn:{{ dns_public_root }}:3478?transport=tcp"
 
 # The shared secret used to compute passwords for the TURN server
 #

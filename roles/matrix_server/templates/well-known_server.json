@@ -1,3 +1,3 @@
 {
-  "m.server": "{{ dns.public.root }}:443"
+  "m.server": "{{ dns_public_root }}:443"
 }

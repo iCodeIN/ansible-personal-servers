@@ -2,19 +2,19 @@
   file:
     path: "{{ folder }}"
     state: directory
-    owner: "{{ unbound.user }}"
+    owner: "{{ unbound_user }}"
     group: "{{ user }}"
   loop:
-    - "{{ unbound.volumes.main.local_folder }}"
-    - "{{ unbound.volumes.main.local_folder }}/var"
+    - "{{ unbound_volumes_main.local_folder }}"
+    - "{{ unbound_volumes_main.local_folder }}/var"
   loop_control:
     loop_var: folder
 
 - name: Copy config files
   template:
     src: "unbound/{{ file }}"
-    dest: "{{ unbound.volumes.main.local_folder }}/{{ file }}"
-    owner: "{{ unbound.user }}"
+    dest: "{{ unbound_volumes_main.local_folder }}/{{ file }}"
+    owner: "{{ unbound_user }}"
     group: "{{ user }}"
   loop:
     - unbound.conf
@@ -33,8 +33,8 @@
 - name: Download root.hints
   get_url:
     url: https://www.internic.net/domain/named.root
-    dest: "{{ unbound.volumes.main.local_folder }}/var/root.hints"
-    owner: "{{ unbound.user }}"
+    dest: "{{ unbound_volumes_main.local_folder }}/var/root.hints"
+    owner: "{{ unbound_user }}"
     group: "{{ user }}"
 
 - name: Copy logrotate file

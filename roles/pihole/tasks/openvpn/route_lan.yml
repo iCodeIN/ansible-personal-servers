@@ -1,7 +1,7 @@
 - name: Copy vpn up script
   template:
     src: openvpn/route_lan.py
-    dest: "{{ openvpn.volumes.config.local_folder }}/up-route_lan.py"
+    dest: "{{ openvpn_volumes_config.local_folder }}/up-route_lan.py"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0755
@@ -11,7 +11,7 @@
 - name: Copy vpn down script
   template:
     src: openvpn/route_lan.py
-    dest: "{{ openvpn.volumes.config.local_folder }}/down-route_lan.py"
+    dest: "{{ openvpn_volumes_config.local_folder }}/down-route_lan.py"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0755
@@ -30,7 +30,7 @@
     state: started
     enabled: yes
     daemon_reload: yes
-  when: openvpn.use_host_net
+  when: openvpn_use_host_net
 
 - name: Configure iptables for vpn using systemd (stopped, disabled)
   systemd:
@@ -38,4 +38,4 @@
     state: stopped
     enabled: no
     daemon_reload: yes
-  when: not openvpn.use_host_net
+  when: not openvpn_use_host_net

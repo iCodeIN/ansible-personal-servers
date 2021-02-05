@@ -1,3 +1,3 @@
 #!/bin/sh
 
-{{ duplicati.volumes.config.mount }}/bh stop -e {{ backup_helper.exclude|join(' ') }}
+{{ duplicati_volumes_config.mount }}/bh stop -e {{ backup_helper_exclude|join(' ') }}

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-{{ duplicati.volumes.config.mount }}/bh start
+{{ duplicati_volumes_config.mount }}/bh start

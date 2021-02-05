@@ -2,20 +2,20 @@
 
 {{ df.minimal_init(
   'rust:latest',
-  syslog_interceptor.container_user,
+  syslog_interceptor_container_user,
   1000,
-  syslog_interceptor.container_home
+  syslog_interceptor_container_home
 ) }}
 
 {{ df.install([ 'netcat' ]) }}
 
-{% set app_dir = syslog_interceptor.container_app_dir %}
+{% set app_dir = syslog_interceptor_container_app_dir %}
 
 RUN mkdir -p {{ app_dir }}
 WORKDIR {{ app_dir }}
 COPY . .
 
-{{ df.run_as_root('chown ' + syslog_interceptor.container_user + ':users . -R') }}
+{{ df.run_as_root('chown ' + syslog_interceptor_container_user + ':users . -R') }}
 
 RUN rustup install nightly \
       && rustup default nightly \

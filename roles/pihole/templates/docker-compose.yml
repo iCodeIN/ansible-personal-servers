@@ -30,14 +30,13 @@ version: '3'
 # docker run -v $OVPN_DATA:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient pihole-vpn > $OVPN_DATA/pihole-vpn.ovpn
 #
 
-{% import 'pihole_ipam.jinja2' as pihole_ipam with context -%}
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
 
 services:
   openvpn:
-    container_name: {{ openvpn.name }}
+    container_name: {{ openvpn_name }}
 {% if is_dev %}
     image: kylemanna/openvpn:latest
 {% else %}
@@ -54,24 +53,24 @@ services:
     # OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
     # LOCAL_NETWORK=192.168.0.0/24
       OPENVPN_OPTS: --inactive 3600 --ping 10 --ping-exit 60 -–log-driver json-file --log-opt max-size=10m
-    {{ dv.volumes_section_complete([ openvpn.volumes.config ])|indent(width = 4) }}
+    {{ dv.volumes_section_complete([ openvpn_volumes_config ])|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
-{% if openvpn.use_host_net %}
+{% if openvpn_use_host_net %}
     network_mode: host
 {% else %}
     networks:
-      {{ openvpn.networks.name }}:
-        ipv4_address: {{ openvpn.ipv4 }}
-{%   if openvpn.networks.v6.enable %}
-        ipv6_address: {{ openvpn.ipv6 }}
+      {{ openvpn_networks.name }}:
+        ipv4_address: {{ openvpn_ipv4 }}
+{%   if openvpn_networks.v6.enable %}
+        ipv6_address: {{ openvpn_ipv6 }}
 {%   endif %}
-{%   if pihole.use_host_net == false %}
-      {{ pihole.networks.name }}:
-        ipv4_address: {{ openvpn.pihole_ipv4 }}
-      {{ network_names.discovery }}:
+{%   if pihole_use_host_net == false %}
+      {{ pihole_networks.name }}:
+        ipv4_address: {{ openvpn_pihole_ipv4 }}
+      {{ network_names_discovery }}:
 {%   endif %}
 {% endif %}
-{% if openvpn.networks.v6.enable %}
+{% if openvpn_networks.v6.enable %}
     privileged: yes
 {% endif %}
     cap_add:
@@ -79,10 +78,10 @@ services:
 
   pihole:
     image: pihole/pihole:latest
-    container_name: {{ pihole.name }}
-    entrypoint: {{ pihole.volumes.main.mount }}startup.sh
+    container_name: {{ pihole_name }}
+    entrypoint: {{ pihole_volumes_main.mount }}startup.sh
     {{ lookup('traefik',
-      { 'service_name': 'pihole', 'port': pihole.web_admin_port, 'use_internal': True },
+      { 'service_name': 'pihole', 'port': pihole_web_admin_port, 'use_internal': True },
       { 'service_name': 'pihole', 'protocol': 'tcp', 'port': 53, 'entrypoints': [ 'dns_tcp' ] },
       { 'service_name': 'pihole', 'protocol': 'udp', 'port': 53, 'entrypoints': [ 'dns_udp' ] })|indent(width = 4) }}
     dns:
@@ -90,7 +89,7 @@ services:
       - 1.1.1.1
       - 1.0.0.1
     depends_on:
-{% if pihole.use_host_net == false %}
+{% if pihole_use_host_net == false %}
       - dhcphelper
 {% endif %}
       - openvpn
@@ -98,45 +97,45 @@ services:
 {#                 We need to escape $-sign with two $$-signs #}
       WEBPASSWORD: '{{ pihole_web_password | replace("$", "$$") }}'
       TZ: {{ timezone }}
-      DNS1: {{ unbound.ipv4 }}#53
+      DNS1: {{ unbound_ipv4 }}#53
       DNS2: "no"
-      WEB_PORT: {{ pihole.web_admin_port }}
-      ServerIP: {{ pihole.web_bind_address }} # {{ pihole_ipam.ipam.ipv4 }}
+      WEB_PORT: {{ pihole_web_admin_port }}
+      ServerIP: {{ pihole_web_bind_address }} # {{ pihole_ipv4 }}
       IPv6: "True"
-{% if host.supports_v6 %}
-{%   if pihole.use_host_net %}
-      ServerIPv6: {{ host.ipv6 }}
-{%   elif pihole.networks.v6.enable %}
-      ServerIPv6: {{ pihole_ipam.ipam.ipv6 }}
+{% if host_supports_v6 %}
+{%   if pihole_use_host_net %}
+      ServerIPv6: {{ host_ipv6 }}
+{%   elif pihole_networks.v6.enable %}
+      ServerIPv6: {{ pihole_ipv6 }}
 {%   endif %}
 {% endif %}
       DNSMASQ_LISTENING: all
-      DNSMASQ_USER: {{ pihole.dnsmasq_user }}
+      DNSMASQ_USER: {{ pihole_dnsmasq_user }}
     {{ dv.volumes_section_complete(
       [
-        pihole.volumes.main ,
-        pihole.volumes.dnsmasq
+        pihole_volumes_main ,
+        pihole_volumes_dnsmasq
       ]
     )|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
-{% if pihole.use_host_net %}
+{% if pihole_use_host_net %}
     network_mode: host
 {% else %}
     networks:
-      {{ network_names.datastore }}:
-      {{ network_names.discovery }}:
-        ipv4_address: {{ pihole.discovery_ipv4 }}
-      {{ pihole.networks.name }}:
-        ipv4_address: {{ pihole_ipam.ipam.ipv4 }}
-{%      if pihole.networks.v6.enable %}
-        ipv6_address: {{ pihole_ipam.ipam.ipv6 }}
+      {{ network_names_datastore }}:
+      {{ network_names_discovery }}:
+        ipv4_address: {{ pihole_discovery_ipv4 }}
+      {{ pihole_networks.name }}:
+        ipv4_address: {{ pihole_ipv4 }}
+{%      if pihole_networks.v6.enable %}
+        ipv6_address: {{ pihole_ipv6 }}
 {%      endif %}
-      {{ unbound.networks.name }}:
+      {{ unbound_networks.name }}:
 {% endif %}
     cap_add:
       # Allows FTLDNS binding to TCP/UDP sockets below 1024 (specifically DNS service on port 53)
       - CAP_NET_BIND_SERVICE
-{% if host.supports_v6 %}
+{% if host_supports_v6 %}
       # use raw and packet sockets (needed for handling DHCPv6 requests, and verifying that an IP is not in use before leasing it)
       - CAP_NET_RAW
 {% endif %}
@@ -145,13 +144,13 @@ services:
       # Needed for DHCP and IPv6 RA
       - NET_ADMIN
 
-{% if pihole.use_host_net == false %}
+{% if pihole_use_host_net == false %}
   # https://docs.pi-hole.net/docker/dhcp/
   # https://discourse.pi-hole.net/t/dhcp-with-docker-compose-and-bridge-networking/17038
   dhcphelper:
     image: {{ dm.private_image('dhcphelper') }}
     network_mode: host
-    command: -s {{ pihole_ipam.ipam.ipv4 }}
+    command: -s {{ pihole_ipv4 }}
     cap_add:
       - NET_ADMIN
     {{ dm.disable_auto_update_section()|indent(width = 4) }}
@@ -159,32 +158,32 @@ services:
 {% endif %}
 
   unbound:
-    container_name: {{ unbound.name }}
+    container_name: {{ unbound_name }}
     # Note: make sure the image supports arm (the image on the latest tag does not)
     image: {{ 'mvance/unbound-rpi:latest' if not is_dev else 'mvance/unbound:latest' }}
 {% set vols = [
-  unbound.volumes.main
+  unbound_volumes_main
 ] %}
     {{ dv.volumes_mapping_full(vols)|indent }}
     networks:
-      {{ unbound.networks.name }}:
-        ipv4_address: {{ unbound.ipv4 }}
-      {{ network_names.datastore }}:
+      {{ unbound_networks.name }}:
+        ipv4_address: {{ unbound_ipv4 }}
+      {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
-{% set nets = [ discovery_network, datastore_network, unbound.networks ] %}
-{% if pihole.use_host_net == false %}
-{{   nets.append(pihole.networks) }}
+{% set nets = [ discovery_network, datastore_network, unbound_networks ] %}
+{% if pihole_use_host_net == false %}
+{{   nets.append(pihole_networks) }}
 {% endif %}
-{% if openvpn.use_host_net == false %}
-{{   nets.append(openvpn.networks) }}
+{% if openvpn_use_host_net == false %}
+{{   nets.append(openvpn_networks) }}
 {% endif %}
 # docker network create --ipv6 --driver=bridge --subnet=172.16.0.1/24 --gateway=172.16.0.1 --subnet=2002:ac10:0001::/64 --gateway=2002:ac10:0001::1 vpn-net
 {{ dn.networks_declaration(nets) }}
 
 {% set vols = [
-  pihole.volumes.main,
-  pihole.volumes.dnsmasq,
-  openvpn.volumes.config,
-  unbound.volumes.main
+  pihole_volumes_main,
+  pihole_volumes_dnsmasq,
+  openvpn_volumes_config,
+  unbound_volumes_main
 ] %}
 {{ dv.volumes_declaration(vols) }}

@@ -2,28 +2,28 @@
   include_tasks: restart_compose_container.yml
   vars:
     item:
-      name: "{{ openvpn.name }}"
-      dir: "{{ root_dirs.pihole }}"
+      name: "{{ openvpn_name }}"
+      dir: "{{ root_dirs_pihole }}"
   ignore_errors: yes # yeet
 
 - name: restart pihole
   include_tasks: restart_compose_container.yml
   vars:
     item:
-      name: "{{ pihole.name }}"
-      dir: "{{ root_dirs.pihole }}"
+      name: "{{ pihole_name }}"
+      dir: "{{ root_dirs_pihole }}"
   ignore_errors: yes # yeet
 
 - name: restart unbound
   include_tasks: restart_compose_container.yml
   vars:
     item:
-      name: "{{ unbound.name }}"
-      dir: "{{ root_dirs.pihole }}"
+      name: "{{ unbound_name }}"
+      dir: "{{ root_dirs_pihole }}"
   ignore_errors: yes # yeet
 
 - name: restart pihole project
   shell: "docker-compose restart"
   args:
-    chdir: "{{ root_dirs.pihole }}"
+    chdir: "{{ root_dirs_pihole }}"
   ignore_errors: yes # yeet

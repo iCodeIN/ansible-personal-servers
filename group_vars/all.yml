@@ -5,46 +5,41 @@ application_root: /home/pi
 timezone: Europe/Zurich
 user: pi
 user_password: "{{ base_system_pi_password }}"
-root_dirs:
-  pihole: "{{ application_root }}/pihole"
-  maintenance: "{{ application_root }}/maintenance"
-  rss: "{{ application_root }}/rss"
-  proxy: "{{ application_root }}/proxy"
-  jupyter: "{{ application_root }}/jupyter"
-  discord: "{{ application_root }}/discord"
-  personal_website: "{{ application_root }}/realmar.net"
-  home_automation: "{{ application_root }}/home_automation"
-  datastore: "{{ application_root }}/datastore"
-  matrix_server: "{{ application_root }}/matrix_server"
 
-  # ZHAW
-  zhaw_iot1: "{{ application_root }}/zhaw_iot1"
+root_dirs_pihole: "{{ application_root }}/pihole"
+root_dirs_maintenance: "{{ application_root }}/maintenance"
+root_dirs_rss: "{{ application_root }}/rss"
+root_dirs_proxy: "{{ application_root }}/proxy"
+root_dirs_jupyter: "{{ application_root }}/jupyter"
+root_dirs_discord: "{{ application_root }}/discord"
+root_dirs_personal_website: "{{ application_root }}/realmar.net"
+root_dirs_home_automation: "{{ application_root }}/home_automation"
+root_dirs_datastore: "{{ application_root }}/datastore"
+root_dirs_matrix_server: "{{ application_root }}/matrix_server"
 
-network_names:
-  discovery: discovery
-  datastore: datastore
+# ZHAW
+root_dirs_zhaw_iot1: "{{ application_root }}/zhaw_iot1"
+
+network_names_discovery: discovery
+network_names_datastore: datastore
 
 discovery_network:
-  name: "{{ network_names.discovery }}"
+  name: "{{ network_names_discovery }}"
 
 datastore_network:
-  name: "{{ network_names.datastore }}"
+  name: "{{ network_names_datastore }}"
 
-dns:
-  public:
-    root: "realmar.net"
-  internal:
-    root: "internal.realmar.net"
+dns_public_root: "realmar.net"
+dns_internal_root: "internal.realmar.net"
 
-dns_sub_domains:
-  login: "login.{{ dns.public.root }}"
-  smarthome: "smarthome.{{ dns.public.root }}"
+dns_sub_domains_login: "login.{{ dns_public_root }}"
+dns_sub_domains_smarthome: "smarthome.{{ dns_public_root }}"
 
 all_dns:
-  - "{{ dns.public.root }}"
-  - "{{ dns.internal.root }}"
-  - "{{ dns_sub_domains.login }}"
-  - "{{ dns_sub_domains.smarthome }}"
+  - "{{ dns_public_root }}"
+  - "{{ dns_internal_root }}"
+  - "{{ dns_sub_domains_login }}"
+  - "{{ dns_sub_domains_smarthome }}"
 
 letsencrypt_resolver_name: lets_encrypt
 

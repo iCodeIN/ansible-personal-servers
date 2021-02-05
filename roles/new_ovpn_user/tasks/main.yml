@@ -12,7 +12,7 @@
 
 - name: Create VPN user
   expect:
-    command: "docker run -e EASYRSA_KEY_SIZE={{ openvpn.conf.ca_cert_bits }} -v {{ openvpn.volumes.config.local_folder }}:{{ openvpn.volumes.config.mount }} --rm -it kylemanna/openvpn easyrsa build-client-full {{ vpn_username }}"
+    command: "docker run -e EASYRSA_KEY_SIZE={{ openvpn_conf_ca_cert_bits }} -v {{ openvpn_volumes_config.local_folder }}:{{ openvpn_volumes_config.mount }} --rm -it kylemanna/openvpn easyrsa build-client-full {{ vpn_username }}"
     responses:
       'Enter PEM pass phrase:': "{{ user_cert_pw }}"
       'Enter pass phrase for \/etc\/openvpn\/pki\/private\/ca\.key:': "{{ ca_cert_pw }}"
@@ -21,24 +21,24 @@
     ovpn_name: "{{ vpn_username }}.ovpn"
 
 - set_fact:
-    ovpn_path: "{{ root_dirs.pihole }}/{{ ovpn_name }}"
+    ovpn_path: "{{ root_dirs_pihole }}/{{ ovpn_name }}"
 
 - name: Store OVPN profile in config directory
-  shell: "docker run -v {{ openvpn.volumes.config.local_folder }}:{{ openvpn.volumes.config.mount }} --rm kylemanna/openvpn ovpn_getclient {{ vpn_username }} > {{ ovpn_path }}"
+  shell: "docker run -v {{ openvpn_volumes_config.local_folder }}:{{ openvpn_volumes_config.mount }} --rm kylemanna/openvpn ovpn_getclient {{ vpn_username }} > {{ ovpn_path }}"
 
 - name: Only route DNS through VPN
   lineinfile:
     path: "{{ ovpn_path }}"
     line: "redirect-gateway def1"
     state: absent
-  when: openvpn.conf.client.only_dns_over_vpn
+  when: openvpn_conf_client_only_dns_over_vpn
 
 - name: Enable IPv6
   lineinfile:
     path: "{{ ovpn_path }}"
     line: "tun-ipv6"
     state: present
-  when: openvpn.networks.v6.enable
+  when: openvpn_networks.v6.enable
 
 - name: Copy OVPN profile to host
   fetch:

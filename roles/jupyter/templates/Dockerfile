@@ -6,9 +6,9 @@
 
 {{ df.init(
   'ubuntu:20.04',
-  jupyter.container_user,
-  jupyter.uid,
-  jupyter.home
+  jupyter_container_user,
+  jupyter_uid,
+  jupyter_home
 ) }}
 
 RUN mkdir -p $HOME/data

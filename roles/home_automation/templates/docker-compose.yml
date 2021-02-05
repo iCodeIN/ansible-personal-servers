@@ -2,9 +2,9 @@
 {% import "docker/network.jinja2" as dn with context -%}
 {% import "docker/volumes.jinja2" as dv with context -%}
 
-{% set zigbee2mqtt_vols = [ zigbee2mqtt.volumes.config ] %}
-{% set mosquitto_vols = [ mosquitto.volumes.data, mosquitto.volumes.log ] %}
-{% set home_assistant_vols = [ home_assistant.volumes.config ] %}
+{% set zigbee2mqtt_vols = [ zigbee2mqtt_volumes_config ] %}
+{% set mosquitto_vols = [ mosquitto_volumes_data, mosquitto_volumes_log ] %}
+{% set home_assistant_vols = [ home_assistant_volumes_config ] %}
 
 version: "3"
 services:
@@ -22,18 +22,18 @@ services:
     image: eclipse-mosquitto
     networks:
       mqtt:
-      {{ network_names.datastore }}:
+      {{ network_names_datastore }}:
     {{ dn.map_ports([ (1883,) ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(mosquitto_vols)|indent(width = 4) }}
-      - "{{ root_dirs.home_automation }}/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+      - "{{ root_dirs_home_automation }}/mosquitto.conf:/mosquitto/config/mosquitto.conf"
     {{ dm.common()|indent(width = 4) }}
 
   home_assistant:
     image: homeassistant/home-assistant:stable
-    {{ lookup('traefik', { 'domain': dns_sub_domains.smarthome, 'service_name': 'smarthome', 'port': 8123, 'use_dns_root': True })|indent(width = 4) }}
+    {{ lookup('traefik', { 'domain': dns_sub_domains_smarthome, 'service_name': 'smarthome', 'port': 8123, 'use_dns_root': True })|indent(width = 4) }}
     networks:
-      {{ network_names.discovery }}:
-      {{ network_names.datastore }}:
+      {{ network_names_discovery }}:
+      {{ network_names_datastore }}:
       mqtt:
     {{ dn.map_ports([ (8123,) ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(home_assistant_vols)|indent(width = 4) }}

@@ -3,17 +3,17 @@
 {% import 'docker/misc.jinja2' as dm with context -%}
 
 {% set vols_traefik = [
-  traefik.volumes.dynamic_conf,
-  traefik.volumes.certificates
+  traefik_volumes_dynamic_conf,
+  traefik_volumes_certificates
 ] %}
 
 {% set vols_authelia = [
-  authelia.volumes.config,
-  authelia.volumes.data
+  authelia_volumes_config,
+  authelia_volumes_data
 ] %}
 
 {% set vols_static_data = [
-  static_data.volumes.data
+  static_data_volumes_data
 ] %}
 
 {% set vols = vols_traefik + vols_authelia + vols_static_data %}
@@ -28,9 +28,9 @@ services:
       - "--accesslog=true"
 
       - "--providers.docker=true"
-      - "--providers.docker.network={{ network_names.discovery }}"
+      - "--providers.docker.network={{ network_names_discovery }}"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.file.directory={{ traefik.volumes.dynamic_conf.mount }}"
+      - "--providers.file.directory={{ traefik_volumes_dynamic_conf.mount }}"
 
       - "--api.insecure=true"
       - "--api.dashboard=true"
@@ -55,17 +55,17 @@ services:
 {% if not is_dev %}
       # Let's Encrypt
       # https://docs.traefik.io/https/acme/
-      - "--certificatesresolvers.{{ traefik.lets_encrypt.resolver_name }}.acme.email={{ traefik.lets_encrypt.email }}"
-      - "--certificatesresolvers.{{ traefik.lets_encrypt.resolver_name }}.acme.storage={{ traefik.volumes.certificates.mount }}/acme.json"
+      - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.email={{ traefik_lets_encrypt_email }}"
+      - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.storage={{ traefik_volumes_certificates.mount }}/acme.json"
 
       # https://docs.traefik.io/https/acme/#httpchallenge
-      - "--certificatesresolvers.{{ traefik.lets_encrypt.resolver_name }}.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.httpchallenge.entrypoint=web"
 {#
 
       # https://docs.traefik.io/https/acme/#dnschallenge
       # if noip implements this, I can switch
-      - "--certificatesresolvers.{{ traefik.lets_encrypt.resolver_name }}.acme.dnschallenge.provider=digitalocean"
-      - "--certificatesresolvers.{{ traefik.lets_encrypt.resolver_name }}.acme.dnschallenge.delaybeforecheck=0"
+      - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.dnschallenge.provider=digitalocean"
+      - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.dnschallenge.delaybeforecheck=0"
 #}
 {% endif %}
     {{ dn.map_ports([
@@ -79,8 +79,8 @@ services:
     {{ dm.common()|indent(width = 4) }}
     networks:
       - default
-      - {{ network_names.discovery }}
-      - {{ network_names.datastore }}
+      - {{ network_names_discovery }}
+      - {{ network_names_datastore }}
     extra_hosts:
       # https://docs.traefik.io/providers/docker/#host-networking
       - "host.docker.internal:172.17.0.1"
@@ -92,19 +92,19 @@ services:
     {{ dv.volumes_section_complete(vols_authelia)|indent(width = 4) }}
     environment:
       TZ: {{ timezone }}
-    {{ lookup('traefik', { 'service_name': service_name, 'use_defaults': False, 'domain': dns_sub_domains.login, 'port': 9091, 'use_dns_root': True })|indent(width = 4) }}
-      - "traefik.http.middlewares.{{ service_name }}.forwardauth.address=http://authelia:9091/api/verify?rd=https://{{ dns_sub_domains.login }}/"
+    {{ lookup('traefik', { 'service_name': service_name, 'use_defaults': False, 'domain': dns_sub_domains_login, 'port': 9091, 'use_dns_root': True })|indent(width = 4) }}
+      - "traefik.http.middlewares.{{ service_name }}.forwardauth.address=http://authelia:9091/api/verify?rd=https://{{ dns_sub_domains_login }}/"
       - "traefik.http.middlewares.{{ service_name }}.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.{{ service_name }}.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,X-Forwarded-User"
     networks:
-      {{ network_names.discovery }}:
+      {{ network_names_discovery }}:
     {{ dm.common()|indent(width = 4) }}
 
   static_data:
     image: nginx:latest
     {{ lookup('traefik', { 'service_name': static_data_name, 'path': static_data_path, 'use_auth': False, 'renderers': { 'basic_auth': { 'users': static_data_users } } })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_static_data)|indent(width = 4) }}
-      - {{ root_dirs.proxy }}/nginx.conf:/etc/nginx/nginx.conf:ro
+      - {{ root_dirs_proxy }}/nginx.conf:/etc/nginx/nginx.conf:ro
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 

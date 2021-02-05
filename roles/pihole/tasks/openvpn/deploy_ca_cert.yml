@@ -14,13 +14,13 @@
 
 - name: Check if VPN CA cert files exists
   stat:
-    path: "{{ openvpn.volumes.config.local_folder }}/pki/ca.crt"
+    path: "{{ openvpn_volumes_config.local_folder }}/pki/ca.crt"
   register: ca_cert
 
 - name: Copy pre-generated VPN CA cert files
   unarchive:
     src: "{{ cert_dir }}"
-    dest: "{{ openvpn.volumes.config.local_folder }}"
+    dest: "{{ openvpn_volumes_config.local_folder }}"
     owner: "{{ user }}"
     group: "{{ user }}"
   when: cert_dir_stat.stat.exists and ca_cert.stat.exists == false
@@ -33,11 +33,11 @@
 
   - name: Generate VPN CA cert
     expect:
-      command: "docker run -e EASYRSA_KEY_SIZE={{ openvpn.conf.ca_cert_bits }} -v {{ openvpn.volumes.config.local_folder }}:{{ openvpn.volumes.config.mount }} --rm -it kylemanna/openvpn ovpn_initpki"
+      command: "docker run -e EASYRSA_KEY_SIZE={{ openvpn_conf_ca_cert_bits }} -v {{ openvpn_volumes_config.local_folder }}:{{ openvpn_volumes_config.mount }} --rm -it kylemanna/openvpn ovpn_initpki"
       responses:
         'Enter New CA Key Passphrase:': "{{ ca_cert_pw }}"
         'Re-Enter New CA Key Passphrase:': "{{ ca_cert_pw }}"
-        '\[Easy\-RSA\sCA\]:': "{{ openvpn.conf.dns }}"
+        '\[Easy\-RSA\sCA\]:': "{{ openvpn_conf_dns }}"
         'Enter pass phrase for \/etc\/openvpn\/pki\/private\/ca\.key:': "{{ ca_cert_pw }}"
       timeout: 604800
   when: cert_dir_stat.stat.exists == false and ca_cert.stat.exists == false

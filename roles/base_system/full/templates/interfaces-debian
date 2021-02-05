@@ -18,18 +18,18 @@ allow-hotplug eth0
 iface eth0 inet dhcp
 {% endif %}
 
-auto {{ host.public_interface }}
+auto {{ host_public_interface }}
 
-iface {{ host.public_interface }} inet static
-    address {{ host.ipv4 }}
-    netmask {{ host.networks.v4.netmask }}
-    gateway {{ host.networks.v4.gateway }}
+iface {{ host_public_interface }} inet static
+    address {{ host_ipv4 }}
+    netmask {{ host_networks.v4.netmask }}
+    gateway {{ host_networks.v4.gateway }}
 
-{% if host.supports_v6 %}
-iface {{ host.public_interface }} inet6 static
-    address {{ host.ipv6 }}
-    netmask {{ host.networks.v6.netmask }}
-    gateway {{ host.networks.v6.gateway }}
+{% if host_supports_v6 %}
+iface {{ host_public_interface }} inet6 static
+    address {{ host_ipv6 }}
+    netmask {{ host_networks.v6.netmask }}
+    gateway {{ host_networks.v6.gateway }}
     pre-up modprobe ipv6
     up ip -6 r add {{ default_route_ipv6 }}
     down ip -6 r del {{ default_route_ipv6 }}

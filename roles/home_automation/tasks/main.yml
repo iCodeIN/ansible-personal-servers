@@ -2,12 +2,12 @@
   - include_tasks: standard_service.yml
     vars:
       usr: "{{ user }}"
-      root_dir: "{{ root_dirs.home_automation }}"
+      root_dir: "{{ root_dirs_home_automation }}"
       dirs:
-        - "{{ zigbee2mqtt.volumes.config.local_folder }}"
-        - "{{ mosquitto.volumes.data.local_folder }}"
-        - "{{ mosquitto.volumes.log.local_folder }}"
-        - "{{ home_assistant.volumes.config.local_folder }}"
+        - "{{ zigbee2mqtt_volumes_config.local_folder }}"
+        - "{{ mosquitto_volumes_data.local_folder }}"
+        - "{{ mosquitto_volumes_log.local_folder }}"
+        - "{{ home_assistant_volumes_config.local_folder }}"
   tags:
     - compose_file
     - home_automation_compose_file
@@ -15,7 +15,7 @@
 - name: Copy zigbee2mqtt configuration
   template:
     src: "zigbee2mqtt_configuration.yaml"
-    dest: "{{ zigbee2mqtt.volumes.config.local_folder }}/configuration.yaml"
+    dest: "{{ zigbee2mqtt_volumes_config.local_folder }}/configuration.yaml"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
@@ -24,7 +24,7 @@
 - name: Copy eclipse-mosquitto configuration
   template:
     src: "mosquitto.conf"
-    dest: "{{ root_dirs.home_automation }}/mosquitto.conf"
+    dest: "{{ root_dirs_home_automation }}/mosquitto.conf"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
@@ -35,7 +35,7 @@
   block:
   - include_tasks: docker/start_stack.yml
     vars:
-      dir: "{{ root_dirs.home_automation }}"
+      dir: "{{ root_dirs_home_automation }}"
 
   - name: Wait until Home Assistant has finished initializing
     pause:
@@ -44,13 +44,13 @@
 
   - include_tasks: docker/stop_stack.yml
     vars:
-      dir: "{{ root_dirs.home_automation }}"
+      dir: "{{ root_dirs_home_automation }}"
   tags: ha_config
 
 - name: Copy home assistant configuration
   template:
     src: "home_assistant_configuration.yaml"
-    dest: "{{ home_assistant.volumes.config.local_folder }}/configuration.yaml"
+    dest: "{{ home_assistant_volumes_config.local_folder }}/configuration.yaml"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644

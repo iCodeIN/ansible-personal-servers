@@ -272,7 +272,7 @@ service_protocol_sn = partial(labels_protocol_sn, service_labels)
 def enable(variables):
     return [
         f'enable=true',
-        f'docker.network={variables["network_names"]["discovery"]}'
+        f'docker.network={variables["network_names_discovery"]}'
     ]
 
 
@@ -375,7 +375,7 @@ def setup_protocol_handler(f) -> Tuple[Dict, Callable]:
         local_renderers = {}
 
         if options.domain is None:
-            options.domain = variables['dns']['internal']['root'] if options.use_internal else variables['dns']['public']['root']
+            options.domain = variables['dns_internal_root'] if options.use_internal else variables['dns_public_root']
 
         if options.path is None:
             options.path = "/" + options.service_name
@@ -467,7 +467,6 @@ class LookupModule(LookupBase):
             lines.extend(renderers[options.protocol](options, variables))
 
         result = '\n'.join(itertools.chain(["labels:"], map(lambda l: f'{INDENT}{l}', lines)))
-        print(result)
 
         return [result]
 
@@ -478,7 +477,7 @@ if __name__ == "__main__":
     l = LookupModule()
     l.run([
 
-        { 'service_name': 'rss', 'renderers': { 'redirect': { "old_path": "/rss/api", "new_path": "/rss/api/" } } }
+        {'service_name': 'rss', 'renderers': {'redirect': {"old_path": "/rss/api", "new_path": "/rss/api/"}}}
         #{ 'service_name': 'test', 'path': '/example', 'use_auth': False, 'renderers': { 'basic_auth': { 'users': 'TODO' } } }
         #{ 'service_name': 'authelia', 'use_defaults': False, 'domain': 'login.realmar.net', 'port': 9091, 'use_dns_root': True }
 
@@ -489,7 +488,7 @@ if __name__ == "__main__":
         #{ 'service_name': 'openvpn', 'protocol': 'udp', 'port': 1194, 'entrypoints': [ 'openvpn_udp' ] }
         #{ 'service_name': 'realmar_net', 'use_dns_root': True }
 
-        #{ 'service_name': 'matrix_well_known', 'use_defaults': False, 'path': wk_path,
+        # { 'service_name': 'matrix_well_known', 'use_defaults': False, 'path': wk_path,
         #    'renderers': {
         #        'replace_path_regex': {
         #        "regex": "^" + wk_path + "(server|client)$",

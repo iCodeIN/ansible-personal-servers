@@ -2,7 +2,7 @@
   - include_tasks: standard_service.yml
     vars:
       usr: "{{ user }}"
-      root_dir: "{{ root_dirs.zhaw_iot1 }}"
+      root_dir: "{{ root_dirs_zhaw_iot1 }}"
       dirs: []
   tags:
     - compose_file
@@ -12,13 +12,13 @@
   - include_tasks: rsync.yml
     vars:
       src: "app"
-      dest: "{{ root_dirs.zhaw_iot1 }}"
+      dest: "{{ root_dirs_zhaw_iot1 }}"
   become_user: "{{ user }}"
 
 - name: Copy config
   template:
     src: "{{ item }}"
-    dest: "{{ root_dirs.zhaw_iot1 }}/{{ item }}"
+    dest: "{{ root_dirs_zhaw_iot1 }}/{{ item }}"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
@@ -29,11 +29,11 @@
 
 - name: Check if KVStore.json exists
   stat:
-    path: "{{ root_dirs.zhaw_iot1 }}/KVStore.json"
+    path: "{{ root_dirs_zhaw_iot1 }}/KVStore.json"
   register: stat_result
 
 - name: Copy KVStore.json
   file:
-    path: "{{ root_dirs.zhaw_iot1 }}/KVStore.json"
+    path: "{{ root_dirs_zhaw_iot1 }}/KVStore.json"
     state: touch
   when: not stat_result.stat.exists

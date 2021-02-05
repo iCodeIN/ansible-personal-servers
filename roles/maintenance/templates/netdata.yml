@@ -3,7 +3,7 @@
 {% import 'docker/misc.jinja2' as dm with context -%}
 
 netdata:
-  container_name: {{ netdata.name }}
+  container_name: {{ netdata_name }}
   image: netdata/netdata:latest
   hostname: pihole.home
   cap_add:
@@ -11,7 +11,7 @@ netdata:
   security_opt:
     - apparmor:unconfined
   volumes:
-    - {{ root_dirs.maintenance }}/netdata.conf:/etc/netdata/netdata.conf:ro
+    - {{ root_dirs_maintenance }}/netdata.conf:/etc/netdata/netdata.conf:ro
     - /etc/passwd:/host/etc/passwd:ro
     - /etc/group:/host/etc/group:ro
     - /proc:/host/proc:ro
@@ -19,5 +19,5 @@ netdata:
     {{ dv.datetime_mapping()|indent(width = 4) }}
   {{ lookup('traefik', { 'service_name': 'netdata', 'use_internal': True, 'port': 19999 })|indent(width = 2) }}
   {{ dn.discovery_network_section()|indent(width = 2) }}
-    {{ network_names.datastore }}:
+    {{ network_names_datastore }}:
   {{ dm.common()|indent(width = 2) }}

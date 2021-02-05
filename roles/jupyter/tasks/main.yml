@@ -2,17 +2,17 @@
     - include_tasks: standard_service.yml
       vars:
         usr: "{{ user }}"
-        root_dir: "{{ root_dirs.jupyter }}"
+        root_dir: "{{ root_dirs_jupyter }}"
         dirs:
-          - "{{ jupyter.volumes.data.local_folder }}"
+          - "{{ jupyter_volumes_data.local_folder }}"
   tags: compose_file
 
 - name: Copy docker files
   template:
     src: "{{ item }}"
-    dest: "{{ root_dirs.jupyter }}/{{ item }}"
-    owner: "{{ jupyter.user }}"
-    group: "{{ jupyter.user }}"
+    dest: "{{ root_dirs_jupyter }}/{{ item }}"
+    owner: "{{ jupyter_user }}"
+    group: "{{ jupyter_user }}"
     mode: 0644
   with_items:
     - Dockerfile
@@ -23,5 +23,5 @@
 - block:
     - include_tasks: fix_permissions.yml
       vars:
-        items: "{{ jupyter_folders_permissions }}"
+        items: "{{ [ (jupyter_volumes_data, jupyter_uid) ] | volumes_to_permissions }}"
   tags: fix_permissions

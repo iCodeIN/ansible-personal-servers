@@ -1,0 +1,54 @@
+datastore_networks:
+  v4:
+    subnet:     172.16.80.0/24
+    netaddress: 172.16.80.0
+    netmask:    255.255.255.0
+    gateway:    172.16.80.1
+  name: "{{ network_names_datastore }}"
+
+influxdb_volumes_data:
+  name:         influxdb_data
+  local_folder: "{{ root_dirs_datastore }}/influxdb-data"
+  mount:        /var/lib/influxdb
+
+chronograf_volumes_data:
+  name:         chronograf_data
+  local_folder: "{{ root_dirs_datastore }}/chronograf-data"
+  mount:        /var/lib/chronograf
+
+kapacitor_volumes_data:
+  name:         kapacitor_data
+  local_folder: "{{ root_dirs_datastore }}/kapacitor-data"
+  mount:        /var/lib/kapacitor
+
+grafana_volumes_data:
+  name:         grafana_data
+  local_folder: "{{ root_dirs_datastore }}/grafana-data"
+  mount:        /var/lib/grafana
+
+syslog_interceptor_container_user: interceptor
+syslog_interceptor_container_home: /home/interceptor
+syslog_interceptor_container_app_dir: /home/interceptor/app
+
+registry_user: 1000
+
+registry_volumes_data:
+  name:         registry_data
+  local_folder: "{{ root_dirs_datastore }}/registry-data"
+  mount:        /var/lib/registry
+
+registry_volumes_certificates:
+  name:         registry_certificates
+  local_folder: "{{ root_dirs_datastore }}/registry-certificates"
+  mount:        /certificates
+
+registry_tls_key: "{{ registry_volumes_certificates.local_folder }}/registry.key"
+registry_tls_crt: "{{ registry_volumes_certificates.local_folder }}/registry.crt"
+registry_tls_csr: "{{ registry_volumes_certificates.local_folder }}/registry.csr"
+
+redis_user: 999
+
+redis_volumes_data:
+  name:         redis_data
+  local_folder: "{{ root_dirs_datastore }}/redis-data"
+  mount:        /data

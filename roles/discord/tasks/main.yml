@@ -1,8 +1,8 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ music_bot.user }}"
-        root_dir: "{{ root_dirs.discord }}"
+        usr: "{{ music_bot_user }}"
+        root_dir: "{{ root_dirs_discord }}"
         dirs: []
   tags:
     - compose_file

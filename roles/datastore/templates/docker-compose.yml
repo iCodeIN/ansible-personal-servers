@@ -2,12 +2,12 @@
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
 
-{% set vols_influxdb = [ influxdb.volumes.data ] %}
-{% set vols_chronograf = [ chronograf.volumes.data ] %}
-{% set vols_kapacitor = [ kapacitor.volumes.data ] %}
-{% set vols_grafana = [ grafana.volumes.data ] %}
-{% set vols_registry = [ registry.volumes.data, registry.volumes.certificates ] %}
-{% set vols_redis = [ redis.volumes.data ] %}
+{% set vols_influxdb = [ influxdb_volumes_data ] %}
+{% set vols_chronograf = [ chronograf_volumes_data ] %}
+{% set vols_kapacitor = [ kapacitor_volumes_data ] %}
+{% set vols_grafana = [ grafana_volumes_data ] %}
+{% set vols_registry = [ registry_volumes_data, registry_volumes_certificates ] %}
+{% set vols_redis = [ redis_volumes_data ] %}
 
 version: "3"
 services:
@@ -17,7 +17,7 @@ services:
     {{ dv.volumes_section_complete()|indent(width = 4) }}
     {{ dn.map_ports([ (5432,) ])|indent(width = 4) }}
     networks:
-      - {{ network_names.datastore }}
+      - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}#}
 
   redis:
@@ -26,7 +26,7 @@ services:
     command: [ "redis-server", "--appendonly", "yes" ]
     {{ dv.volumes_section_complete(vols_redis)|indent(width = 4) }}
     networks:
-      {{ network_names.datastore }}:
+      {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
 
 ################################################################################
@@ -34,24 +34,24 @@ services:
 
   docker_registry:
     image: registry:2
-    user: "{{ registry.user }}:{{ registry.user }}"
+    user: "{{ registry_user }}:{{ registry_user }}"
     environment:
-      REGISTRY_HTTP_TLS_CERTIFICATE: {{ registry.volumes.certificates.mount }}/registry.crt
-      REGISTRY_HTTP_TLS_KEY: {{ registry.volumes.certificates.mount }}/registry.key
+      REGISTRY_HTTP_TLS_CERTIFICATE: {{ registry_volumes_certificates.mount }}/registry.crt
+      REGISTRY_HTTP_TLS_KEY: {{ registry_volumes_certificates.mount }}/registry.key
     {{ dn.map_ports([ (5000,) ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_registry)|indent(width = 4) }}
-      - {{ root_dirs.datastore }}/registry_config.yml:/etc/docker/registry/config.yml:ro
+      - {{ root_dirs_datastore }}/registry_config.yml:/etc/docker/registry/config.yml:ro
     networks:
-      {{ network_names.datastore }}:
+      {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
 
   docker_registry_ui:
     image: joxit/docker-registry-ui:{{ 'latest' if is_dev else 'arm64v8' }}
     environment:
       REGISTRY_URL: https://{{ private_docker_registry }}
-    {{ lookup('traefik', { 'domain': dns.internal.root, 'service_name': 'docker_registry_ui', 'path': '/registry' })|indent(width = 4) }}
+    {{ lookup('traefik', { 'domain': dns_internal_root, 'service_name': 'docker_registry_ui', 'path': '/registry' })|indent(width = 4) }}
     networks:
-      - {{ network_names.discovery }}
+      - {{ network_names_discovery }}
 
 ################################################################################
 ################################################################################
@@ -60,23 +60,23 @@ services:
     image: telegraf
     container_name: telegraf
     {{ dv.volumes_section_complete()|indent(width = 4) }}
-      - {{ root_dirs.datastore }}/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-      - {{ root_dirs.datastore }}/gather_stats.sh:/opt/gather_stats.sh:ro
+      - {{ root_dirs_datastore }}/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - {{ root_dirs_datastore }}/gather_stats.sh:/opt/gather_stats.sh:ro
       {{ dv.mount_docker_socket() }}
     # syslog
     {{ dn.map_ports([ (6518, 6514, "udp") ])|indent(width = 4) }}
     networks:
-      {{ network_names.datastore }}:
+      {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
 
   influxdb:
     image: influxdb
     container_name: influxdb
     {{ dv.volumes_section_complete(vols_influxdb)|indent(width = 4) }}
-      - {{ root_dirs.datastore }}/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+      - {{ root_dirs_datastore }}/influxdb.conf:/etc/influxdb/influxdb.conf:ro
     {{ dn.map_ports([ (8086,) ])|indent(width = 4) }}
     networks:
-      {{ network_names.datastore }}:
+      {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
 
   chronograf:
@@ -92,17 +92,17 @@ services:
     {{ dn.map_ports([ (8888,) ])|indent(width = 4) }}
 {% endif %}
     networks:
-      - {{ network_names.discovery }}
-      - {{ network_names.datastore }}
+      - {{ network_names_discovery }}
+      - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}
 
   kapacitor:
     image: kapacitor
     container_name: kapacitor
     {{ dv.volumes_section_complete(vols_kapacitor)|indent(width = 4) }}
-      - {{ root_dirs.datastore }}/kapacitor.conf:/etc/kapacitor/kapacitor.conf:ro
+      - {{ root_dirs_datastore }}/kapacitor.conf:/etc/kapacitor/kapacitor.conf:ro
     networks:
-      - {{ network_names.datastore }}
+      - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}
 
 ################################################################################
@@ -113,14 +113,14 @@ services:
     container_name: grafana
     {{ lookup('traefik', { 'service_name': 'grafana', 'port': 3000 })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_grafana)|indent(width = 4) }}
-      - {{ root_dirs.datastore }}/grafana.ini:/etc/grafana/grafana.ini:ro
-      - {{ root_dirs.datastore }}/syslog-interceptor-config.yml:/etc/grafana/grafana.ini:ro
+      - {{ root_dirs_datastore }}/grafana.ini:/etc/grafana/grafana.ini:ro
+      - {{ root_dirs_datastore }}/syslog-interceptor-config.yml:/etc/grafana/grafana.ini:ro
 {% if is_dev %}
     {{ dn.map_ports([ (3000,) ])|indent(width = 4) }}
 {% endif %}
     networks:
-      - {{ network_names.discovery }}
-      - {{ network_names.datastore }}
+      - {{ network_names_discovery }}
+      - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}
 
 ################################################################################
@@ -132,10 +132,10 @@ services:
     {{ dm.journald_logging()|indent(width = 4) }}
     {{ dm.disable_auto_update_section()|indent(width = 4) }}
     {{ dv.volumes_section_complete()|indent(width = 4) }}
-      - {{ root_dirs.datastore }}/syslog-interceptor-config.yml:{{ syslog_interceptor.container_app_dir }}/config.yml:ro
+      - {{ root_dirs_datastore }}/syslog-interceptor-config.yml:{{ syslog_interceptor_container_app_dir }}/config.yml:ro
     {{ dn.map_ports([ (6514, "udp") ])|indent(width = 4) }}
     networks:
-      - {{ network_names.datastore }}
+      - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}
 
 ################################################################################

@@ -15,7 +15,7 @@ updater:
     SELF_UPDATE: "true"
     LATEST: "false"
 
-    IGNORE: "{{ updater.ignore|join(' ') }}"
+    IGNORE: "{{ updater_ignore|join(' ') }}"
 
     DATA_EXPORT: "influxdb"
     INFLUX_URL: influxdb
@@ -25,5 +25,5 @@ updater:
   {{ dv.volumes_section_complete()|indent(width = 2) }}
     {{ dv.mount_docker_socket() }}
   {{ dn.discovery_network_section()|indent(width = 2) }}
-    {{ network_names.datastore }}:
+    {{ network_names_datastore }}:
   {{ dm.common()|indent(width = 2) }}

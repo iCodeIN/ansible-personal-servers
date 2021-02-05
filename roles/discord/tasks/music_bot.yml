@@ -1,10 +1,10 @@
 #- name: Create config folder
 #  file:
-#    path: "{{ root_dirs.discord }}/{{ music_bot.config_folder_name }}"
+#    path: "{{ root_dirs_discord }}/{{ music_bot_config_folder_name }}"
 #    state: directory
 #    recurse: yes
-#    owner: "{{ music_bot.user }}"
-#    group: "{{ music_bot.user }}"
+#    owner: "{{ music_bot_user }}"
+#    group: "{{ music_bot_user }}"
 #  tags:
 #    - compose_file
 #    - docker_file
@@ -12,9 +12,9 @@
 #- name: Copy docker files
 #  template:
 #    src: "{{ item }}"
-#    dest: "{{ root_dirs.discord }}/{{ item }}"
-#    owner: "{{ music_bot.user }}"
-#    group: "{{ music_bot.user }}"
+#    dest: "{{ root_dirs_discord }}/{{ item }}"
+#    owner: "{{ music_bot_user }}"
+#    group: "{{ music_bot_user }}"
 #    mode: 0644
 #  with_items:
 #    - music_bot/Dockerfile
@@ -25,9 +25,9 @@
 #
 #- name: Create empty serversettings.json file
 #  file:
-#    path: "{{ root_dirs.discord }}/{{ music_bot.config_folder_name }}/serversettings.json"
-#    owner: "{{ music_bot.uid }}"
-#    group: "{{ music_bot.uid }}"
+#    path: "{{ root_dirs_discord }}/{{ music_bot_config_folder_name }}/serversettings.json"
+#    owner: "{{ music_bot_uid }}"
+#    group: "{{ music_bot_uid }}"
 #    mode: 0644
 #    state: touch
 #  tags:

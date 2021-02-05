@@ -1,12 +1,12 @@
 tls:
   certificates:
-    - certFile: {{ traefik.volumes.certificates.mount }}/{{ tls.self_signed.cert }}
-      keyFile:  {{ traefik.volumes.certificates.mount }}/{{ tls.self_signed.private_key }}
+    - certFile: {{ traefik_volumes_certificates.mount }}/{{ tls_self_signed_cert }}
+      keyFile:  {{ traefik_volumes_certificates.mount }}/{{ tls_self_signed_private_key }}
       stores:
         - default
 
   stores:
     default:
       defaultCertificate:
-        certFile: {{ traefik.volumes.certificates.mount }}/{{ tls.self_signed.cert }}
-        keyFile:  {{ traefik.volumes.certificates.mount }}/{{ tls.self_signed.private_key }}
+        certFile: {{ traefik_volumes_certificates.mount }}/{{ tls_self_signed_cert }}
+        keyFile:  {{ traefik_volumes_certificates.mount }}/{{ tls_self_signed_private_key }}

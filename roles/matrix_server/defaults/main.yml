@@ -1,0 +1,25 @@
+matrix_server_user: 999
+
+matrix_server_volumes_data:
+  name:         matrix_server_data
+  local_folder: "{{ root_dirs_matrix_server }}/matrix_server-data"
+  mount:        /data
+
+matrix_server_networks:
+    # v4:
+    #   subnet: 172.16.90.0/24
+    #   netaddress: 172.16.90.0
+    #   netmask: 255.255.255.0
+    #   gateway: 172.16.90.1
+    name: matrix_net
+
+matrix_server_db_user: synapse
+matrix_server_db_name: synapse
+
+matrix_server_db_volumes_data:
+  name:         matrix_db_data
+  local_folder: "{{ root_dirs_matrix_server }}/db-data"
+  mount:        /var/lib/postgresql/data
+
+# turnserver:
+#   ipv4: 172.16.90.20

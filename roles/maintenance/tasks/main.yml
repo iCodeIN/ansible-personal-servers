@@ -2,11 +2,11 @@
     - include_tasks: standard_service.yml
       vars:
         usr: "{{ user }}"
-        root_dir: "{{ root_dirs.maintenance }}"
+        root_dir: "{{ root_dirs_maintenance }}"
         dirs:
-          - "{{ duplicati.volumes.config.local_folder }}"
-          - "{{ duplicati.volumes.backup_target.local_folder }}"
-          - "{{ portainer.volumes.data.local_folder }}"
+          - "{{ duplicati_volumes_config.local_folder }}"
+          - "{{ duplicati_volumes_backup_target.local_folder }}"
+          - "{{ portainer_volumes_data.local_folder }}"
   tags:
     - compose_file
     - maintenance_compose_file
@@ -14,7 +14,7 @@
 - name: Copy configs
   template:
     src: "{{ item }}"
-    dest: "{{ root_dirs.maintenance }}/{{ item }}"
+    dest: "{{ root_dirs_maintenance }}/{{ item }}"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644

@@ -2,22 +2,22 @@
   - name: Create datastore network
     include_tasks: docker/network/add_docker_network.yml
     vars:
-      network: "{{ datastore.networks }}"
+      network: "{{ datastore_networks }}"
   tags: docker_network
 
 - block:
     - include_tasks: standard_service.yml
       vars:
         usr: "{{ user }}"
-        root_dir: "{{ root_dirs.datastore }}"
+        root_dir: "{{ root_dirs_datastore }}"
         dirs:
-          - "{{ influxdb.volumes.data.local_folder }}"
-          - "{{ chronograf.volumes.data.local_folder }}"
-          - "{{ kapacitor.volumes.data.local_folder }}"
-          - "{{ grafana.volumes.data.local_folder }}"
-          - "{{ registry.volumes.data.local_folder }}"
-          - "{{ registry.volumes.certificates.local_folder }}"
-          - "{{ redis.volumes.data.local_folder }}"
+          - "{{ influxdb_volumes_data.local_folder }}"
+          - "{{ chronograf_volumes_data.local_folder }}"
+          - "{{ kapacitor_volumes_data.local_folder }}"
+          - "{{ grafana_volumes_data.local_folder }}"
+          - "{{ registry_volumes_data.local_folder }}"
+          - "{{ registry_volumes_certificates.local_folder }}"
+          - "{{ redis_volumes_data.local_folder }}"
   tags:
     - compose_file
     - datastore_compose_file
@@ -32,7 +32,7 @@
 - name: Copy configs
   template:
     src: "{{ item }}"
-    dest: "{{ root_dirs.datastore }}/{{ item }}"
+    dest: "{{ root_dirs_datastore }}/{{ item }}"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
@@ -53,16 +53,16 @@
 - name: Copy docker registry configs
   template:
     src: registry_config.yml
-    dest: "{{ root_dirs.datastore }}/registry_config.yml"
-    owner: "{{ registry.user }}"
-    group: "{{ registry.user }}"
+    dest: "{{ root_dirs_datastore }}/registry_config.yml"
+    owner: "{{ registry_user }}"
+    group: "{{ registry_user }}"
     mode: 0644
   tags: docker_registry_config
 
 - name: Copy stats scripts
   template:
     src: "{{ item }}"
-    dest: "{{ root_dirs.datastore }}/{{ item }}"
+    dest: "{{ root_dirs_datastore }}/{{ item }}"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0755
@@ -92,7 +92,7 @@
 
   - include_tasks: docker/start_stack.yml
     vars:
-      dir: "{{ root_dirs.datastore }}"
+      dir: "{{ root_dirs_datastore }}"
 
   - name: Create influxdb databases
     influxdb_database:
@@ -117,7 +117,9 @@
 - block:
   - include_tasks: fix_permissions.yml
     vars:
-      items: "{{ datastore_folders_permissions }}"
+      items: "{{ [ (registry_volumes_data,         registry_user),
+                   (registry_volumes_certificates, registry_user),
+                   (redis_volumes_data,            redis_user) ] | volumes_to_permissions }}"
   tags:
     - fix_permissions
     - datastore_fix_permissions

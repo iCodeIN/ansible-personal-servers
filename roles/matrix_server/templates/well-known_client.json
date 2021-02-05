@@ -1,5 +1,5 @@
 {
   "m.homeserver": {
-    "base_url": "https://{{ dns.public.root }}"
+    "base_url": "https://{{ dns_public_root }}"
   }
 }

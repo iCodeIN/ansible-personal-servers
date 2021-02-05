@@ -30,11 +30,11 @@
   #    args:
   #      chdir: "{{ item }}"
   #    with_items:
-  #      - "{{ root_dirs.pihole }}"
-  #      - "{{ root_dirs.maintenance }}"
-  #      - "{{ root_dirs.rss }}"
-  #      - "{{ root_dirs.proxy }}"
-  #      - "{{ root_dirs.jupyter }}"
+  #      - "{{ root_dirs_pihole }}"
+  #      - "{{ root_dirs_maintenance }}"
+  #      - "{{ root_dirs_rss }}"
+  #      - "{{ root_dirs_proxy }}"
+  #      - "{{ root_dirs_jupyter }}"
   #    register: cli_result
   #    changed_when:
   #      - '"up-to-date" not in cli_result.stderr'
