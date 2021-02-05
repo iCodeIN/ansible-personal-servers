@@ -1,17 +1,11 @@
 {% import "docker/network.jinja2" as dn with context -%}
 {% import "docker/misc.jinja2" as dm with context -%}
-{% import "traefik/http.jinja2" as tf with context -%}
 
-{% set service_name = "realmar_net" %}
 version: "3"
 services:
   realmar.net:
     image: {{ dm.private_image('realmar_net') }}
-    labels:
-      {{ tf.enable(service_name)|indent(width = 6) }}
-      {{ tf.use_letsencrypt(service_name) }}
-      - "traefik.http.routers.{{ service_name }}.rule=Host(`{{ dns.public.root }}`)"
-      {{ dm.disable_auto_update()|indent(width = 4) }}
+    {{ lookup('traefik', { 'service_name': 'realmar_net', 'use_dns_root': True })|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 

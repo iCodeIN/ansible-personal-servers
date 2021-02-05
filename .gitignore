@@ -4,3 +4,4 @@
 *.ovpn
 .venv
 *.vdi
+*.pyc

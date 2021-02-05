@@ -34,11 +34,11 @@
         - "{{ root_dirs.personal_website }}"
         #- "{{ root_dirs.zhaw_iot1 }}"
 
-    - name: Running command
-      shell: "{{ command }}"
-      args:
-        chdir: "{{ item }}"
-      with_items:
+    #- name: Running command
+    #  shell: "{{ command }}"
+    #  args:
+    #    chdir: "{{ item }}"
+    #  with_items:
         - "{{ root_dirs.discord }}"
         - "{{ root_dirs.matrix_server }}"
-      when: not is_dev
+    #  when: not is_dev

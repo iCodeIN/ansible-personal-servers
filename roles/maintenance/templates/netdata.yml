@@ -1,7 +1,6 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
-{% import 'traefik/http.jinja2' as traefik with context -%}
 
 netdata:
   container_name: {{ netdata.name }}
@@ -18,8 +17,7 @@ netdata:
     - /proc:/host/proc:ro
     - /sys:/host/sys:ro
     {{ dv.datetime_mapping()|indent(width = 4) }}
-
-  {{ traefik.declare_labels_mount_path_internal("netdata", "/netdata")|indent(width = 2) }}
+  {{ lookup('traefik', { 'service_name': 'netdata', 'use_internal': True, 'port': 19999 })|indent(width = 2) }}
   {{ dn.discovery_network_section()|indent(width = 2) }}
     {{ network_names.datastore }}:
   {{ dm.common()|indent(width = 2) }}

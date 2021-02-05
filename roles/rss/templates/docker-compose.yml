@@ -1,7 +1,6 @@
 {% import "docker/volumes.jinja2" as dv with context -%}
 {% import "docker/network.jinja2" as dn with context -%}
 {% import "docker/misc.jinja2" as dm with context -%}
-{% import "traefik/http.jinja2" as traefik with context -%}
 
 {% set vols_rss = [
   freshrss.volumes.data,
@@ -13,18 +12,7 @@ services:
   rss:
     image: {{ 'freshrss/freshrss:latest' if is_dev else 'freshrss/freshrss:arm' }}
     container_name: freshrss
-    {{ traefik.declare_labels_mount_path_public(
-      "rss", "/rss", None,
-      traefik.minimal_middlewares + [
-        {
-          'mw': traefik.strip_path,
-          'args': { 'path': '/rss' }
-        },
-        {
-          "mw": traefik.redirect,
-          "args": { "old_path": "/rss/api", "new_path": "/rss/api/" }
-        },
-      ])|indent(width = 4) }}
+    {{ lookup('traefik', { 'service_name': 'rss', 'renderers': { 'redirect': { "old_path": "/rss/api", "new_path": "/rss/api/" } } })|indent(width = 4) }}
     environment:
       CRON_MIN: 4,34
       TZ: {{ timezone }}

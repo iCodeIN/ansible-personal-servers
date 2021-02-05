@@ -1,7 +1,6 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
-{% import 'traefik/http.jinja2' as traefik with context -%}
 
 {% set vols_matrix_server = [ matrix_server.volumes.data ] %}
 {% set vols_db = [ matrix_server_db.volumes.data ] %}
@@ -31,11 +30,7 @@ services:
       UID: '{{ matrix_server.user }}'
       GID: '{{ matrix_server.user }}'
       TZ: {{ timezone }}
-    {{ traefik.declare_labels_mount_path(dns.public.root, service_name, "/_matrix/", 8008,
-        traefik.minimal_middlewares_no_auth,
-        [ 'websecure' ]
-      )|indent(width = 4) }}
-      {{ traefik.use_letsencrypt(service_name) }}
+    {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_matrix_server)|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
       {{ network_names.datastore }}:
@@ -57,27 +52,18 @@ services:
 
   well_known:
     image: nginx:latest
-    {{ traefik.declare_labels_mount_path(dns.public.root, wk_service_name, wk_path, 80,
-        [
-          {
-            "mw": traefik.replace_path_regex,
-            "args": {
-              "regex": "^" + wk_path + "(server|client)$",
-              "replacement": "/well-known_$1.json"
-            }
-          },
-          {
-            "mw": traefik.add_cors,
-            "args": {
-              "originlist": "*",
-              "methods": "GET,POST,PUT,DELETE,OPTIONS",
-              "allowheaders": "Origin,X-Requested-With,Content-Type,Accept,Authorization"
-            }
-          },
-        ],
-        [ 'websecure' ]
-      )|indent(width = 4) }}
-      {{ traefik.use_letsencrypt(wk_service_name) }}
+    {{ lookup('traefik', { 'service_name': 'matrix_well_known', 'use_defaults': False, 'path': wk_path,
+      'renderers': {
+        'replace_path_regex': {
+          "regex": "^" + wk_path + "(server|client)$",
+          "replacement": "/well-known_$1.json"
+        },
+        'add_cors': {
+          "originlist": "*",
+          "methods": "GET,POST,PUT,DELETE,OPTIONS",
+          "allowheaders": "Origin,X-Requested-With,Content-Type,Accept,Authorization"
+        }
+    } })|indent(width = 4) }}
     volumes:
 {% for file in [ "well-known_server.json", "well-known_client.json" ] %}
       - {{ root_dirs.matrix_server }}/{{ file }}:/usr/share/nginx/html/{{ file }}:ro

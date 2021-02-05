@@ -34,8 +34,6 @@ version: '3'
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
-{% import 'traefik/http.jinja2' as traefik with context -%}
-{% import 'traefik/udp_tcp.jinja2' as traefik_raw with context -%}
 
 services:
   openvpn:
@@ -45,8 +43,7 @@ services:
 {% else %}
     image: {{ dm.private_image('kylemanna/openvpn') }}
 {% endif %}
-    {{ traefik_raw.declare_labels_udp('openvpn', [ 'openvpn_udp' ], 1194)|indent(width = 4) }}
-      {{ dm.disable_auto_update() }}
+    {{ lookup('traefik', { 'service_name': 'openvpn', 'protocol': 'udp', 'port': 1194, 'entrypoints': [ 'openvpn_udp' ] })|indent(width = 4) }}
     environment:
     # VIRTUAL_PORT=${VIRTUAL_PORT_OPENVPN}
     # VIRTUAL_HOST=${VIRTUAL_HOST_OPENVPN}
@@ -84,8 +81,10 @@ services:
     image: pihole/pihole:latest
     container_name: {{ pihole.name }}
     entrypoint: {{ pihole.volumes.main.mount }}startup.sh
-    {{ traefik.declare_labels_mount_path_internal('pihole', '/pihole', pihole.web_admin_port)|indent(width = 4) }}
-      {{ traefik_raw.tcp_udp('pihole', [ 'dns_tcp' ], [ 'dns_udp' ], 53, '*')|indent(width = 6) }}
+    {{ lookup('traefik',
+      { 'service_name': 'pihole', 'port': pihole.web_admin_port, 'use_internal': True },
+      { 'service_name': 'pihole', 'protocol': 'tcp', 'port': 53, 'entrypoints': [ 'dns_tcp' ] },
+      { 'service_name': 'pihole', 'protocol': 'udp', 'port': 53, 'entrypoints': [ 'dns_udp' ] })|indent(width = 4) }}
     dns:
       - 127.0.0.1
       - 1.1.1.1

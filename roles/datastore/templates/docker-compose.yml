@@ -1,7 +1,6 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
-{% import 'traefik/http.jinja2' as traefik with context -%}
 
 {% set vols_influxdb = [ influxdb.volumes.data ] %}
 {% set vols_chronograf = [ chronograf.volumes.data ] %}
@@ -50,7 +49,7 @@ services:
     image: joxit/docker-registry-ui:{{ 'latest' if is_dev else 'arm64v8' }}
     environment:
       REGISTRY_URL: https://{{ private_docker_registry }}
-    {{ traefik.declare_labels_mount_path_internal("docker_registry_ui", "/registry", 80)|indent(width = 4) }}
+    {{ lookup('traefik', { 'domain': dns.internal.root, 'service_name': 'docker_registry_ui', 'path': '/registry' })|indent(width = 4) }}
     networks:
       - {{ network_names.discovery }}
 
@@ -87,7 +86,7 @@ services:
       INFLUXDB_URL: http://influxdb:8086
       KAPACITOR_URL: http://kapacitor:9092
       BASE_PATH: /chronograf
-    {{ traefik.declare_labels_mount_path_public("chronograf", "/chronograf", 8888, traefik.minimal_middlewares)|indent(width = 4) }}
+    {{ lookup('traefik', { 'service_name': 'chronograf', 'port': 8888 })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_chronograf)|indent(width = 4) }}
 {% if is_dev %}
     {{ dn.map_ports([ (8888,) ])|indent(width = 4) }}
@@ -112,7 +111,7 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
-    {{ traefik.declare_labels_mount_path_public("grafana", "/grafana", 3000)|indent(width = 4) }}
+    {{ lookup('traefik', { 'service_name': 'grafana', 'port': 3000 })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_grafana)|indent(width = 4) }}
       - {{ root_dirs.datastore }}/grafana.ini:/etc/grafana/grafana.ini:ro
       - {{ root_dirs.datastore }}/syslog-interceptor-config.yml:/etc/grafana/grafana.ini:ro

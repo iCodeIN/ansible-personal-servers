@@ -3,7 +3,6 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
-{% import 'traefik/http.jinja2' as traefik with context -%}
 
 {%- set vols = [
   duplicati.volumes.config,
@@ -19,8 +18,7 @@ duplicati:
     PGID: 0 # ding dong root bad
     TZ: {{ timezone }}
     CLI_ARGS: --restore-permissions=true
-
-  {{ traefik.declare_labels_mount_path_internal("backup", "/backup")|indent(width = 2) }}
+  {{ lookup('traefik', { 'service_name': 'backup', 'use_internal': True, 'port': 8200 })|indent(width = 2) }}
 {#{{ dn.map_ports([ (8200,) ])|indent(width = 4) }} #}
   {{ dv.volumes_section_complete(vols)|indent(width = 2) }}
     {{ dv.mount_docker_socket() }}

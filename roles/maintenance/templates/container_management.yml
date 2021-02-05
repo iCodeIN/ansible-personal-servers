@@ -1,7 +1,6 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
-{% import 'traefik/http.jinja2' as traefik with context -%}
 
 portainer:
   container_name: portainer
@@ -9,8 +8,7 @@ portainer:
   image: portainer/portainer:latest
   command:
     - "--no-auth"
-
-  {{ traefik.declare_labels_mount_path_internal("portainer", "/portainer")|indent(width = 2) }}
+  {{ lookup('traefik', { 'service_name': 'portainer', 'use_internal': True, 'port': 9000 })|indent(width = 2) }}
   {{ dv.volumes_section_complete([ portainer.volumes.data ])|indent(width = 2) }}
     - /var/run/docker.sock:/var/run/docker.sock
   {{ dn.discovery_network_section()|indent(width = 2) }}
