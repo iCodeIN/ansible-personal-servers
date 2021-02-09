@@ -33,6 +33,7 @@
   with_items:
     - init_db.sql
     - turnserver.conf
+    - element_web_config.json
     - well-known_server.json
     - well-known_client.json
   tags:

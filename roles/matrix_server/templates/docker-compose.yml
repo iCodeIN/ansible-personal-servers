@@ -30,7 +30,7 @@ services:
       UID: '{{ matrix_server_user }}'
       GID: '{{ matrix_server_user }}'
       TZ: {{ timezone }}
-    {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
+    {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'strip_path': False, 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_matrix_server)|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
       {{ network_names_datastore }}:
@@ -38,6 +38,16 @@ services:
     {{ dm.common()|indent(width = 4) }}
     depends_on:
       - db
+
+  element_web:
+    image: 'bubuntux/element-web'
+    {{ lookup('traefik', { 'service_name': 'element_web', 'domain': dns_sub_domains_element, 'use_dns_root': True, 'use_auth': False })|indent(width = 4) }}
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+      - {{ root_dirs_matrix_server }}/element_web_config.json:/etc/element-web/config.json:ro
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+    {{ dm.common()|indent(width = 4) }}
+    depends_on:
+      - server
 
   turnserver:
     image: killua99/coturn:latest
