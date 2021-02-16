@@ -14,4 +14,7 @@
                      (pihole_volumes_dnsmasq, pihole_user),
                      (unbound_volumes_main,   unbound_user),
                      (openvpn_volumes_config, openvpn_user) ] | volumes_to_permissions }}"
-  tags: fix_permissions
+  tags:
+    - fix_permissions
+    - compose_file
+    - pihole_compose_file

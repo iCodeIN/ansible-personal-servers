@@ -143,6 +143,8 @@ services:
       - CAP_NET_ADMIN
       # Needed for DHCP and IPv6 RA
       - NET_ADMIN
+      # https://github.com/pi-hole/docker-pi-hole/issues/734
+      - CAP_SYS_PTRACE
 
 {% if pihole_use_host_net == false %}
   # https://docs.pi-hole.net/docker/dhcp/
