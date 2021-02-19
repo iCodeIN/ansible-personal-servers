@@ -1,0 +1,8 @@
+
+- name: restart matrix_telegram
+  include_tasks: handlers/restart_compose_container.yml
+  vars:
+    item:
+      name: "{{ matrix_server_telegram_container_name }}"
+      dir: "{{ root_dirs_matrix_server }}"
+  ignore_errors: yes # yeet

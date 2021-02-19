@@ -15,7 +15,7 @@
 # e.g. matrix.org, localhost:8080, etc.
 # This is also the last part of your UserID.
 #
-server_name: realmar.net
+server_name: {{ dns_public_root }}
 
 # When running as a daemon, the file to store the pid in
 #
@@ -29,7 +29,7 @@ pid_file: /data/homeserver.pid
 # under the 'listeners' configuration, however this is a security risk:
 # https://github.com/matrix-org/synapse#security-note
 #
-#web_client_location: https://riot.example.com/
+web_client_location: https://{{ dns_sub_domains_element }}/
 
 # The public-facing base URL that clients use to access this HS
 # (not including _matrix/...). This is the same URL a user would
@@ -37,7 +37,7 @@ pid_file: /data/homeserver.pid
 # use synapse with a reverse proxy, this should be the URL to reach
 # synapse via the proxy.
 #
-#public_baseurl: https://example.com/
+public_baseurl: https://{{ dns_public_root }}/
 
 # Set the soft limit on the number of file descriptors synapse can use
 # Zero is used to indicate synapse should set the soft limit to the
@@ -55,25 +55,25 @@ use_presence: true
 # API, so this setting is of limited value if federation is enabled on
 # the server.
 #
-#require_auth_for_profile_requests: true
+require_auth_for_profile_requests: true
 
 # Uncomment to require a user to share a room with another user in order
 # to retrieve their profile information. Only checked on Client-Server
 # requests. Profile requests from other servers should be checked by the
 # requesting server. Defaults to 'false'.
 #
-#limit_profile_requests_to_users_who_share_rooms: true
+limit_profile_requests_to_users_who_share_rooms: true
 
 # If set to 'true', removes the need for authentication to access the server's
 # public rooms directory through the client API, meaning that anyone can
 # query the room directory. Defaults to 'false'.
 #
-#allow_public_rooms_without_auth: true
+allow_public_rooms_without_auth: false
 
 # If set to 'true', allows any other homeserver to fetch the server's public
 # rooms directory via federation. Defaults to 'false'.
 #
-#allow_public_rooms_over_federation: true
+allow_public_rooms_over_federation: false
 
 # The default room version for newly created rooms.
 #
@@ -99,14 +99,14 @@ use_presence: true
 # Whether room invites to users on this server should be blocked
 # (except those sent by local server admins). The default is False.
 #
-#block_non_admin_invites: true
+block_non_admin_invites: false
 
 # Room searching
 #
 # If disabled, new messages will not be indexed for searching and users
 # will receive errors when searching for messages. Defaults to enabled.
 #
-#enable_search: false
+enable_search: true
 
 # List of ports that Synapse should listen on, their purpose and their
 # configuration.
@@ -970,18 +970,18 @@ url_preview_accept_language:
 # This homeserver's ReCAPTCHA public key. Must be specified if
 # enable_registration_captcha is enabled.
 #
-#recaptcha_public_key: "YOUR_PUBLIC_KEY"
+recaptcha_public_key: "{{ matrix_server_recaptcha_public_key }}"
 
 # This homeserver's ReCAPTCHA private key. Must be specified if
 # enable_registration_captcha is enabled.
 #
-#recaptcha_private_key: "YOUR_PRIVATE_KEY"
+recaptcha_private_key: "{{ matrix_server_recaptcha_private_key }}"
 
 # Uncomment to enable ReCaptcha checks when registering, preventing signup
 # unless a captcha is answered. Requires a valid ReCaptcha
 # public/private key. Defaults to 'false'.
 #
-#enable_registration_captcha: true
+enable_registration_captcha: true
 
 # The API endpoint to use for verifying m.login.recaptcha responses.
 # Defaults to "https://www.recaptcha.net/recaptcha/api/siteverify".
@@ -1148,7 +1148,7 @@ registration_shared_secret: "{{ matrix_server_registration_shared_secret }}"
 # participate in rooms hosted on this server which have been made
 # accessible to anonymous users.
 #
-#allow_guest_access: false
+allow_guest_access: false
 
 # The identity server which we suggest that clients should use when users log
 # in on this server.
@@ -1190,7 +1190,7 @@ account_threepid_delegates:
 #
 # Does not apply to server administrators. Defaults to 'true'
 #
-#enable_set_displayname: false
+enable_set_displayname: true
 
 # Whether users are allowed to change their avatar after it has been
 # initially set. Useful when provisioning users based on the contents
@@ -1198,14 +1198,14 @@ account_threepid_delegates:
 #
 # Does not apply to server administrators. Defaults to 'true'
 #
-#enable_set_avatar_url: false
+enable_set_avatar_url: true
 
 # Whether users can change the 3PIDs associated with their accounts
 # (email address and msisdn).
 #
 # Defaults to 'true'
 #
-#enable_3pid_changes: false
+enable_3pid_changes: true
 
 # Users who register on this homeserver will automatically be joined
 # to these rooms.
@@ -1282,7 +1282,7 @@ account_threepid_delegates:
 #
 # Defaults to true.
 #
-#auto_join_rooms_for_guests: false
+auto_join_rooms_for_guests: false
 
 
 ## Metrics ###
@@ -1335,9 +1335,8 @@ report_stats: true
 
 # A list of application service config files to use
 #
-#app_service_config_files:
-#  - app_service_1.yaml
-#  - app_service_2.yaml
+app_service_config_files:
+  - {{ matrix_server_volumes_telegram_data.mount }}/registration.yaml
 
 # Uncomment to enable tracking of application service IP addresses. Implicitly
 # enables MAU tracking for application service users.
@@ -1425,7 +1424,8 @@ old_signing_keys:
 #  - server_name: "my_other_trusted_server.example.com"
 #
 trusted_key_servers:
-  - server_name: "matrix.org"
+  {{ matrix_server_trusted_key_servers | to_nice_yaml(indent = 2, width = 1337)
+                                       | indent(width = 2) }}
 
 # Uncomment the following to disable the warning that is emitted when the
 # trusted_key_servers include 'matrix.org'. See above.
@@ -2168,12 +2168,12 @@ spam_checker:
 # Note that this option will only affect rooms created after it is set. It
 # will also not affect rooms created by other servers.
 #
-#encryption_enabled_by_default_for_room_type: invite
+encryption_enabled_by_default_for_room_type: all
 
 
 # Uncomment to allow non-server-admin users to create groups on this server
 #
-#enable_group_creation: true
+enable_group_creation: true
 
 # If enabled, non server admins can only create groups with local parts
 # starting with this prefix
@@ -2194,9 +2194,9 @@ spam_checker:
 # rebuild the user_directory search indexes, see
 # https://github.com/matrix-org/synapse/blob/master/docs/user_directory.md
 #
-#user_directory:
-#  enabled: true
-#  search_all_users: false
+user_directory:
+  enabled: false
+  search_all_users: false
 
 
 # User Consent configuration

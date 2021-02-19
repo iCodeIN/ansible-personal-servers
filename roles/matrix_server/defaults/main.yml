@@ -1,4 +1,4 @@
-matrix_server_user: 999
+matrix_server_user: '999'
 
 matrix_server_volumes_data:
   name:         matrix_server_data
@@ -15,6 +15,7 @@ matrix_server_networks:
 
 matrix_server_db_user: synapse
 matrix_server_db_name: synapse
+matrix_server_db_telegram_name: telegram
 
 matrix_server_db_volumes_data:
   name:         matrix_db_data
@@ -23,3 +24,16 @@ matrix_server_db_volumes_data:
 
 # turnserver:
 #   ipv4: 172.16.90.20
+
+matrix_server_telegram_volumes_data:
+  name:         matrix_telegram_data
+  local_folder: "{{ root_dirs_matrix_server }}/telegram-data"
+  mount:        /data
+
+matrix_server_volumes_telegram_data:
+  name:         "{{ matrix_server_telegram_volumes_data.name }}"
+  local_folder: "{{ matrix_server_telegram_volumes_data.local_folder }}"
+  mount:        /telegram-data
+
+matrix_server_telegram_user: '1337'
+matrix_server_telegram_container_name: 'mautrixtelegram'

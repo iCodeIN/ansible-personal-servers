@@ -4,6 +4,9 @@
 
 {% set vols_matrix_server = [ matrix_server_volumes_data ] %}
 {% set vols_db = [ matrix_server_db_volumes_data ] %}
+{% set vols_telegram = [ matrix_server_telegram_volumes_data ] %}
+{% set vols_all = vols_matrix_server + vols_db + vols_telegram %}
+
 {% set service_name = 'matrix_synapse' %}
 {% set wk_path = "/.well-known/matrix/" %}
 {% set wk_service_name = "matrix_well_known" %}
@@ -23,21 +26,31 @@ services:
     {{ dm.common()|indent(width = 4) }}
 
 {# https://github.com/matrix-org/synapse/tree/master/docker #}
-  server:
+  synapse:
     image: matrixdotorg/synapse:v1.26.0
-    container_name: matrix_server
+    container_name: synapse
     environment:
       UID: '{{ matrix_server_user }}'
       GID: '{{ matrix_server_user }}'
       TZ: {{ timezone }}
     {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'strip_path': False, 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
-    {{ dv.volumes_section_complete(vols_matrix_server)|indent(width = 4) }}
+    {{ dv.volumes_section_complete(vols_matrix_server + [ matrix_server_volumes_telegram_data ])|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
       {{ network_names_datastore }}:
       {{ matrix_server_networks.name }}:
     {{ dm.common()|indent(width = 4) }}
     depends_on:
       - db
+
+  mautrix_telegram:
+    container_name: {{ matrix_server_telegram_container_name }}
+    image: dock.mau.dev/tulir/mautrix-telegram:latest
+    {{ dv.volumes_section_complete(vols_telegram)|indent(width = 4) }}
+    {{ dm.common()|indent(width = 4) }}
+    networks:
+      {{ matrix_server_networks.name }}:
+    depends_on:
+      - synapse
 
   element_web:
     image: 'bubuntux/element-web'
@@ -47,7 +60,7 @@ services:
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
     depends_on:
-      - server
+      - synapse
 
   turnserver:
     image: killua99/coturn:latest
@@ -84,4 +97,4 @@ services:
 {{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
   {{ matrix_server_networks.name }}:
 
-{{ dv.volumes_declaration(vols_matrix_server + vols_db) }}
+{{ dv.volumes_declaration(vols_all) }}
