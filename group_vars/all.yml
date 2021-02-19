@@ -35,6 +35,7 @@ dns_internal_root: "internal.realmar.net"
 dns_sub_domains_login: "login.{{ dns_public_root }}"
 dns_sub_domains_smarthome: "smarthome.{{ dns_public_root }}"
 dns_sub_domains_element: "element.{{ dns_public_root }}"
+dns_sub_domains_prometheus: "prometheus.{{ dns_public_root }}"
 
 all_dns:
   - "{{ dns_public_root }}"
@@ -42,6 +43,7 @@ all_dns:
   - "{{ dns_sub_domains_login }}"
   - "{{ dns_sub_domains_smarthome }}"
   - "{{ dns_sub_domains_element }}"
+  - "{{ dns_sub_domains_prometheus }}"
 
 letsencrypt_resolver_name: lets_encrypt
 

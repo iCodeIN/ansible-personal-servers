@@ -59,6 +59,15 @@
     mode: 0644
   tags: docker_registry_config
 
+- name: Copy prometheus configs
+  template:
+    src: prometheus.yml
+    dest: "{{ root_dirs_datastore }}/prometheus.yml"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_user }}"
+    mode: 0644
+  tags: prometheus_config
+
 - name: Copy stats scripts
   template:
     src: "{{ item }}"
@@ -104,6 +113,7 @@
       - graphite
       - ouroboros
       - traefik
+      - "{{ prometheus_user_influxdb_name }}"
   tags: influxdb_init
 
 - block:
@@ -119,7 +129,9 @@
     vars:
       items: "{{ [ (registry_volumes_data,         registry_user),
                    (registry_volumes_certificates, registry_user),
-                   (redis_volumes_data,            redis_user) ] | volumes_to_permissions }}"
+                   (redis_volumes_data,            redis_user),
+                   (prometheus_volumes_data,       prometheus_user, user)
+                   ] | volumes_to_permissions }}"
   tags:
     - fix_permissions
     - datastore_fix_permissions

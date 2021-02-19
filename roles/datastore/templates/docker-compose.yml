@@ -8,6 +8,7 @@
 {% set vols_grafana = [ grafana_volumes_data ] %}
 {% set vols_registry = [ registry_volumes_data, registry_volumes_certificates ] %}
 {% set vols_redis = [ redis_volumes_data ] %}
+{% set vols_prometheus = [ prometheus_volumes_data ] %}
 
 version: "3"
 services:
@@ -25,6 +26,15 @@ services:
     container_name: redis
     command: [ "redis-server", "--appendonly", "yes" ]
     {{ dv.volumes_section_complete(vols_redis)|indent(width = 4) }}
+    networks:
+      {{ network_names_datastore }}:
+    {{ dm.common()|indent(width = 4) }}
+
+  prometheus:
+    image: quay.io/prometheus/prometheus:latest
+    {{ lookup('traefik', { 'service_name': 'prometheus', 'domain': dns_sub_domains_prometheus,  'port': 9090, 'use_dns_root': True })|indent(width = 4) }}
+    {{ dv.volumes_section_complete(vols_prometheus)|indent(width = 4) }}
+      - {{ root_dirs_datastore }}/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
@@ -143,4 +153,10 @@ services:
 
 {{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
 
-{{ dv.volumes_declaration(vols_influxdb + vols_chronograf + vols_kapacitor + vols_grafana + vols_registry + vols_redis) }}
+{{ dv.volumes_declaration(vols_influxdb +
+                          vols_chronograf +
+                          vols_kapacitor +
+                          vols_grafana +
+                          vols_registry +
+                          vols_redis +
+                          vols_prometheus) }}

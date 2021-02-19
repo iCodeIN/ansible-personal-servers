@@ -52,3 +52,12 @@ redis_volumes_data:
   name:         redis_data
   local_folder: "{{ root_dirs_datastore }}/redis-data"
   mount:        /data
+
+prometheus_user: nobody
+
+prometheus_volumes_data:
+  name:         prometheus_data
+  local_folder: "{{ root_dirs_datastore }}/prometheus-data"
+  mount:        /prometheus
+
+prometheus_user_influxdb_name: prometheus
