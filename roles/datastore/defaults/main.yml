@@ -26,6 +26,14 @@ grafana_volumes_data:
   local_folder: "{{ root_dirs_datastore }}/grafana-data"
   mount:        /var/lib/grafana
 
+grafana_db_name: grafana
+grafana_db_container_name: grafana_db
+
+grafana_db_volumes_data:
+  name:         grafana_db_data
+  local_folder: "{{ root_dirs_datastore }}/grafana-db-data"
+  mount:        /var/lib/postgresql/data
+
 syslog_interceptor_container_user: interceptor
 syslog_interceptor_container_home: /home/interceptor
 syslog_interceptor_container_app_dir: /home/interceptor/app
@@ -47,6 +55,7 @@ registry_tls_crt: "{{ registry_volumes_certificates.local_folder }}/registry.crt
 registry_tls_csr: "{{ registry_volumes_certificates.local_folder }}/registry.csr"
 
 redis_user: 999
+redis_container_name: redis
 
 redis_volumes_data:
   name:         redis_data

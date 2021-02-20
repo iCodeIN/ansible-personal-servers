@@ -15,6 +15,7 @@
           - "{{ chronograf_volumes_data.local_folder }}"
           - "{{ kapacitor_volumes_data.local_folder }}"
           - "{{ grafana_volumes_data.local_folder }}"
+          - "{{ grafana_db_volumes_data.local_folder }}"
           - "{{ registry_volumes_data.local_folder }}"
           - "{{ registry_volumes_certificates.local_folder }}"
           - "{{ redis_volumes_data.local_folder }}"
@@ -47,8 +48,16 @@
     - telegraf.conf
     - influxdb.conf
     - kapacitor.conf
-    - grafana.ini
   tags: datastore_config
+
+- name: Copy grafana configs
+  template:
+    src: "grafana.ini"
+    dest: "{{ root_dirs_datastore }}/grafana.ini"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+  tags: grafana_config
 
 - name: Copy docker registry configs
   template:
@@ -64,7 +73,7 @@
     src: prometheus.yml
     dest: "{{ root_dirs_datastore }}/prometheus.yml"
     owner: "{{ prometheus_user }}"
-    group: "{{ prometheus_user }}"
+    group: "{{ user }}"
     mode: 0644
   tags: prometheus_config
 
@@ -137,3 +146,4 @@
     - datastore_fix_permissions
     - compose_file
     - datastore_compose_file
+    - grafana_config

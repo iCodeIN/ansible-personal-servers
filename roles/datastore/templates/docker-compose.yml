@@ -6,24 +6,17 @@
 {% set vols_chronograf = [ chronograf_volumes_data ] %}
 {% set vols_kapacitor = [ kapacitor_volumes_data ] %}
 {% set vols_grafana = [ grafana_volumes_data ] %}
+{% set vols_grafana_db = [ grafana_db_volumes_data ] %}
 {% set vols_registry = [ registry_volumes_data, registry_volumes_certificates ] %}
 {% set vols_redis = [ redis_volumes_data ] %}
 {% set vols_prometheus = [ prometheus_volumes_data ] %}
 
 version: "3"
 services:
-  {#postgresql:
-    image: postgres
-    container_name: postgres
-    {{ dv.volumes_section_complete()|indent(width = 4) }}
-    {{ dn.map_ports([ (5432,) ])|indent(width = 4) }}
-    networks:
-      - {{ network_names_datastore }}
-    {{ dm.common()|indent(width = 4) }}#}
 
   redis:
     image: redis:latest
-    container_name: redis
+    container_name: {{ redis_container_name }}
     command: [ "redis-server", "--appendonly", "yes" ]
     {{ dv.volumes_section_complete(vols_redis)|indent(width = 4) }}
     networks:
@@ -96,7 +89,7 @@ services:
       INFLUXDB_URL: http://influxdb:8086
       KAPACITOR_URL: http://kapacitor:9092
       BASE_PATH: /chronograf
-    {{ lookup('traefik', { 'service_name': 'chronograf', 'port': 8888 })|indent(width = 4) }}
+    {{ lookup('traefik', { 'service_name': 'chronograf', 'port': 8888, 'strip_path': False })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_chronograf)|indent(width = 4) }}
 {% if is_dev %}
     {{ dn.map_ports([ (8888,) ])|indent(width = 4) }}
@@ -118,6 +111,18 @@ services:
 ################################################################################
 ################################################################################
 
+  grafana_db:
+    image: postgres:13
+    container_name: {{ grafana_db_container_name}}
+    environment:
+      POSTGRES_USER: {{ grafana_db_user }}
+      POSTGRES_PASSWORD: '{{ grafana_db_password|pw }}'
+      POSTGRES_DB: {{ grafana_db_name }}
+    {{ dv.volumes_section_complete(vols_grafana_db)|indent(width = 4) }}
+    networks:
+      - {{ network_names_datastore }}
+    {{ dm.common()|indent(width = 4) }}
+
   grafana:
     image: grafana/grafana
     container_name: grafana
@@ -132,6 +137,8 @@ services:
       - {{ network_names_discovery }}
       - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}
+    depends_on:
+      - grafana_db
 
 ################################################################################
 ################################################################################
@@ -157,6 +164,7 @@ services:
                           vols_chronograf +
                           vols_kapacitor +
                           vols_grafana +
+                          vols_grafana_db +
                           vols_registry +
                           vols_redis +
                           vols_prometheus) }}

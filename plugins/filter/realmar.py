@@ -9,6 +9,7 @@ sys.path.append(os.path.join(BASEDIR, '..'))
 
 
 from declarations import Volume, Permissions
+from utils import espace_yaml
 
 
 def volumes_to_permissions(data: List[Tuple[Volume, str, Optional[str]]]) -> List[Permissions]:
@@ -21,10 +22,15 @@ def volumes_to_permissions(data: List[Tuple[Volume, str, Optional[str]]]) -> Lis
     return list(map(f, data))
 
 
+def pw(data: str) -> str:
+    return espace_yaml(data)
+
+
 class FilterModule(object):
     ''' Ansible core jinja2 filters '''
 
     def filters(self):
         return {
-            volumes_to_permissions.__name__: volumes_to_permissions
+            volumes_to_permissions.__name__: volumes_to_permissions,
+            pw.__name__: pw
         }
