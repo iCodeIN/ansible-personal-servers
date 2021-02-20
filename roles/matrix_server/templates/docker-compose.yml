@@ -48,6 +48,7 @@ services:
     {{ dv.volumes_section_complete(vols_telegram)|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
     networks:
+      {{ network_names_datastore }}:
       {{ matrix_server_networks.name }}:
     depends_on:
       - synapse
