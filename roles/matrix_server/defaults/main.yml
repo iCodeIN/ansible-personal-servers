@@ -58,4 +58,4 @@ ms_vol_bridge_signal:
 
 matrix_server_signal_container_name: 'mautrixsignal'
 matrix_server_signal_user: "{{ user }}"
-matrix_server_signal_user_id: "{{ default_user_id }}"
+matrix_server_signal_user_id: "'{{ user_id }}'"

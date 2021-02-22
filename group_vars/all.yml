@@ -16,6 +16,7 @@ root_dirs_personal_website: "{{ application_root }}/realmar.net"
 root_dirs_home_automation: "{{ application_root }}/home_automation"
 root_dirs_datastore: "{{ application_root }}/datastore"
 root_dirs_matrix_server: "{{ application_root }}/matrix_server"
+root_dirs_wireguard: "{{ application_root }}/wireguard"
 
 # ZHAW
 root_dirs_zhaw_iot1: "{{ application_root }}/zhaw_iot1"

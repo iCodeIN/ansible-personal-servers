@@ -1,5 +1,6 @@
 version: '3'
 
+{#
 #
 # https://howchoo.com/g/nmrlzmq1ymn/how-to-install-docker-on-your-raspberry-pi
 # https://github.com/kylemanna/docker-openvpn/blob/master/docs/docker-compose.md
@@ -29,12 +30,14 @@ version: '3'
 # docker run -v $OVPN_DATA:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full pihole-vpn
 # docker run -v $OVPN_DATA:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient pihole-vpn > $OVPN_DATA/pihole-vpn.ovpn
 #
+#}
 
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
 
 services:
+{#
   openvpn:
     container_name: {{ openvpn_name }}
 {% if is_dev %}
@@ -75,6 +78,7 @@ services:
 {% endif %}
     cap_add:
       - NET_ADMIN
+#}
 
   pihole:
     image: pihole/pihole:latest
@@ -92,7 +96,7 @@ services:
 {% if pihole_use_host_net == false %}
       - dhcphelper
 {% endif %}
-      - openvpn
+{#    - openvpn #}
     environment:
 {#                 We need to escape $-sign with two $$-signs #}
       WEBPASSWORD: '{{ pihole_web_password | replace("$", "$$") }}'
@@ -176,16 +180,18 @@ services:
 {% if pihole_use_host_net == false %}
 {{   nets.append(pihole_networks) }}
 {% endif %}
+{#
 {% if openvpn_use_host_net == false %}
 {{   nets.append(openvpn_networks) }}
 {% endif %}
+#}
 # docker network create --ipv6 --driver=bridge --subnet=172.16.0.1/24 --gateway=172.16.0.1 --subnet=2002:ac10:0001::/64 --gateway=2002:ac10:0001::1 vpn-net
 {{ dn.networks_declaration(nets) }}
 
+{# openvpn_volumes_config, #}
 {% set vols = [
   pihole_volumes_main,
   pihole_volumes_dnsmasq,
-  openvpn_volumes_config,
   unbound_volumes_main
 ] %}
 {{ dv.volumes_declaration(vols) }}

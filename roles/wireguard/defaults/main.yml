@@ -1,0 +1,4 @@
+wireguard_volumes_config:
+  name: main_config
+  local_folder: "{{ root_dirs_wireguard }}/wireguard-config"
+  mount: /config

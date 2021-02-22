@@ -1,13 +1,4 @@
 - block:
-    - name: Get UID of default user
-      getent:
-        database: passwd
-        key: "{{ user }}"
-      register: matrix_server_default_user
-
-    - set_fact:
-        default_user_id: "'{{ matrix_server_default_user['ansible_facts']['getent_passwd']['pi'][1] }}'"
-
     - include_tasks: standard_service.yml
       vars:
         usr: "{{ matrix_server_user }}"

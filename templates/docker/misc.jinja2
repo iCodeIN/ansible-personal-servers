@@ -66,4 +66,19 @@ logging:
 {% endraw %}
 {% endmacro %}
 
-{% macro private_image(name, tag) %}{% if tag is not defined %}{% set tag = 'latest' if is_dev else 'aarch64' %}{% endif %}{{ private_docker_registry }}/{{ name }}:{{ tag }}{% endmacro %}
+{% macro autoarch(amd64, aarch64) %}{% if is_dev %}{{ amd64 }}{% else %}{{ aarch64 }}{% endif %}{% endmacro %}
+
+{% macro private_image(name, tag) %}{#
+#}{{ private_docker_registry }}/{{ name }}:{{
+    autoarch('latest', 'aarch64')
+      if tag is not defined
+      else
+    tag
+  }}{% endmacro %}
+
+{% macro service(name, image) %}
+{{ name }}:
+  image: {{ image }}
+  {{ common()|indent(width = 2) }}
+{% endmacro %}
+
