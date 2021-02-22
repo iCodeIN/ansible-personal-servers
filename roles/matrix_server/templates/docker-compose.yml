@@ -5,7 +5,54 @@
 {% set vols_matrix_server = [ matrix_server_volumes_data ] %}
 {% set vols_db = [ matrix_server_db_volumes_data ] %}
 {% set vols_telegram = [ matrix_server_telegram_volumes_data ] %}
-{% set vols_all = vols_matrix_server + vols_db + vols_telegram %}
+{% set vols_signal = [ matrix_server_signal_volumes_data ] %}
+{% set vols_signald = [ matrix_server_signald_volumes_data ] %}
+
+{% set vols_bridges = vols_telegram + vols_signal %}
+{% set vols_bridges_synapse_mounts = [ ms_vol_bridge_telegram, ms_vol_bridge_signal ] %}
+
+{% set vols_all = vols_matrix_server + vols_db + vols_bridges + vols_signald %}
+
+{% set mautrix_ref = {
+  'telegram': {
+    'container_name': matrix_server_telegram_container_name,
+    'vols': vols_telegram,
+  },
+  'signal': {
+    'container_name': matrix_server_signal_container_name,
+    'vols': vols_signal + vols_signald,
+  },
+} %}
+
+{% macro synapse_nets_list() %}
+{{ network_names_datastore }}:
+{{ matrix_server_networks.name }}:
+{% endmacro %}
+
+{% macro synapse_nets() %}
+networks:
+  {{ synapse_nets_list()|indent(width = 2) }}
+{% endmacro %}
+
+{% macro mautrix(name, more) %}
+mautrix_{{ name }}:
+  container_name: {{ mautrix_ref[name].container_name }}
+{% if more is defined and more['user'] %}
+  user: {{ more['user'] }}
+{% endif %}
+  image: dock.mau.dev/tulir/mautrix-{{ name }}:latest
+  {{ dv.volumes_section_complete(mautrix_ref[name].vols)|indent(width = 2) }}
+  {{ synapse_nets()|indent(width = 2) }}
+  {{ dm.journald_logging()|indent(width = 2) }}
+  {{ dm.common()|indent(width = 2) }}
+  depends_on:
+    - synapse
+{% if more is defined and more['depends_on'] %}
+{% for d in more['depends_on'] %}
+    - {{ d }}
+{% endfor %}
+{% endif %}
+{% endmacro %}
 
 {% set service_name = 'matrix_synapse' %}
 {% set wk_path = "/.well-known/matrix/" %}
@@ -13,6 +60,50 @@
 
 version: "3"
 services:
+
+{# https://github.com/matrix-org/synapse/tree/master/docker #}
+  synapse:
+    image: matrixdotorg/synapse:v1.26.0
+    container_name: synapse
+    environment:
+      UID: '{{ matrix_server_user }}'
+      GID: '{{ matrix_server_user }}'
+      TZ: {{ timezone }}
+    {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'strip_path': False, 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
+    {{ dv.volumes_section_complete(vols_matrix_server + vols_bridges_synapse_mounts)|indent(width = 4) }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+      {{ synapse_nets_list()|indent(width = 6) }}
+    {{ dm.common()|indent(width = 4) }}
+    depends_on:
+      - db
+
+################################################################################
+##Bridges#######################################################################
+################################################################################
+
+  {{ mautrix('telegram')|indent(width = 2) }}
+
+  {{ mautrix('signal',
+    {
+      'user': matrix_server_signal_user_id,
+      'depends_on': [ 'signald' ]
+    })|indent(width = 2)
+  }}
+
+  signald:
+    container_name: signald
+    image: docker.io/finn/signald:{{ 'latest' if is_dev else 'aarch64-latest' }}
+    user: {{ matrix_server_signal_user_id }}
+    {{ dv.volumes_section_complete(vols_signald)|indent(width = 4) }}
+    {{ synapse_nets()|indent(width = 4) }}
+    {{ dm.common()|indent(width = 4) }}
+    depends_on:
+      - synapse
+
+################################################################################
+################################################################################
+################################################################################
+
   db:
     image: postgres:13
     environment:
@@ -24,34 +115,6 @@ services:
     networks:
       {{ matrix_server_networks.name }}:
     {{ dm.common()|indent(width = 4) }}
-
-{# https://github.com/matrix-org/synapse/tree/master/docker #}
-  synapse:
-    image: matrixdotorg/synapse:v1.26.0
-    container_name: synapse
-    environment:
-      UID: '{{ matrix_server_user }}'
-      GID: '{{ matrix_server_user }}'
-      TZ: {{ timezone }}
-    {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'strip_path': False, 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
-    {{ dv.volumes_section_complete(vols_matrix_server + [ matrix_server_volumes_telegram_data ])|indent(width = 4) }}
-    {{ dn.discovery_network_section()|indent(width = 4) }}
-      {{ network_names_datastore }}:
-      {{ matrix_server_networks.name }}:
-    {{ dm.common()|indent(width = 4) }}
-    depends_on:
-      - db
-
-  mautrix_telegram:
-    container_name: {{ matrix_server_telegram_container_name }}
-    image: dock.mau.dev/tulir/mautrix-telegram:latest
-    {{ dv.volumes_section_complete(vols_telegram)|indent(width = 4) }}
-    {{ dm.common()|indent(width = 4) }}
-    networks:
-      {{ network_names_datastore }}:
-      {{ matrix_server_networks.name }}:
-    depends_on:
-      - synapse
 
   element_web:
     image: 'bubuntux/element-web'

@@ -1341,7 +1341,8 @@ report_stats: true
 # A list of application service config files to use
 #
 app_service_config_files:
-  - {{ matrix_server_volumes_telegram_data.mount }}/registration.yaml
+  - {{ ms_vol_bridge_telegram.mount }}/registration.yaml
+  - {{ ms_vol_bridge_signal.mount }}/registration.yaml
 
 # Uncomment to enable tracking of application service IP addresses. Implicitly
 # enables MAU tracking for application service users.

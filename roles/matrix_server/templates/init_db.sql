@@ -5,5 +5,7 @@ CREATE DATABASE {{ matrix_server_db_name }}
   template=template0
   OWNER {{ matrix_server_db_user }};
 
-CREATE DATABASE {{ matrix_server_db_telegram_name }}
+{% for name in [ matrix_server_db_telegram_name, matrix_server_db_signal_name ] %}
+CREATE DATABASE {{ name }}
   OWNER {{ matrix_server_db_user }};
+{% endfor %}

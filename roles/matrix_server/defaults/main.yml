@@ -16,6 +16,7 @@ matrix_server_networks:
 matrix_server_db_user: synapse
 matrix_server_db_name: synapse
 matrix_server_db_telegram_name: telegram
+matrix_server_db_signal_name: signal
 
 matrix_server_db_volumes_data:
   name:         matrix_db_data
@@ -25,15 +26,36 @@ matrix_server_db_volumes_data:
 # turnserver:
 #   ipv4: 172.16.90.20
 
+matrix_server_bridge_db_string_fragment: "postgres://{{ matrix_server_db_user }}:{{ matrix_server_db_password | urlencode() }}@db/"
+
 matrix_server_telegram_volumes_data:
   name:         matrix_telegram_data
   local_folder: "{{ root_dirs_matrix_server }}/telegram-data"
   mount:        /data
 
-matrix_server_volumes_telegram_data:
+ms_vol_bridge_telegram:
   name:         "{{ matrix_server_telegram_volumes_data.name }}"
   local_folder: "{{ matrix_server_telegram_volumes_data.local_folder }}"
   mount:        /telegram-data
 
 matrix_server_telegram_user: '1337'
 matrix_server_telegram_container_name: 'mautrixtelegram'
+
+matrix_server_signal_volumes_data:
+  name:         matrix_signal_data
+  local_folder: "{{ root_dirs_matrix_server }}/signal-data"
+  mount:        /data
+
+matrix_server_signald_volumes_data:
+  name:         matrix_signald_data
+  local_folder: "{{ root_dirs_matrix_server }}/signald-data"
+  mount:        /signald
+
+ms_vol_bridge_signal:
+  name:         "{{ matrix_server_signal_volumes_data.name }}"
+  local_folder: "{{ matrix_server_signal_volumes_data.local_folder }}"
+  mount:        /signal-data
+
+matrix_server_signal_container_name: 'mautrixsignal'
+matrix_server_signal_user: "{{ user }}"
+matrix_server_signal_user_id: "{{ default_user_id }}"

@@ -1,4 +1,13 @@
 - block:
+    - name: Get UID of default user
+      getent:
+        database: passwd
+        key: "{{ user }}"
+      register: matrix_server_default_user
+
+    - set_fact:
+        default_user_id: "'{{ matrix_server_default_user['ansible_facts']['getent_passwd']['pi'][1] }}'"
+
     - include_tasks: standard_service.yml
       vars:
         usr: "{{ matrix_server_user }}"
@@ -7,6 +16,8 @@
           - "{{ matrix_server_volumes_data.local_folder }}"
           - "{{ matrix_server_db_volumes_data.local_folder }}"
           - "{{ matrix_server_telegram_volumes_data.local_folder }}"
+          - "{{ matrix_server_signal_volumes_data.local_folder }}"
+          - "{{ matrix_server_signald_volumes_data.local_folder }}"
   tags:
     - compose_file
     - matrix_server_compose_file
@@ -53,16 +64,30 @@
   tags:
     - matrix_server_config
     - matrix_server_telegram
-  notify:
-    - restart matrix_telegram
+
+- name: Copy signal bridge configs
+  template:
+    src: "{{ item }}"
+    dest: "{{ matrix_server_signal_volumes_data.local_folder }}/{{ item | replace('signal-', '') }}"
+    owner: "{{ matrix_server_signal_user }}"
+    group: "{{ matrix_server_signal_user }}"
+    mode: 0644
+  loop:
+    - signal-config.yaml
+    - signal-registration.yaml
+  tags:
+    - matrix_server_config
+    - matrix_server_signal
 
 - block:
   - include_tasks: fix_permissions.yml
     vars:
-      items: "{{ [ (matrix_server_telegram_volumes_data, matrix_server_telegram_user) ] | volumes_to_permissions }}"
+      items: "{{ [
+        (matrix_server_telegram_volumes_data, matrix_server_telegram_user),
+        (matrix_server_signal_volumes_data, matrix_server_signal_user),
+        (matrix_server_signald_volumes_data, matrix_server_signal_user)
+         ] | volumes_to_permissions }}"
   tags:
     - fix_permissions
     - compose_file
     - matrix_server_compose_file
-    - matrix_server_config
-    - matrix_server_telegram
