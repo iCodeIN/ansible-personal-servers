@@ -1,5 +1,9 @@
+{% import 'docker/volumes.jinja2' as dv with context -%}
 {% import "docker/misc.jinja2" as dm with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
+
+
+{% set anastassios_updater_vols = [ anastassios_updater_volumes_data ] %}
 
 version: "3"
 services:
@@ -23,4 +27,20 @@ services:
     {{ dm.journald_logging()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
+
+  {{ dm.service(
+    'anastassios_updater',
+    dm.private_image('anastassios_updater'))|indent(width = 2) }}
+    environment:
+      DATA_PATH: {{ anastassios_updater_volumes_data.mount }}
+      SLACK_TOKEN: '{{ discord_anastassios_updater_slack_token }}'
+      CHANNEL: '{{ discord_anastassios_updater_channel }}'
+      BASE_PATH: '{{ discord_anastassios_updater_base_path }}'
+    {{ lookup('traefik', { 'service_name': 'anastassios_updater', 'domain': dns_internal_root, 'port': 8080, 'strip_path': False })|indent(width = 4) }}
+    {{ dv.volumes_section_complete(anastassios_updater_vols)|indent(width = 4) }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+    {{ dm.journald_logging()|indent(width = 4) }}
+
 {{ dn.discovery_networks_declaration() }}
+
+{{ dv.volumes_declaration(anastassios_updater_vols) }}

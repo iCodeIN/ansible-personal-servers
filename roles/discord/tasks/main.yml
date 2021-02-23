@@ -3,7 +3,8 @@
       vars:
         usr: "{{ music_bot_user }}"
         root_dir: "{{ root_dirs_discord }}"
-        dirs: []
+        dirs:
+          - "{{ anastassios_updater_volumes_data.local_folder }}"
   tags:
     - compose_file
     - discord_compose_file
