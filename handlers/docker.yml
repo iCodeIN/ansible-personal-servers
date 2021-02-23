@@ -1,11 +1,3 @@
-- name: restart openvpn
-  include_tasks: restart_compose_container.yml
-  vars:
-    item:
-      name: "{{ openvpn_name }}"
-      dir: "{{ root_dirs_pihole }}"
-  ignore_errors: yes # yeet
-
 - name: restart pihole
   include_tasks: restart_compose_container.yml
   vars:

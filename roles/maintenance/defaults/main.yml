@@ -21,7 +21,6 @@ portainer_volumes_data:
   mount: /data
 
 updater_ignore:
-  - "openvpn"
   - "syslog_interceptor"
   - "datastore_syslog_interceptor"
   - "discord_music_bot_1"
@@ -38,7 +37,6 @@ backup_helper_exclude:
   - realmarnet
   - jupyter
   - freshrss
-  - openvpn
   - dhcphelper
   - unbound
   - netdata

@@ -38,8 +38,6 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entryPoints.among_us.address=:22023/udp"
-{#    - "--entryPoints.openvpn_udp.address=:1194/udp" #}
-      - "--entryPoints.wireguard_udp.address=:51820/udp"
       - "--entryPoints.dns_tcp.address=:53"
       - "--entryPoints.dns_udp.address=:53/udp"
 
@@ -69,12 +67,10 @@ services:
       - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.dnschallenge.delaybeforecheck=0"
 #}
 {% endif %}
-{#      (1194,'udp'), #}
     {{ dn.map_ports([
         (80,), (443,),
         (8080,),
         (22023,'udp'),
-        (51820,'udp'),
         (53,'tcp'), (53,'udp') ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_traefik)|indent(width = 4) }}
       {{ dv.mount_docker_socket() }}

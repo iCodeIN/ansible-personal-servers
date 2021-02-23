@@ -1,7 +1,6 @@
 - include_tasks: "{{ item }}"
   with_items:
     - pihole/main.yml
-    # - openvpn/main.yml
     - unbound/main.yml
   tags:
     - compose_file
@@ -10,7 +9,6 @@
 - block:
     - include_tasks: fix_permissions.yml
       vars:
-        # (openvpn_volumes_config, openvpn_user)
         items: "{{ [ (pihole_volumes_main,    pihole_user),
                      (pihole_volumes_dnsmasq, pihole_user),
                      (unbound_volumes_main,   unbound_user)
