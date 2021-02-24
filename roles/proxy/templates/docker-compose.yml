@@ -1,6 +1,7 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
+{% import 'docker/services.jinja2' as ds with context -%}
 
 {% set vols_traefik = [
   traefik_volumes_dynamic_conf,
@@ -16,7 +17,7 @@
   static_data_volumes_data
 ] %}
 
-{% set vols = vols_traefik + vols_authelia + vols_static_data %}
+{% set vols = vols_traefik + vols_authelia + vols_static_data + [ proxy_db_volumes_data ] %}
 
 version: "3.3"
 services:
@@ -83,6 +84,15 @@ services:
       # https://docs.traefik.io/providers/docker/#host-networking
       - "host.docker.internal:172.17.0.1"
 
+  {{ ds.postgres(
+    proxy_db_container_name,
+    proxy_db_user,
+    proxy_db_password,
+    proxy_db_name,
+    proxy_db_volumes_data)|indent(width = 2) }}
+    networks:
+      {{ network_names_discovery }}:
+
 {% set service_name = "authelia" %}
   authelia:
     image: authelia/authelia
@@ -93,10 +103,14 @@ services:
     {{ lookup('traefik', { 'service_name': service_name, 'use_defaults': False, 'domain': dns_sub_domains_login, 'port': 9091, 'use_dns_root': True })|indent(width = 4) }}
       - "traefik.http.middlewares.{{ service_name }}.forwardauth.address=http://authelia:9091/api/verify?rd=https://{{ dns_sub_domains_login }}/"
       - "traefik.http.middlewares.{{ service_name }}.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.{{ service_name }}.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,X-Forwarded-User"
+      - "traefik.http.middlewares.{{ service_name }}.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email,X-Forwarded-User"
     networks:
       {{ network_names_discovery }}:
+      {{ network_names_datastore }}:
+    {{ dm.journald_logging()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
+    depends_on:
+      - {{ proxy_db_container_name }}
 
   static_data:
     image: nginx:latest

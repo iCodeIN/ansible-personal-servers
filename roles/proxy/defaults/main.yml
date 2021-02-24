@@ -35,7 +35,6 @@ authelia_volumes_data:
   local_folder: "{{ root_dirs_proxy }}/authelia-data"
   mount:        /app/data
 
-
 static_data_volumes_data:
   name:         static_data
   local_folder: "{{ root_dirs_proxy }}/static-data"
@@ -49,3 +48,11 @@ tls_self_signed_cert_request: realmar.net.csr
 tls_self_signed_cert_dir:         "{{ traefik_volumes_certificates.local_folder }}/realmar.net.crt"
 tls_self_signed_private_key_dir:  "{{ traefik_volumes_certificates.local_folder }}/realmar.net.pem"
 tls_self_signed_cert_request_dir: "{{ traefik_volumes_certificates.local_folder }}/realmar.net.csr"
+
+proxy_db_name: proxy
+proxy_db_container_name: proxy_db
+
+proxy_db_volumes_data:
+  name:         proxy_db_data
+  local_folder: "{{ root_dirs_proxy }}/db-data"
+  mount:        "{{ postgresql_data_dir }}"

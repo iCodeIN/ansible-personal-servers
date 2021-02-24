@@ -16,6 +16,7 @@
         - "{{ authelia_volumes_config.local_folder }}"
         - "{{ authelia_volumes_data.local_folder }}"
         - "{{ static_data_volumes_data.local_folder }}"
+        - "{{ proxy_db_volumes_data.local_folder }}"
   tags:
     - compose_file
     - proxy_compose_file
@@ -63,11 +64,13 @@
     - ssl
   when: not is_dev
 
-# - block:
-#   - include_tasks: fix_permissions.yml
-#     vars:
-#       items: "{{ rss_folders_permissions }}"
-#   tags:
-#      - fix_permissions
-#      - compose_file
-#      - proxy_compose_file
+- block:
+  - include_tasks: fix_permissions.yml
+    vars:
+      items: "{{ [
+        (proxy_db_volumes_data, '999'),
+         ] | volumes_to_permissions }}"
+  tags:
+    - fix_permissions
+    - compose_file
+    - proxy_compose_file

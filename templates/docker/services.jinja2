@@ -1,0 +1,15 @@
+{% import "docker/volumes.jinja2" as dv with context -%}
+{% import "docker/misc.jinja2" as dm with context -%}
+
+{% macro postgres(name, user, password, db, volume, version) %}
+{% if version is not defined %}
+{% set version = '13' %}
+{% endif %}
+{{ dm.service(name, 'postgres:' + version) }}
+  environment:
+    POSTGRES_USER: {{ user }}
+    POSTGRES_PASSWORD: '{{ password | pw }}'
+    POSTGRES_DB: {{ db }}
+    TZ: {{ timezone }}
+  {{ dv.volumes_section_complete([ volume ])|indent(width = 2) }}
+{% endmacro %}
