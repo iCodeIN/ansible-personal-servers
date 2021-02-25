@@ -6,6 +6,10 @@ remote_read:
 
 scrape_configs:
 
+  - job_name: "node"
+    static_configs:
+      - targets: [ "{{ host_ipv4 }}:9100" ]
+
   - job_name: "synapse"
     metrics_path: "/_synapse/metrics"
     static_configs:

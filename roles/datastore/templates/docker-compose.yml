@@ -32,6 +32,19 @@ services:
       {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
 
+  {{ dm.service('node_exporter', 'quay.io/prometheus/node-exporter:latest')|indent(width = 2) }}
+    {{ dm.journald_logging()|indent(width = 4) }}
+    command:
+      - '--path.rootfs=/host'
+      - '--collector.systemd'
+      - '--collector.processes'
+    network_mode: host
+    pid: host
+    volumes:
+      - '/:/host:ro,rslave'
+    cap_add:
+      - SYS_TIME
+
 ################################################################################
 ################################################################################
 
@@ -73,7 +86,7 @@ services:
     {{ dm.common()|indent(width = 4) }}
 
   influxdb:
-    image: influxdb
+    image: influxdb:1.8.4
     container_name: influxdb
     {{ dv.volumes_section_complete(vols_influxdb)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/influxdb.conf:/etc/influxdb/influxdb.conf:ro
