@@ -33,7 +33,8 @@ services:
     dm.private_image('anastassios_updater'))|indent(width = 2) }}
     environment:
       DATA_PATH: {{ anastassios_updater_volumes_data.mount }}
-      SLACK_TOKEN: '{{ discord_anastassios_updater_slack_token }}'
+      SLACK_TOKEN_BOT: '{{ discord_anastassios_updater_slack_token_bot }}'
+      SLACK_TOKEN_USER: '{{ discord_anastassios_updater_slack_token_user }}'
       CHANNEL: '{{ discord_anastassios_updater_channel }}'
       BASE_PATH: '{{ discord_anastassios_updater_base_path }}'
     {{ lookup('traefik', { 'service_name': 'anastassios_updater', 'domain': dns_internal_root, 'port': 8080, 'strip_path': False })|indent(width = 4) }}
