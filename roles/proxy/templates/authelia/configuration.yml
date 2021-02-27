@@ -11,7 +11,7 @@ log_level: info
 
 # The secret used to generate JWT tokens when validating user identity by
 # email confirmation.
-jwt_secret: '{{ proxy_authelia_jwt_secret | replace("$", "$$") }}'
+jwt_secret: '{{ proxy_authelia_jwt_secret | pw }}'
 
 theme: dark
 
@@ -49,6 +49,8 @@ totp:
 #
 # There are two supported backends: `ldap` and `file`.
 authentication_backend:
+
+  disable_reset_password: false
 
   # File backend configuration.
   #
