@@ -24,15 +24,14 @@
       args:
         chdir: "{{ item }}"
       with_items:
-        #- "{{ root_dirs_datastore }}"
+        - "{{ root_dirs_datastore }}"
         - "{{ root_dirs_proxy }}"
         - "{{ root_dirs_maintenance }}"
         - "{{ root_dirs_pihole }}"
-        #- "{{ root_dirs_home_automation }}"
-        #- "{{ root_dirs_rss }}"
-        #- "{{ root_dirs_jupyter }}"
-        #- "{{ root_dirs_personal_website }}"
-        #- "{{ root_dirs_zhaw_iot1 }}"
+        - "{{ root_dirs_home_automation }}"
+        - "{{ root_dirs_rss }}"
+        - "{{ root_dirs_jupyter }}"
+        - "{{ root_dirs_personal_website }}"
         - "{{ root_dirs_wireguard }}"
 
     #- name: Running command
@@ -40,6 +39,6 @@
     #  args:
     #    chdir: "{{ item }}"
     #  with_items:
-        #- "{{ root_dirs_discord }}"
-        #- "{{ root_dirs_matrix_server }}"
+        - "{{ root_dirs_discord }}"
+        - "{{ root_dirs_matrix_server }}"
     #  when: not is_dev

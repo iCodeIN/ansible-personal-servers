@@ -1,4 +1,5 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
+{% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
 
 {% set wireguard_vols = [ wireguard_volumes_config ] %}
@@ -10,10 +11,10 @@ services:
     'ghcr.io/linuxserver/wireguard:' + dm.autoarch('amd64-latest', 'arm64v8-latest'))|indent(width = 2) }}
     container_name: wireguard
     privileged: True
+    {{ lookup('traefik', { 'service_name': 'wireguard', 'protocol': 'udp', 'port': 51820, 'entrypoints': [ 'wireguard_udp' ] })|indent(width = 4) }}
     {{ dv.volumes_section_complete(wireguard_vols)|indent(width = 4) }}
       - /lib/modules:/lib/modules
-    # perf is just a lot better without proxies
-    network_mode: host
+    {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.journald_logging()|indent(width = 4) }}
     cap_add:
       - NET_ADMIN
@@ -31,5 +32,7 @@ services:
     sysctls:
       net.ipv4.conf.all.src_valid_mark: 1
       net.ipv6.conf.all.disable_ipv6: 0
+
+{{ dn.discovery_networks_declaration() }}
 
 {{ dv.volumes_declaration(wireguard_vols) }}
