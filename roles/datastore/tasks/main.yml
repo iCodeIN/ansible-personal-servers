@@ -19,6 +19,7 @@
           - "{{ registry_volumes_data.local_folder }}"
           - "{{ registry_volumes_certificates.local_folder }}"
           - "{{ redis_volumes_data.local_folder }}"
+          - "{{ prometheus_volumes_data.local_folder }}"
   tags:
     - compose_file
     - datastore_compose_file

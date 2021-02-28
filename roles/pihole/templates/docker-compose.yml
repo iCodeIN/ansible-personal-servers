@@ -35,7 +35,6 @@ services:
       DNS1: {{ unbound_ipv4 }}#53
       DNS2: "no"
       WEB_PORT: {{ pihole_web_admin_port }}
-      ServerIP: {{ pihole_web_bind_address }}
 {% if host_supports_v6 and pihole_networks.v6.enable %}
       IPv6: "True"
       ServerIPv6: {{ pihole_ipv6 }}
@@ -46,7 +45,6 @@ services:
     networks:
       {{ network_names_datastore }}:
       {{ network_names_discovery }}:
-        ipv4_address: {{ pihole_discovery_ipv4 }}
       {{ pihole_networks.name }}:
         ipv4_address: {{ pihole_ipv4 }}
 {%      if pihole_networks.v6.enable %}
