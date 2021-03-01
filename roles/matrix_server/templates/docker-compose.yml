@@ -63,7 +63,7 @@ services:
 
 {# https://github.com/matrix-org/synapse/tree/master/docker #}
   synapse:
-    image: matrixdotorg/synapse:v1.26.0
+    image: matrixdotorg/synapse:latest
     container_name: synapse
     environment:
       UID: '{{ matrix_server_user }}'
