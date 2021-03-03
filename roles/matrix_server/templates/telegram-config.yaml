@@ -153,7 +153,7 @@ bridge:
     sync_update_limit: 0
     # Number of most recently active dialogs to create portals for when syncing chats.
     # Set to 0 to remove limit.
-    sync_create_limit: 30
+    sync_create_limit: 0
     # Whether or not to sync and create portals for direct chats at startup.
     sync_direct_chats: true
     # The maximum number of simultaneous Telegram deletions to handle.
@@ -236,7 +236,7 @@ bridge:
         allow: true
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
-        default: false
+        default: true
         # Database for the encryption data. Currently only supports Postgres and an in-memory
         # store that's persisted as a pickle.
         # If set to `default`, will use the appservice postgres database

@@ -1343,6 +1343,7 @@ report_stats: true
 app_service_config_files:
   - {{ ms_vol_bridge_telegram.mount }}/registration.yaml
   - {{ ms_vol_bridge_signal.mount }}/registration.yaml
+  - {{ ms_vol_bridge_instagram.mount }}/registration.yaml
 
 # Uncomment to enable tracking of application service IP addresses. Implicitly
 # enables MAU tracking for application service users.

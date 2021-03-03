@@ -17,6 +17,7 @@ matrix_server_db_user: synapse
 matrix_server_db_name: synapse
 matrix_server_db_telegram_name: telegram
 matrix_server_db_signal_name: signal
+matrix_server_db_instagram_name: instagram
 
 matrix_server_db_volumes_data:
   name:         matrix_db_data
@@ -28,6 +29,10 @@ matrix_server_db_volumes_data:
 
 matrix_server_bridge_db_string_fragment: "postgres://{{ matrix_server_db_user }}:{{ matrix_server_db_password | urlencode() }}@db/"
 
+################################################################################
+# Telegram Bridge
+################################################################################
+
 matrix_server_telegram_volumes_data:
   name:         matrix_telegram_data
   local_folder: "{{ root_dirs_matrix_server }}/telegram-data"
@@ -38,8 +43,12 @@ ms_vol_bridge_telegram:
   local_folder: "{{ matrix_server_telegram_volumes_data.local_folder }}"
   mount:        /telegram-data
 
-matrix_server_telegram_user: '1337'
 matrix_server_telegram_container_name: 'mautrixtelegram'
+matrix_server_telegram_user: '1337'
+
+################################################################################
+# Signal Bridge
+################################################################################
 
 matrix_server_signal_volumes_data:
   name:         matrix_signal_data
@@ -59,3 +68,20 @@ ms_vol_bridge_signal:
 matrix_server_signal_container_name: 'mautrixsignal'
 matrix_server_signal_user: "{{ user }}"
 matrix_server_signal_user_id: "'{{ user_id }}'"
+
+################################################################################
+# Instagram Bridge
+################################################################################
+
+matrix_server_instagram_volumes_data:
+  name:         matrix_instagram_data
+  local_folder: "{{ root_dirs_matrix_server }}/instagram-data"
+  mount:        /data
+
+ms_vol_bridge_instagram:
+  name:         "{{ matrix_server_instagram_volumes_data.name }}"
+  local_folder: "{{ matrix_server_instagram_volumes_data.local_folder }}"
+  mount:        /instagram-data
+
+matrix_server_instagram_container_name: 'mautrixinstagram'
+matrix_server_instagram_user: '1337'

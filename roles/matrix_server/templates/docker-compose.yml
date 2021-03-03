@@ -7,21 +7,26 @@
 {% set vols_telegram = [ matrix_server_telegram_volumes_data ] %}
 {% set vols_signal = [ matrix_server_signal_volumes_data ] %}
 {% set vols_signald = [ matrix_server_signald_volumes_data ] %}
+{% set vols_instagram = [ matrix_server_instagram_volumes_data ] %}
 
-{% set vols_bridges = vols_telegram + vols_signal %}
-{% set vols_bridges_synapse_mounts = [ ms_vol_bridge_telegram, ms_vol_bridge_signal ] %}
+{% set vols_bridges = vols_telegram + vols_signal + vols_instagram %}
+{% set vols_bridges_synapse_mounts = [ ms_vol_bridge_telegram, ms_vol_bridge_signal, ms_vol_bridge_instagram ] %}
 
 {% set vols_all = vols_matrix_server + vols_db + vols_bridges + vols_signald %}
 
 {% set mautrix_ref = {
   'telegram': {
     'container_name': matrix_server_telegram_container_name,
-    'vols': vols_telegram,
+    'vols': vols_telegram
   },
   'signal': {
     'container_name': matrix_server_signal_container_name,
-    'vols': vols_signal + vols_signald,
+    'vols': vols_signal + vols_signald
   },
+  'instagram': {
+    'container_name': matrix_server_instagram_container_name,
+    'vols': vols_instagram
+  }
 } %}
 
 {% macro synapse_nets_list() %}
@@ -82,6 +87,8 @@ services:
 ################################################################################
 
   {{ mautrix('telegram')|indent(width = 2) }}
+
+  {# {{ mautrix('instagram')|indent(width = 2) }} #}
 
   {{ mautrix('signal',
     {

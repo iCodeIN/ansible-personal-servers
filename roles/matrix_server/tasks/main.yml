@@ -9,6 +9,7 @@
           - "{{ matrix_server_telegram_volumes_data.local_folder }}"
           - "{{ matrix_server_signal_volumes_data.local_folder }}"
           - "{{ matrix_server_signald_volumes_data.local_folder }}"
+          - "{{ matrix_server_instagram_volumes_data.local_folder }}"
   tags:
     - compose_file
     - matrix_server_compose_file
@@ -70,15 +71,31 @@
     - matrix_server_config
     - matrix_server_signal
 
+- name: Copy instagram bridge configs
+  template:
+    src: "{{ item }}"
+    dest: "{{ matrix_server_instagram_volumes_data.local_folder }}/{{ item | replace('instagram-', '') }}"
+    owner: "{{ matrix_server_instagram_user }}"
+    group: "{{ matrix_server_instagram_user }}"
+    mode: 0644
+  loop:
+    - instagram-config.yaml
+    - instagram-registration.yaml
+  tags:
+    - matrix_server_config
+    - matrix_server_instagram
+
 - block:
   - include_tasks: fix_permissions.yml
     vars:
       items: "{{ [
         (matrix_server_telegram_volumes_data, matrix_server_telegram_user),
         (matrix_server_signal_volumes_data, matrix_server_signal_user),
-        (matrix_server_signald_volumes_data, matrix_server_signal_user)
+        (matrix_server_signald_volumes_data, matrix_server_signal_user),
+        (matrix_server_instagram_volumes_data, matrix_server_instagram_user)
          ] | volumes_to_permissions }}"
   tags:
     - fix_permissions
+    - matrix_server_fix_permissions
     - compose_file
     - matrix_server_compose_file
