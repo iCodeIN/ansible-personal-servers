@@ -35,9 +35,15 @@ services:
       DATA_PATH: {{ anastassios_updater_volumes_data.mount }}
       SLACK_TOKEN_BOT: '{{ discord_anastassios_updater_slack_token_bot }}'
       SLACK_TOKEN_USER: '{{ discord_anastassios_updater_slack_token_user }}'
+      USER_ID: '{{ discord_anastassios_updater_slack_user_id }}'
       CHANNEL: '{{ discord_anastassios_updater_channel }}'
       BASE_PATH: '{{ discord_anastassios_updater_base_path }}'
-    {{ lookup('traefik', { 'service_name': 'anastassios_updater', 'domain': dns_internal_root, 'port': 8080, 'strip_path': False })|indent(width = 4) }}
+      PORT: '{{ discord_anastassios_updater_port }}'
+    {{ lookup('traefik', {
+      'service_name': 'anastassios_updater',
+      'domain': dns_internal_root,
+      'port': discord_anastassios_updater_port,
+      'strip_path': False })|indent(width = 4) }}
     {{ dv.volumes_section_complete(anastassios_updater_vols)|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.journald_logging()|indent(width = 4) }}

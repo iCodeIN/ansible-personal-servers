@@ -5,6 +5,8 @@ music_bot_container_user: discord
 music_bot_uid: 1000
 music_bot_home: /home/discord
 
+discord_anastassios_updater_port: 8080
+
 anastassios_updater_volumes_data:
   name:         anastassios_updater_data
   local_folder: "{{ root_dirs_discord }}/anastassios_updater-data"
