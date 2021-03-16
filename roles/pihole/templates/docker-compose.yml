@@ -68,6 +68,21 @@ services:
     depends_on:
       - dhcphelper
 
+  # https://github.com/eko/pihole-exporter
+  # https://grafana.com/grafana/dashboards/10176
+  {{ dm.service(
+    'prometheus_exporter',
+    dm.private_image('ekofr/pihole-exporter'))|indent(width = 2) }}
+    container_name: {{ pihole_prometheus_exporter_container_name }}
+    environment:
+      PIHOLE_HOSTNAME: {{ pihole_ipv4 }}
+      PORT: {{ pihole_prometheus_exporter_port }}
+      INTERVAL: 30s
+    networks:
+      {{ network_names_datastore }}:
+      {{ pihole_networks.name }}:
+    {{ dm.journald_logging()|indent(width = 4) }}
+
   # https://docs.pi-hole.net/docker/dhcp/
   # https://discourse.pi-hole.net/t/dhcp-with-docker-compose-and-bridge-networking/17038
   dhcphelper:

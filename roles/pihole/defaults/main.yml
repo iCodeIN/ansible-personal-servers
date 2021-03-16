@@ -52,3 +52,6 @@ unbound_networks:
     netmask: 255.255.255.0
     gateway: 172.16.3.1
   name: unbound_net
+
+pihole_prometheus_exporter_container_name: pihole_prometheus_exporter
+pihole_prometheus_exporter_port: 9617
