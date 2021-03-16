@@ -10,6 +10,7 @@
           - "{{ matrix_server_signal_volumes_data.local_folder }}"
           - "{{ matrix_server_signald_volumes_data.local_folder }}"
           - "{{ matrix_server_instagram_volumes_data.local_folder }}"
+          - "{{ matrix_server_twitter_volumes_data.local_folder }}"
   tags:
     - compose_file
     - matrix_server_compose_file
@@ -25,7 +26,9 @@
     - homeserver.yaml
     - realmar.net.log.config
     - realmar.net.signing.key
-  tags: matrix_server_config
+  tags:
+    - matrix_server_config
+    - matrix_server_config_homeserver
 
 - name: Copy DB scripts and configs
   template:
@@ -85,6 +88,20 @@
     - matrix_server_config
     - matrix_server_instagram
 
+- name: Copy twitter bridge configs
+  template:
+    src: "{{ item }}"
+    dest: "{{ matrix_server_twitter_volumes_data.local_folder }}/{{ item | replace('twitter-', '') }}"
+    owner: "{{ matrix_server_twitter_user }}"
+    group: "{{ matrix_server_twitter_user }}"
+    mode: 0644
+  loop:
+    - twitter-config.yaml
+    - twitter-registration.yaml
+  tags:
+    - matrix_server_config
+    - matrix_server_twitter
+
 - block:
   - include_tasks: fix_permissions.yml
     vars:
@@ -92,7 +109,8 @@
         (matrix_server_telegram_volumes_data, matrix_server_telegram_user),
         (matrix_server_signal_volumes_data, matrix_server_signal_user),
         (matrix_server_signald_volumes_data, matrix_server_signal_user),
-        (matrix_server_instagram_volumes_data, matrix_server_instagram_user)
+        (matrix_server_instagram_volumes_data, matrix_server_instagram_user),
+        (matrix_server_twitter_volumes_data, matrix_server_twitter_user)
          ] | volumes_to_permissions }}"
   tags:
     - fix_permissions

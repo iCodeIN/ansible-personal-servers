@@ -18,6 +18,7 @@ matrix_server_db_name: synapse
 matrix_server_db_telegram_name: telegram
 matrix_server_db_signal_name: signal
 matrix_server_db_instagram_name: instagram
+matrix_server_db_twitter_name: twitter
 
 matrix_server_db_volumes_data:
   name:         matrix_db_data
@@ -85,3 +86,20 @@ ms_vol_bridge_instagram:
 
 matrix_server_instagram_container_name: 'mautrixinstagram'
 matrix_server_instagram_user: '1337'
+
+################################################################################
+# Twitter Bridge
+################################################################################
+
+matrix_server_twitter_volumes_data:
+  name:         matrix_twitter_data
+  local_folder: "{{ root_dirs_matrix_server }}/twitter-data"
+  mount:        /data
+
+ms_vol_bridge_twitter:
+  name:         "{{ matrix_server_twitter_volumes_data.name }}"
+  local_folder: "{{ matrix_server_twitter_volumes_data.local_folder }}"
+  mount:        /twitter-data
+
+matrix_server_twitter_container_name: 'mautrixtwitter'
+matrix_server_twitter_user: "{{ user }}"

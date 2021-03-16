@@ -8,9 +8,14 @@
 {% set vols_signal = [ matrix_server_signal_volumes_data ] %}
 {% set vols_signald = [ matrix_server_signald_volumes_data ] %}
 {% set vols_instagram = [ matrix_server_instagram_volumes_data ] %}
+{% set vols_twitter = [ matrix_server_twitter_volumes_data ] %}
 
-{% set vols_bridges = vols_telegram + vols_signal + vols_instagram %}
-{% set vols_bridges_synapse_mounts = [ ms_vol_bridge_telegram, ms_vol_bridge_signal, ms_vol_bridge_instagram ] %}
+{% set vols_bridges = vols_telegram + vols_signal + vols_instagram + vols_twitter %}
+{% set vols_bridges_synapse_mounts = [
+  ms_vol_bridge_telegram,
+  ms_vol_bridge_signal,
+  ms_vol_bridge_instagram,
+  ms_vol_bridge_twitter ] %}
 
 {% set vols_all = vols_matrix_server + vols_db + vols_bridges + vols_signald %}
 
@@ -26,6 +31,10 @@
   'instagram': {
     'container_name': matrix_server_instagram_container_name,
     'vols': vols_instagram
+  },
+  'twitter': {
+    'container_name': matrix_server_twitter_container_name,
+    'vols': vols_twitter
   }
 } %}
 
@@ -88,7 +97,9 @@ services:
 
   {{ mautrix('telegram')|indent(width = 2) }}
 
-  {# {{ mautrix('instagram')|indent(width = 2) }} #}
+  {{ mautrix('instagram')|indent(width = 2) }}
+
+  {{ mautrix('twitter')|indent(width = 2) }}
 
   {{ mautrix('signal',
     {

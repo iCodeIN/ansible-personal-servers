@@ -32,6 +32,10 @@ scrape_configs:
     static_configs:
       - targets: [ "{{ matrix_server_instagram_container_name }}:9000" ]
 
+  - job_name: "mautrix_twitter"
+    static_configs:
+      - targets: [ "{{ matrix_server_twitter_container_name }}:9000" ]
+
   - job_name: "pihole"
     static_configs:
       - targets: [ "{{ pihole_prometheus_exporter_container_name }}:{{ pihole_prometheus_exporter_port }}" ]
