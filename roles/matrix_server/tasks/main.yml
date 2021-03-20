@@ -7,6 +7,7 @@
           - "{{ matrix_server_volumes_data.local_folder }}"
           - "{{ matrix_server_db_volumes_data.local_folder }}"
           - "{{ matrix_server_telegram_volumes_data.local_folder }}"
+          - "{{ matrix_server_whatsapp_volumes_data.local_folder }}"
           - "{{ matrix_server_signal_volumes_data.local_folder }}"
           - "{{ matrix_server_signald_volumes_data.local_folder }}"
           - "{{ matrix_server_instagram_volumes_data.local_folder }}"
@@ -60,6 +61,20 @@
     - matrix_server_config
     - matrix_server_telegram
 
+- name: Copy whatsapp bridge configs
+  template:
+    src: "{{ item }}"
+    dest: "{{ matrix_server_whatsapp_volumes_data.local_folder }}/{{ item | replace('whatsapp-', '') }}"
+    owner: "{{ matrix_server_whatsapp_user }}"
+    group: "{{ matrix_server_whatsapp_user }}"
+    mode: 0644
+  loop:
+    - whatsapp-config.yaml
+    - whatsapp-registration.yaml
+  tags:
+    - matrix_server_config
+    - matrix_server_whatsapp
+
 - name: Copy signal bridge configs
   template:
     src: "{{ item }}"
@@ -107,6 +122,7 @@
     vars:
       items: "{{ [
         (matrix_server_telegram_volumes_data, matrix_server_telegram_user),
+        (matrix_server_whatsapp_volumes_data, matrix_server_whatsapp_user),
         (matrix_server_signal_volumes_data, matrix_server_signal_user),
         (matrix_server_signald_volumes_data, matrix_server_signal_user),
         (matrix_server_instagram_volumes_data, matrix_server_instagram_user),

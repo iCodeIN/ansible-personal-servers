@@ -9,13 +9,15 @@
 {% set vols_signald = [ matrix_server_signald_volumes_data ] %}
 {% set vols_instagram = [ matrix_server_instagram_volumes_data ] %}
 {% set vols_twitter = [ matrix_server_twitter_volumes_data ] %}
+{% set vols_whatsapp = [ matrix_server_whatsapp_volumes_data ] %}
 
-{% set vols_bridges = vols_telegram + vols_signal + vols_instagram + vols_twitter %}
+{% set vols_bridges = vols_telegram + vols_signal + vols_instagram + vols_twitter + vols_whatsapp %}
 {% set vols_bridges_synapse_mounts = [
   ms_vol_bridge_telegram,
   ms_vol_bridge_signal,
   ms_vol_bridge_instagram,
-  ms_vol_bridge_twitter ] %}
+  ms_vol_bridge_twitter,
+  ms_vol_bridge_whatsapp ] %}
 
 {% set vols_all = vols_matrix_server + vols_db + vols_bridges + vols_signald %}
 
@@ -26,6 +28,7 @@
   },
   'signal': {
     'container_name': matrix_server_signal_container_name,
+    'user': matrix_server_signal_user_id,
     'vols': vols_signal + vols_signald
   },
   'instagram': {
@@ -35,6 +38,10 @@
   'twitter': {
     'container_name': matrix_server_twitter_container_name,
     'vols': vols_twitter
+  },
+  'whatsapp': {
+    'container_name': matrix_server_whatsapp_container_name,
+    'vols': vols_whatsapp
   }
 } %}
 
@@ -51,8 +58,8 @@ networks:
 {% macro mautrix(name, more) %}
 mautrix_{{ name }}:
   container_name: {{ mautrix_ref[name].container_name }}
-{% if more is defined and more['user'] %}
-  user: {{ more['user'] }}
+{% if 'user' in mautrix_ref[name] %}
+  user: '{{ mautrix_ref[name].user }}'
 {% endif %}
   image: dock.mau.dev/tulir/mautrix-{{ name }}:latest
   {{ dv.volumes_section_complete(mautrix_ref[name].vols)|indent(width = 2) }}
@@ -97,13 +104,14 @@ services:
 
   {{ mautrix('telegram')|indent(width = 2) }}
 
+  {{ mautrix('whatsapp')|indent(width = 2) }}
+
   {{ mautrix('instagram')|indent(width = 2) }}
 
   {{ mautrix('twitter')|indent(width = 2) }}
 
   {{ mautrix('signal',
     {
-      'user': matrix_server_signal_user_id,
       'depends_on': [ 'signald' ]
     })|indent(width = 2)
   }}
@@ -111,7 +119,7 @@ services:
   signald:
     container_name: signald
     image: docker.io/finn/signald:{{ 'latest' if is_dev else 'aarch64-latest' }}
-    user: {{ matrix_server_signal_user_id }}
+    user: '{{ matrix_server_signal_user_id }}'
     {{ dv.volumes_section_complete(vols_signald)|indent(width = 4) }}
     {{ synapse_nets()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}

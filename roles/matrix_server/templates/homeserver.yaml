@@ -831,11 +831,11 @@ media_store_path: "/data/media_store"
 
 # The largest allowed upload size in bytes
 #
-#max_upload_size: 10M
+max_upload_size: 768M
 
 # Maximum number of pixels that will be thumbnailed
 #
-#max_image_pixels: 32M
+max_image_pixels: 32M
 
 # Whether to generate new thumbnails on the fly to precisely match
 # the resolution requested by the client. If true then whenever
@@ -1342,6 +1342,7 @@ report_stats: true
 #
 app_service_config_files:
   - {{ ms_vol_bridge_telegram.mount }}/registration.yaml
+  - {{ ms_vol_bridge_whatsapp.mount }}/registration.yaml
   - {{ ms_vol_bridge_signal.mount }}/registration.yaml
   - {{ ms_vol_bridge_instagram.mount }}/registration.yaml
   - {{ ms_vol_bridge_twitter.mount }}/registration.yaml

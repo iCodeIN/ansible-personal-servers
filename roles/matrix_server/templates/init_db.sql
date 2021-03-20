@@ -7,6 +7,7 @@ CREATE DATABASE {{ matrix_server_db_name }}
 
 {% for name in [
   matrix_server_db_telegram_name,
+  matrix_server_db_whatsapp_name,
   matrix_server_db_signal_name,
   matrix_server_db_instagram_name,
   matrix_server_db_twitter_name ] %}

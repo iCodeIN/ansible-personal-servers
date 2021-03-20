@@ -24,6 +24,10 @@ scrape_configs:
     static_configs:
       - targets: [ "{{ matrix_server_telegram_container_name }}:9000" ]
 
+  - job_name: "mautrix_whatsapp"
+    static_configs:
+      - targets: [ "{{ matrix_server_whatsapp_container_name }}:9000" ]
+
   - job_name: "mautrix_signal"
     static_configs:
       - targets: [ "{{ matrix_server_signal_container_name }}:9000" ]

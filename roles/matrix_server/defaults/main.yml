@@ -16,6 +16,7 @@ matrix_server_networks:
 matrix_server_db_user: synapse
 matrix_server_db_name: synapse
 matrix_server_db_telegram_name: telegram
+matrix_server_db_whatsapp_name: whatsapp
 matrix_server_db_signal_name: signal
 matrix_server_db_instagram_name: instagram
 matrix_server_db_twitter_name: twitter
@@ -48,6 +49,23 @@ matrix_server_telegram_container_name: 'mautrixtelegram'
 matrix_server_telegram_user: '1337'
 
 ################################################################################
+# Whatsapp Bridge
+################################################################################
+
+matrix_server_whatsapp_volumes_data:
+  name:         matrix_whatsapp_data
+  local_folder: "{{ root_dirs_matrix_server }}/whatsapp-data"
+  mount:        /data
+
+ms_vol_bridge_whatsapp:
+  name:         "{{ matrix_server_whatsapp_volumes_data.name }}"
+  local_folder: "{{ matrix_server_whatsapp_volumes_data.local_folder }}"
+  mount:        /whatsapp-data
+
+matrix_server_whatsapp_container_name: 'mautrixwhatsapp'
+matrix_server_whatsapp_user: '1337'
+
+################################################################################
 # Signal Bridge
 ################################################################################
 
@@ -68,7 +86,7 @@ ms_vol_bridge_signal:
 
 matrix_server_signal_container_name: 'mautrixsignal'
 matrix_server_signal_user: "{{ user }}"
-matrix_server_signal_user_id: "'{{ user_id }}'"
+matrix_server_signal_user_id: "{{ user_id }}"
 
 ################################################################################
 # Instagram Bridge
@@ -102,4 +120,4 @@ ms_vol_bridge_twitter:
   mount:        /twitter-data
 
 matrix_server_twitter_container_name: 'mautrixtwitter'
-matrix_server_twitter_user: "{{ user }}"
+matrix_server_twitter_user: '1337'

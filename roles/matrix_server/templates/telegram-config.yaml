@@ -23,7 +23,7 @@ appservice:
     port: 29317
     # The maximum body size of appservice API requests (from the homeserver) in mebibytes
     # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
-    max_body_size: 1
+    max_body_size: 8
 
     # The full URI to the database. SQLite and Postgres are fully supported.
     # Other DBMSes supported by SQLAlchemy may or may not work.
@@ -138,7 +138,7 @@ bridge:
     # synced when they send messages. The maximum is 10000, after which the Telegram server
     # will not send any more members.
     # -1 means no limit (which means it's limited to 10000 by the server)
-    max_initial_member_sync: 100
+    max_initial_member_sync: -1
     # Whether or not to sync the member list in channels.
     # If no channel admins have logged into the bridge, the bridge won't be able to sync the member
     # list regardless of this setting.
@@ -201,9 +201,9 @@ bridge:
     # N.B. Inline images are not supported on all clients (e.g. Element iOS/Android).
     inline_images: false
     # Maximum size of image in megabytes before sending to Telegram as a document.
-    image_as_file_size: 10
+    image_as_file_size: 2048
     # Maximum size of Telegram documents in megabytes to bridge.
-    max_document_size: 100
+    max_document_size: 2048
     # Enable experimental parallel file transfer, which makes uploads/downloads much faster by
     # streaming from/to Matrix and using many connections for Telegram.
     # Note that generating HQ thumbnails for videos is not possible with streamed transfers.
@@ -260,7 +260,7 @@ bridge:
             require_verification: true
     # Whether or not to explicitly set the avatar and room name for private
     # chat portal rooms. This will be implicitly enabled if encryption.default is true.
-    private_chat_portal_meta: false
+    private_chat_portal_meta: true
     # Whether or not the bridge should send a read receipt from the bridge bot when a message has
     # been sent to Telegram.
     delivery_receipts: true
@@ -294,11 +294,11 @@ bridge:
         missed_limit: -1
         # If using double puppeting, should notifications be disabled
         # while the initial backfill is in progress?
-        disable_notifications: false
+        disable_notifications: true
         # Whether or not to enable backfilling in normal groups.
         # Normal groups have numerous technical problems in Telegram, and backfilling normal groups
         # will likely cause problems if there are multiple Matrix users in the group.
-        normal_groups: false
+        normal_groups: true
 
     # Overrides for base power levels.
     initial_power_level_overrides:
@@ -324,7 +324,7 @@ bridge:
         pre_db_check: false
         # The number of latest events to keep when checking for duplicates.
         # You might need to increase this on high-traffic bridge instances.
-        cache_queue_length: 20
+        cache_queue_length: 200
 
     # The formats to use when sending messages to Telegram via the relay bot.
     # Text msgtypes (m.text, m.notice and m.emote) support HTML, media msgtypes don't.
