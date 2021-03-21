@@ -45,7 +45,11 @@ services:
     cap_add:
       - SYS_TIME
 
-  {{ dm.service('influxdb_stats_exporter', dm.private_image('carlpett/influxdb_stats_exporter'))|indent(width = 2) }}
+  {{ dm.service(
+    'influxdb_stats_exporter',
+    dm.autoarch(
+      'carlpett/influxdb_stats_exporter:latest',
+      dm.private_image('carlpett/influxdb_stats_exporter')))|indent(width = 2) }}
     container_name: influxdb_stats_exporter
     command:
       - '--influx.url=http://influxdb:8086'
@@ -150,7 +154,6 @@ services:
     {{ lookup('traefik', { 'service_name': 'grafana', 'port': 3000 })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_grafana)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/grafana.ini:/etc/grafana/grafana.ini:ro
-      - {{ root_dirs_datastore }}/syslog-interceptor-config.yml:/etc/grafana/grafana.ini:ro
 {% if is_dev %}
     {{ dn.map_ports([ (3000,) ])|indent(width = 4) }}
 {% endif %}
