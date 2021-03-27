@@ -23,6 +23,7 @@ services:
       {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
 
+{#
   prometheus:
     image: quay.io/prometheus/prometheus:latest
     {{ lookup('traefik', { 'service_name': 'prometheus', 'domain': dns_sub_domains_prometheus,  'port': 9090, 'use_dns_root': True })|indent(width = 4) }}
@@ -56,6 +57,7 @@ services:
       - '--ssl.skip-verify=true'
     networks:
         {{ network_names_datastore }}:
+#}
 
 ################################################################################
 ################################################################################
