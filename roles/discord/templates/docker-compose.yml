@@ -17,6 +17,7 @@ services:
     {{ dm.common()|indent(width = 4) }}
 #}
 
+{#
   among_us_server:
     image: aeonlucid/impostor:nightly
     user: "1000"
@@ -26,7 +27,7 @@ services:
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.journald_logging()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
-
+#}
 
   {{ dm.service(
     'anastassios_updater',
