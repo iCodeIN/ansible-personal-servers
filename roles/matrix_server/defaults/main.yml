@@ -13,6 +13,11 @@ matrix_server_networks:
     #   gateway: 172.16.90.1
     name: matrix_net
 
+matrix_server_python_plugins:
+  - shared_secret_authenticator.py
+matrix_server_python_plugins_path: "{{ root_dirs_matrix_server }}/synapse-python-plugins"
+matrix_server_python_packages: /usr/local/lib/python3.8/site-packages
+
 matrix_server_db_user: synapse
 matrix_server_db_name: synapse
 matrix_server_db_telegram_name: telegram

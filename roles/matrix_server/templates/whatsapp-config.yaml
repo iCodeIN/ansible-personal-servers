@@ -169,7 +169,7 @@ bridge:
     # If set, custom puppets will be enabled automatically for local users
     # instead of users having to find an access token and run `login-matrix`
     # manually.
-    login_shared_secret: null
+    login_shared_secret: "{{ matrix_server_shared_secret_auth_access_token }}"
 
     # Whether or not to invite own WhatsApp user's Matrix puppet into private
     # chat portals when backfilling if needed.

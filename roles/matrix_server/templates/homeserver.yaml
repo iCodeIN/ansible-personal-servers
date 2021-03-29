@@ -2114,6 +2114,9 @@ email:
 # respectively.
 #
 password_providers:
+  - module: "shared_secret_authenticator.SharedSecretAuthenticator"
+    config:
+      sharedSecret: "{{ matrix_server_shared_secret_auth_access_token }}"
 #    # Example config for an LDAP auth provider
 #    - module: "ldap_auth_provider.LdapAuthProvider"
 #      config:

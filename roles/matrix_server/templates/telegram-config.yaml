@@ -190,8 +190,8 @@ bridge:
     # manually.
     # If using this for other servers than the bridge's server,
     # you must also set the URL in the double_puppet_server_map.
-    #login_shared_secret_map:
-    #    example.com: foobar
+    login_shared_secret_map:
+        {{ dns_public_root }}: "{{ matrix_server_shared_secret_auth_access_token }}"
     # Set to false to disable link previews in messages sent to Telegram.
     telegram_link_preview: true
     # Whether or not the !tg join command should do a HTTP request
