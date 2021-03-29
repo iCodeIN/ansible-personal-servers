@@ -98,6 +98,40 @@ services:
     depends_on:
       - db
 
+  {{ dm.service('matrix_tag_manager', dm.private_image('turt2live/matrix-tag-manager'))|indent(width = 2) }}
+    {{ lookup('traefik', {
+      'service_name': 'matrix_tag_manager',
+      'domain': dns_public_root,
+      'path': '/mtags'
+      })|indent(width = 4) }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+
+{#
+https://github.com/turt2live/matrix-tag-manager
+https://github.com/turt2live/matrix-tag-manager/blob/master/Dockerfile
+
+Add the following:
+
+FROM node:lts AS BUILDER
+RUN apt update && apt install -y python3 python3-dev build-essential
+RUN npm install -g @angular/cli
+RUN mkdir -p /app
+COPY ./package.json /app
+RUN cd /app && npm install --save-dev @angular-devkit/build-angular
+RUN cd /app && npm install --save-dev @angular/compiler-cli
+RUN cd /app && npm install
+COPY . /app
+RUN cd /app && sed -i 's/matrix\.org/realmar\.net/g' src/app/login-form/login-form.component.ts
+RUN cd /app && sed -i 's/matrix\.org/realmar\.net/g' src/app/login-form/login-form.component.html
+RUN cd /app && ng build --prod --baseHref=/mtags/
+
+FROM nginx
+COPY --from=BUILDER /app/dist/matrix-tag-manager /usr/share/nginx/html
+
+
+docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-tag-manager 192.168.1.128:5000/turt2live/matrix-tag-manager:aarch64 && docker push 192.168.1.128:5000/turt2live/matrix-tag-manager:aarch64
+#}
+
 ################################################################################
 ##Bridges#######################################################################
 ################################################################################
