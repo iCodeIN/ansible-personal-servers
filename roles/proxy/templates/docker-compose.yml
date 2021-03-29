@@ -41,7 +41,6 @@ services:
       - "--entryPoints.among_us.address=:22023/udp"
       - "--entryPoints.dns_tcp.address=:53"
       - "--entryPoints.dns_udp.address=:53/udp"
-      - "--entryPoints.wireguard_udp.address=:51820/udp"
 
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
@@ -73,7 +72,6 @@ services:
         (80,), (443,),
         (8080,),
         (22023,'udp'),
-        (51820,'udp'),
         (53,'tcp'), (53,'udp') ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_traefik)|indent(width = 4) }}
       {{ dv.mount_docker_socket() }}

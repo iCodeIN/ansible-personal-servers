@@ -28,3 +28,6 @@
   service:
     name: rsyslog
     state: restarted
+
+- name: apply sysctls
+  command: sysctl --system
