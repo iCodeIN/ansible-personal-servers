@@ -9,12 +9,12 @@
     - compose_file
     - wireguard_compose_file
 
-- name: Copy wireguard sysctls
-  template:
-    src: wireguard_sysctls.conf
-    dest: /etc/sysctl.d/wireguard_sysctls.conf
-    mode: 0644
-  tags: wireguard_sysctls
-  notify: apply sysctls
-
-- meta: flush_handlers
+# - name: Copy wireguard sysctls
+#   template:
+#     src: wireguard_sysctls.conf
+#     dest: /etc/sysctl.d/wireguard_sysctls.conf
+#     mode: 0644
+#   tags: wireguard_sysctls
+#   notify: apply sysctls
+#
+# - meta: flush_handlers

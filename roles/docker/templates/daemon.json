@@ -9,7 +9,7 @@
   https://github.com/moby/moby/issues/14856
   https://stackoverflow.com/questions/44413816/how-to-disable-userland-proxy-for-docker-compose
 #}
-  "userland-proxy": false,
+  "userland-proxy": true,
   "insecure-registries": [ "{{ private_docker_registry }}" ],
   "log-driver": "syslog",
   "log-opts": {

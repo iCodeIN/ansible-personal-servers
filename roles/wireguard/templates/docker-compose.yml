@@ -13,10 +13,10 @@ services:
     privileged: True
     {{ dv.volumes_section_complete(wireguard_vols)|indent(width = 4) }}
       - /lib/modules:/lib/modules
-{#
     {{ dn.map_ports([ (51820,'udp') ])|indent(width = 4) }}
-#}
+{#
     network_mode: host
+#}
     {{ dm.journald_logging()|indent(width = 4) }}
     cap_add:
       - NET_ADMIN
@@ -31,10 +31,8 @@ services:
       # PEERDNS: {{ host_ipv4 }}
       INTERNAL_SUBNET: 10.28.28.0
       ALLOWEDIPS: 0.0.0.0/0
-{#
     sysctls:
       net.ipv4.conf.all.src_valid_mark: 1
       net.ipv6.conf.all.disable_ipv6: 0
-#}
 
 {{ dv.volumes_declaration(wireguard_vols) }}
