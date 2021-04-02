@@ -90,7 +90,13 @@ services:
       UID: '{{ matrix_server_user }}'
       GID: '{{ matrix_server_user }}'
       TZ: {{ timezone }}
-    {{ lookup('traefik', { 'service_name': 'matrix_synapse', 'strip_path': False, 'use_auth': False, 'path': '/_matrix/', 'port': 8008 })|indent(width = 4) }}
+    {{ lookup('traefik', {
+      'service_name': 'matrix_synapse',
+      'path': '/_matrix/',
+      'port': 8008,
+      'strip_path': False,
+      'use_auth': False
+      })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_matrix_server + vols_bridges_synapse_mounts)|indent(width = 4) }}
 {% for plugin in matrix_server_python_plugins %}
       - {{ matrix_server_python_plugins_path }}/{{ plugin }}:{{ matrix_server_python_packages }}/{{ plugin }}:ro
@@ -105,7 +111,8 @@ services:
     {{ lookup('traefik', {
       'service_name': 'matrix_tag_manager',
       'domain': dns_public_root,
-      'path': '/mtags'
+      'path': '/mtags',
+      'use_auth': False
       })|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
 
