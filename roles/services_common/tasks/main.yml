@@ -6,9 +6,20 @@
   getent:
     database: passwd
     key: "{{ user }}"
-  register: default_user_id
+  register: default_user_id_raw
   tags: always
 
 - set_fact:
-    user_id: "{{ default_user_id['ansible_facts']['getent_passwd']['pi'][1] }}"
+    default_user_id: "{{ default_user_id_raw['ansible_facts']['getent_passwd'][user][1] }}"
+  tags: always
+
+- name: Get UID of fileshare user
+  getent:
+    database: passwd
+    key: "{{ fileserver_share_user }}"
+  register: fileshare_user_id_raw
+  tags: always
+
+- set_fact:
+    fileserver_user_id: "{{ fileshare_user_id_raw['ansible_facts']['getent_passwd'][fileserver_share_user][1] }}"
   tags: always

@@ -1,0 +1,21 @@
+drive_container_path: /var/data
+
+drive_volumes_data:
+  name: drive-data
+  local_folder: "{{ fileserver_share_path }}"
+  mount: "{{ drive_container_path }}"
+
+# amd64 only
+#
+#drive_volumes_srv:
+#  name: drive-srv
+#  local_folder: "{{ root_dirs_drive }}/srv"
+#  mount: /srv
+#
+#drive_db_username: pydio
+#drive_db_name: pydio
+#
+#drive_db_data:
+#  name: drive-db-data
+#  local_folder: "{{ root_dirs_drive }}/db-data"
+#  mount: /config
