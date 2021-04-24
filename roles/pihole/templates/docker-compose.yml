@@ -68,6 +68,7 @@ services:
     depends_on:
       - dhcphelper
 
+{#
   # https://github.com/eko/pihole-exporter
   # https://grafana.com/grafana/dashboards/10176
   {{ dm.service(
@@ -82,6 +83,7 @@ services:
       {{ network_names_datastore }}:
       {{ pihole_networks.name }}:
     {{ dm.journald_logging()|indent(width = 4) }}
+#}
 
   # https://docs.pi-hole.net/docker/dhcp/
   # https://discourse.pi-hole.net/t/dhcp-with-docker-compose-and-bridge-networking/17038
