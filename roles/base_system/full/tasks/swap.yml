@@ -16,3 +16,11 @@
 - name: Activate swap
   command: dphys-swapfile swapon
   when: copy_swapfile.changed
+
+- name: Copy swap sysctls
+  template:
+    src: swap_sysctls.conf
+    dest: /etc/sysctl.d/swap_sysctls.conf
+    mode: 0644
+  tags: swap_sysctls
+  notify: apply sysctls
