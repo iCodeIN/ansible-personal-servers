@@ -40,6 +40,7 @@ services:
       CHANNEL: '{{ discord_anastassios_updater_channel }}'
       BASE_PATH: '{{ discord_anastassios_updater_base_path }}'
       PORT: '{{ discord_anastassios_updater_port }}'
+      TZ: {{ timezone }}
     {{ lookup('traefik', {
       'service_name': 'anastassios_updater',
       'domain': dns_internal_root,
