@@ -70,3 +70,12 @@ prometheus_volumes_data:
   mount:        /prometheus
 
 prometheus_user_influxdb_name: prometheus
+
+influxdb_dbs:
+  - home_assistant
+  - graphite
+  - ouroboros
+  - traefik
+  - "{{ prometheus_user_influxdb_name }}"
+
+grafana_dbs_excludes_traefik: "(Query(`db=telegraf`) || Query(`db=graphite`) || Query(`db=ouroboros`) || Query(`db=traefik`) || Query(`db={{ prometheus_user_influxdb_name }}`))"

@@ -153,7 +153,14 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
-    {{ lookup('traefik', { 'service_name': 'grafana', 'port': 3000 })|indent(width = 4) }}
+    {{ lookup('traefik',
+      { 'service_name': 'grafana', 'port': 3000, 'use_auth': False },
+      { 'service_name': 'grafana_protected', 'port': 3000, 'path': '/grafana',
+        'renderers': {
+          'route' : {
+            'expression':
+              'Host(`' + dns_public_root + '`) && PathPrefix(`/grafana`) && ' + grafana_dbs_excludes_traefik } }
+      })|escape_yaml|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_grafana)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/grafana.ini:/etc/grafana/grafana.ini:ro
 {% if is_dev %}

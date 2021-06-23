@@ -118,12 +118,7 @@
       hostname: 127.0.0.1
       database_name: "{{ item }}"
       state: present
-    loop:
-      - home_assistant
-      - graphite
-      - ouroboros
-      - traefik
-      - "{{ prometheus_user_influxdb_name }}"
+    loop: "{{ influxdb_dbs }}"
   tags: influxdb_init
 
 - block:
