@@ -5,7 +5,7 @@
         root_dir: "{{ root_dirs_maintenance }}"
         dirs:
           - "{{ duplicati_volumes_config.local_folder }}"
-          - "{{ duplicati_volumes_backup_target.local_folder }}"
+          - "{{ duplicati_volumes_backup_target_home_user.local_folder }}"
           - "{{ portainer_volumes_data.local_folder }}"
   tags:
     - compose_file
@@ -33,3 +33,5 @@
   tags:
     - fix_permissions
     - maintenance_fix_permissions
+    - compose_file
+    - maintenance_compose_file

@@ -8,10 +8,15 @@ duplicati_volumes_config:
   local_folder: "{{ root_dirs_maintenance }}/duplicati_config"
   mount: /config
 
-duplicati_volumes_backup_target:
-  name: duplicati_backup_target
+duplicati_volumes_backup_target_home_user:
+  name: duplicati_backup_target_home_user
   local_folder: "/home/{{ user }}"
   mount: "/source"
+
+duplicati_volumes_backup_target_home_root:
+  name: duplicati_backup_target_home_root
+  local_folder: "/root"
+  mount: "/root"
 
 portainer_user: "{{ user }}"
 
