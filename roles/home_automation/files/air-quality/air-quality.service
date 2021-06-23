@@ -1,0 +1,16 @@
+[Unit]
+Description=air-quality - Measures the pm2.5 and pm10 values and sends them to MQTT
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+
+WorkingDirectory=/home/ubuntu/air-quality
+
+ExecStart=/home/ubuntu/.local/bin/pipenv run python /home/ubuntu/air-quality/main.py
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
