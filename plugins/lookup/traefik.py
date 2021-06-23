@@ -411,7 +411,8 @@ def http(options: Options, variables: HostVars, local_renderers: RendererDeclara
     if options.use_dns_root:
         local_renderers['route'] = enrich({'expression': f'Host(`{options.domain}`)'})
     else:
-        local_renderers['default_route'] = enrich({'host': options.domain, 'path': f'{options.path}'})
+        if 'route' not in options.renderers:
+            local_renderers['default_route'] = enrich({'host': options.domain, 'path': f'{options.path}'})
         if options.use_defaults:
             local_renderers['add_trailing_slash'] = enrich()
 
