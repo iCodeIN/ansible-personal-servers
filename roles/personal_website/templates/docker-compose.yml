@@ -5,8 +5,25 @@ version: "3"
 services:
   realmar.net:
     image: {{ dm.private_image('realmar_net') }}
-    {{ lookup('traefik', { 'service_name': 'realmar_net', 'use_dns_root': True })|indent(width = 4) }}
+    {{ lookup('traefik', {
+      'service_name': 'realmar_net',
+      'use_dns_root': True,
+      'use_auth': False
+       })|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
+
+{#
+  jobbernetes.realmar.net:
+    image: {{ dm.private_image('jobbernetes_admin_web') }}
+    {{ lookup('traefik', {
+      'service_name': 'jobbernetes_admin_web',
+      'domain': dns_sub_domains_jobbernetes,
+      'use_dns_root': True,
+      'use_auth': False,
+      'renderers': { 'basic_auth': { 'users': personal_website_jobbernetes_users } } })|indent(width = 4) }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+    {{ dm.common()|indent(width = 4) }}
+#}
 
 {{ dn.discovery_networks_declaration() }}
