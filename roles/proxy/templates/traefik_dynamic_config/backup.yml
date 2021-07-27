@@ -1,0 +1,24 @@
+http:
+  middlewares:
+    backup_fix_wss:
+      headers:
+        customrequestheaders:
+          X-Forwarded-Proto: https
+
+  routers:
+    backup:
+      entrypoints:
+        - websecure
+      rule: "Host(`{{ dns_sub_domains_backup }}`)"
+      service: backup
+      tls:
+        certresolver: lets_encrypt
+      middlewares:
+        - backup_fix_wss
+        - authelia@docker
+
+  services:
+    backup:
+      loadbalancer:
+        servers:
+          - url: "http://{{ traefik_networks.v4.gateway }}:3875/"

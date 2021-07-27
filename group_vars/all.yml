@@ -38,6 +38,7 @@ dns_sub_domains_smarthome: "smarthome.{{ dns_public_root }}"
 dns_sub_domains_element: "element.{{ dns_public_root }}"
 dns_sub_domains_prometheus: "prometheus.{{ dns_public_root }}"
 dns_sub_domains_jobbernetes: "jobbernetes.{{ dns_public_root }}"
+dns_sub_domains_backup: "backup.{{ dns_public_root }}"
 
 all_dns:
   - "{{ dns_public_root }}"
@@ -46,8 +47,8 @@ all_dns:
   - "{{ dns_sub_domains_smarthome }}"
   - "{{ dns_sub_domains_element }}"
   - "{{ dns_sub_domains_prometheus }}"
-  - "{{ dns_sub_domains_drive }}"
   - "{{ dns_sub_domains_jobbernetes }}"
+  - "{{ dns_sub_domains_backup }}"
 
 letsencrypt_resolver_name: lets_encrypt
 

@@ -21,13 +21,16 @@
     - compose_file
     - proxy_compose_file
 
-- name: Copy traefik config
+- name: Copy traefik dynamic config
   template:
-    src: tls_conf.yml
-    dest: "{{ traefik_volumes_dynamic_conf.local_folder }}/tls_conf.yml"
+    src: "traefik_dynamic_config/{{ item }}"
+    dest: "{{ traefik_volumes_dynamic_conf.local_folder }}/{{ item }}"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
+  with_items:
+    - tls_conf.yml
+    - backup.yml
   tags: treafik_config
 
 - name: Copy authelia config
