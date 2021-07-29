@@ -1,0 +1,9 @@
+#
+# IN
+#   network: dict         # network ipam
+#
+
+- name: Remove podman network
+  containers.podman.podman_network:
+    name: "{{ network.name }}"
+    state: absent

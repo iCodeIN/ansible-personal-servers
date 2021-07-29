@@ -1,0 +1,18 @@
+#
+# IN
+#   network: dict         # network ipam
+#
+
+- name: Add v4-only podman network
+  containers.podman.podman_network:
+    name: "{{ network.name }}"
+    driver: bridge
+    subnet: "{{ network.v4.subnet }}"
+    state: present
+  when: network.v6 is not defined or network.v6.enable == false
+
+- name: Add v4 and v6 podman network
+  assert:
+    that: False
+    fail_msg: IPv6 not yet implemented for Podman
+  when: network.v6 is defined and network.v6.enable

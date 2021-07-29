@@ -1,6 +1,6 @@
 - block:
   - name: Create discovery network
-    include_tasks: docker/network/add_docker_network.yml
+    include_tasks: containers/network/add_network.yml
     vars:
       network: "{{ traefik_networks }}"
   tags: docker_network

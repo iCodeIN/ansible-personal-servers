@@ -3,13 +3,11 @@
 #   network: dict         # network ipam
 #
 
-- name: Check if network exists
-  docker_network_info:
-    name: "{{ network.name }}"
-  register: result
+- debug:
+    msg: "{{ network }}"
+  when: is_dev
 
 - name: Remove docker network
   docker_network:
     name: "{{ network.name }}"
     state: absent
-  when: result.exists

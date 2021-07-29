@@ -1,0 +1,6 @@
+#
+# IN
+#   network: dict         # network ipam
+#
+
+- include_tasks: docker/network/remove_network.yml

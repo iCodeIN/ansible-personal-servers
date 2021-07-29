@@ -1,0 +1,26 @@
+- name: Add Kubic APT signing key
+  apt_key:
+    url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ hostvars[inventory_hostname].ansible_distribution_version }}/Release.key"
+    state: present
+
+- name: Add Kubic APT Repository
+  apt_repository:
+    repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ hostvars[inventory_hostname].ansible_distribution_version }}/ /"
+    filename: devel:kubic:libcontainers:stable.list
+    state: present
+
+- name: Install Podman Packages
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: yes
+  vars:
+    packages:
+      - podman
+      - buildah
+      - skopeo
+
+- name: Install Podman pip packages
+  pip:
+    name: https://github.com/containers/podman-compose/archive/devel.tar.gz
+    state: latest

@@ -3,10 +3,9 @@
 #   network: dict         # network ipam
 #
 
-- name: Check if network exists
-  docker_network_info:
-    name: "{{ network.name }}"
-  register: result
+- debug:
+    msg: "{{ network }}"
+  when: is_dev
 
 - name: Add v4-only docker network
   docker_network:
@@ -15,7 +14,7 @@
     ipam_config:
       - subnet: "{{ network.v4.subnet }}"
     state: present
-  when: (network.v6 is not defined or network.v6.enable == false) and result.exists == false
+  when: network.v6 is not defined or network.v6.enable == false
 
 - name: Add v4 and v6 docker network
   docker_network:
@@ -26,4 +25,4 @@
       - subnet: "{{ network.v4.subnet }}"
       - subnet: "{{ network.v6.subnet }}"
     state: present
-  when: network.v6 is defined and network.v6.enable and result.exists == false
+  when: network.v6 is defined and network.v6.enable
