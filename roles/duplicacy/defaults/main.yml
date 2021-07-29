@@ -1,0 +1,7 @@
+duplicacy_installation_dir: /opt/duplicacy
+duplicacy_binary_name: duplicacy_web
+duplicacy_binary_full_path: "{{ duplicacy_installation_dir }}/{{ duplicacy_binary_name }}"
+duplicacy_download_url: https://acrosync.com/duplicacy-web/duplicacy_web_linux_x64_1.5.0
+
+duplicacy_user: root
+duplicacy_group: root

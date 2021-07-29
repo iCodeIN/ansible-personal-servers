@@ -1,0 +1,23 @@
+- name: Create installation dir
+  file:
+    state: directory
+    path: "{{ duplicacy_installation_dir }}"
+
+- name: Download Duplicacy binary
+  get_url:
+    url: "{{ duplicacy_download_url }}"
+    dest: "{{ duplicacy_binary_full_path }}"
+    mode: '0750'
+
+- name: Copy service file
+  template:
+    src: duplicacy.service
+    dest: /etc/systemd/system/duplicacy.service
+    mode: 0644
+
+- name: Enable systemd Dupliacy service
+  systemd:
+    name: duplicacy.service
+    state: started
+    daemon_reload: yes
+    enabled: yes

@@ -1,0 +1,20 @@
+[Unit]
+Description=Duplicacy Backup
+
+Wants=network.target
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+
+User={{ duplicacy_user }}
+Group={{ duplicacy_group }}
+WorkingDirectory={{ duplicacy_installation_dir }}
+
+ExecStart={{ duplicacy_installation_dir }}/{{ duplicacy_binary_name }}
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
