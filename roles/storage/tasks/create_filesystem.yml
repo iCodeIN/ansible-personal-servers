@@ -1,0 +1,14 @@
+- file:
+    state: directory
+    path: "{{ item.mountpoint }}"
+  tags:
+    - zfs_pools
+    - zfs_file_systems
+
+- zfs:
+    name: "{{ zfs_pool_name }}/{{ item.name }}"
+    extra_zfs_properties: "{{ item.properites }}"
+    state: present
+  tags:
+    - zfs_pools
+    - zfs_file_systems

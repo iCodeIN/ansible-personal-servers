@@ -1,0 +1,58 @@
+- name: Install ZFS components
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: yes
+  vars:
+    packages:
+      - zfsutils-linux
+      - nfs-kernel-server
+      - samba
+  tags: zfs_packages
+
+# https://github.com/radek-sprta/ansible-role-zfs/blob/master/tasks/pool.yml
+# License: MIT
+
+- name: Check if pool exists
+  shell: set -o pipefail; zpool list -H | cut -s -f1
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: existing_pools
+  tags: zfs_pools
+
+# https://www.reddit.com/r/zfs/comments/ax7u1l/usage_of_ashift_on_wd_red_pool/
+# https://www.reddit.com/r/zfs/comments/dltik7/whats_the_purpose_of_the_acltype_property/
+# https://www.reddit.com/r/zfs/comments/88vd1v/dataset_normalizationformd/
+# https://www.reddit.com/r/zfs/comments/89xe9u/zol_xattrsa/
+# https://docs.oracle.com/cd/E53394_01/html/E54801/gcvjg.html
+# https://serverfault.com/questions/591180/how-can-i-determine-what-raidz-level-my-volume-is-using
+
+- name: Create ZFS pool
+  shell: >-
+    set -o pipefail;
+    zpool create -f
+    -o ashift=12
+    -O acltype=posixacl
+    -O canmount=off
+    -O compression=lz4
+    -O dnodesize=auto
+    -O normalization=formD
+    -O relatime=on
+    -O xattr=sa
+    -O casesensitivity=mixed
+    -O nbmand=on
+    {{ zfs_pool_name }}
+    {{ zfs_pool_configuration }}
+    {% for device in zfs_devices %} {{ device }} {% endfor %}
+  args:
+    executable: /bin/bash
+  when: zfs_pool_name not in existing_pools.stdout
+  tags: zfs_pools
+
+- name: Create ZFS File Systems
+  include_tasks: create_filesystem.yml
+  loop: "{{ zfs_file_systems }}"
+  tags:
+    - zfs_pools
+    - zfs_file_systems

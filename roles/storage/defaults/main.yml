@@ -1,0 +1,35 @@
+zfs_devices_prod: []
+
+zfs_devices_dev:
+  - /dev/sdc
+  - /dev/sdd
+  - /dev/sde
+  - /dev/sdf
+  - /dev/sdg
+  - /dev/sdh
+  - /dev/sdi
+  - /dev/sdj
+  - /dev/sdk
+  - /dev/sdl
+  - /dev/sdm
+  - /dev/sdn
+
+zfs_devices: "{{ zfs_devices_dev if is_dev else zfs_devices_prod }}"
+
+zfs_pool_name: rdpool
+
+# https://docs.oracle.com/cd/E53394_01/html/E54801/gayok.html#scrolltoc
+#   mirror
+#   raidz1
+#   raidz2
+#   raidz3
+zfs_pool_configuration: raidz1
+
+zfs_file_systems:
+  - name: user
+    mountpoint: /zfs/user
+    properties:
+      # sharenfs: "rw=@192.168.0.0/24"
+      # sharesmb: on
+      canmount: on
+      mountpoint: /zfs/user

@@ -1,3 +1,3 @@
 fileserver_share_user: smbrealmar
 fileserver_share_name: data
-fileserver_share_path: /home/smbrealmar/data
+fileserver_share_path: /zfs/user
