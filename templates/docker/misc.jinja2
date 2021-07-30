@@ -66,7 +66,7 @@ logging:
 {% endraw %}
 {% endmacro %}
 
-{% macro autoarch(amd64, aarch64) %}{% if is_dev %}{{ amd64 }}{% else %}{{ aarch64 }}{% endif %}{% endmacro %}
+{% macro autoarch(amd64, aarch64) %}{% if is_dev or not is_rpi %}{{ amd64 }}{% else %}{{ aarch64 }}{% endif %}{% endmacro %}
 
 {% macro private_image(name, tag) %}{#
 #}{{ private_docker_registry }}/{{ name }}:{{
