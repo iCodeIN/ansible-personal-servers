@@ -81,10 +81,3 @@
   tags:
     - compose_file
     - pihole_compose_file
-
-- name: stop and disable systemd-resolved (conflicts with dnsmasq)
-  service:
-    name: systemd-resolved
-    state: stopped
-    enabled: no
-  when: is_ubuntu

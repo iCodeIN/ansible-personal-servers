@@ -8,14 +8,17 @@
       tags: always
 
   roles:
-    - { role: base_system/full, tags: base_system }
-    - { role: duplicacy, tags: [ duplicacy, backup ] }
+    - { role: base_system/full, tags: [ base_system, base ] }
+    - { role: storage, tags: [ zfs, storage, base ] }
+    - { role: fileserver, tags: [ fileserver, storage, base ] }
+    - { role: duplicacy, tags: [ duplicacy, backup, base ] }
+    - { role: docker, tags: [ docker, containers, base ] }
+
     - { role: proxy, tags: proxy }
     - { role: datastore, tags: datastore }
     - { role: pihole, tags: pihole }
     - { role: wireguard, tags: wireguard }
     - { role: maintenance, tags: maintenance }
-    - { role: fileserver, tags: fileserver }
     - { role: rss, tags: rss }
     - { role: jupyter, tags: jupyter }
     - { role: discord, tags: discord }

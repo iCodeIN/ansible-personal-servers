@@ -1,9 +1,10 @@
-data_mountpoint: /data
-application_root: /home/pi
-# application_root: "{{ data_mountpoint }}"
+data_mountpoint: /applications
+# application_root: /home/pi
+application_root: "{{ data_mountpoint }}"
 
 timezone: Europe/Zurich
-user: pi
+user: realmar
+user_id: 1000
 user_password: "{{ base_system_pi_password }}"
 
 root_dirs_pihole: "{{ application_root }}/pihole"

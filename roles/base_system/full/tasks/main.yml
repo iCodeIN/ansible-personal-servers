@@ -70,7 +70,8 @@
 
 - meta: flush_handlers
 
-- include_tasks: swap.yml
+- include: swap.yml
+  when: not is_dev
 
 - name: Disable autocomplete beep
   lineinfile:
@@ -97,6 +98,15 @@
   file:
     path: "{{ global_cert_dir }}"
     state: directory
+
+- include: users.yml
+
+- name: stop and disable systemd-resolved
+  service:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+  tags: network
 
 - block:
     - name: Setup dev environment

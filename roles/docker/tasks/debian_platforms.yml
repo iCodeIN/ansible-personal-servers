@@ -38,11 +38,13 @@
   apt_repository:
     repo: "deb [arch={{ arch }}] {{ base_url }} {{ lsb_release.stdout }} stable"
     filename: docker
-  # ??? need to restart computer before installing docker ??? wut
-  # for some reason this only needs to be done on my RPI4 with rasbian buster :thinking_face:
-  notify: restart computer
+  register: add_docker_repo
 
-- meta: flush_handlers
+# ??? need to restart computer before installing docker ??? wut
+# for some reason this only needs to be done on my RPI4 with rasbian buster :thinking_face:
+- reboot:
+    reboot_timeout: 3600
+  when: add_docker_repo.changed and is_rpi
 
 - name: Install Docker
   apt:
@@ -51,5 +53,9 @@
     update_cache: yes
     # aufs-dkms does not work with RPI (no kernel support for it)
     # also aint nobody needs recommended stuff ( ͡° ͜ʖ ͡°)
-    install_recommends: no
-  notify: restart computer
+    install_recommends: "{{ is_rpi == False }}"
+  register: install_docker
+
+- reboot:
+    reboot_timeout: 3600
+  when: install_docker.changed and is_rpi
