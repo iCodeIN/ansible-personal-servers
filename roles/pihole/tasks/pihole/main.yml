@@ -11,7 +11,7 @@
     state: directory
     path: "{{ folder.local_folder }}"
     owner: "{{ pihole_user }}"
-    group: "{{ user }}"
+    group: "{{ pihole_user }}"
   loop:
     - "{{ pihole_volumes_main }}"
     - "{{ pihole_volumes_dnsmasq }}"
@@ -25,7 +25,7 @@
     src: "pihole/dhcp-helper/Dockerfile"
     dest: "{{ root_dirs_pihole }}/dhcp-helper/Dockerfile"
     owner: "{{ pihole_user }}"
-    group: "{{ user }}"
+    group: "{{ pihole_user }}"
     mode: 0644
   tags:
     - pihole_conf
@@ -36,7 +36,7 @@
     src: "pihole/{{ item }}"
     dest: "{{ pihole_volumes_dnsmasq.local_folder }}/{{ item }}"
     owner: "{{ pihole_user }}"
-    group: "{{ user }}"
+    group: "{{ pihole_user }}"
     mode: 0644
   with_items:
     - 10-custom-dns.conf
@@ -48,7 +48,7 @@
     src: pihole/pihole-FTL.conf
     dest: "{{ pihole_volumes_main.local_folder }}/pihole-FTL.conf"
     owner: "{{ pihole_user }}"
-    group: "{{ user }}"
+    group: "{{ pihole_user }}"
     mode: 0644
   tags: pihole_conf
 
@@ -57,7 +57,7 @@
     src: pihole/startup.sh
     dest: "{{ pihole_volumes_main.local_folder }}/startup.sh"
     owner: "{{ pihole_user }}"
-    group: "{{ user }}"
+    group: "{{ pihole_user }}"
     mode: 0755
   tags:
     - pihole_conf
@@ -75,7 +75,7 @@
     src: docker-compose.yml
     dest: "{{ root_dirs_pihole }}/docker-compose.yml"
     owner: "{{ pihole_user }}"
-    group: "{{ user }}"
+    group: "{{ pihole_user }}"
     mode: 0644
   # notify: restart pihole project
   tags:

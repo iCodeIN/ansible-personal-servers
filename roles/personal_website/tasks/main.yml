@@ -1,8 +1,9 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ user }}"
-        root_dir: "{{ root_dirs_personal_website }}"
+        root_dir:
+          path: "{{ root_dirs_personal_website }}"
+          user: "{{ user }}"
   tags:
     - compose_file
     - personal_website_compose_file

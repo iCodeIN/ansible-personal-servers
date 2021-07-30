@@ -1,17 +1,33 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ matrix_server_user }}"
-        root_dir: "{{ root_dirs_matrix_server }}"
+        root_dir:
+          path: "{{ root_dirs_matrix_server }}"
+          user: "{{ matrix_server_user }}"
         dirs:
-          - "{{ matrix_server_volumes_data.local_folder }}"
-          - "{{ matrix_server_db_volumes_data.local_folder }}"
-          - "{{ matrix_server_telegram_volumes_data.local_folder }}"
-          - "{{ matrix_server_whatsapp_volumes_data.local_folder }}"
-          - "{{ matrix_server_signal_volumes_data.local_folder }}"
-          - "{{ matrix_server_signald_volumes_data.local_folder }}"
-          - "{{ matrix_server_instagram_volumes_data.local_folder }}"
-          - "{{ matrix_server_twitter_volumes_data.local_folder }}"
+          - path: "{{ matrix_server_volumes_data.local_folder }}"
+            user: "{{ matrix_server_user }}"
+
+          - path: "{{ matrix_server_db_volumes_data.local_folder }}"
+            user: "{{ matrix_server_user }}"
+
+          - path: "{{ matrix_server_telegram_volumes_data.local_folder }}"
+            user: "{{ matrix_server_telegram_user }}"
+
+          - path: "{{ matrix_server_whatsapp_volumes_data.local_folder }}"
+            user: "{{ matrix_server_whatsapp_user }}"
+
+          - path: "{{ matrix_server_signal_volumes_data.local_folder }}"
+            user: "{{ matrix_server_signal_user }}"
+
+          - path: "{{ matrix_server_signald_volumes_data.local_folder }}"
+            user: "{{ matrix_server_signal_user }}"
+
+          - path: "{{ matrix_server_instagram_volumes_data.local_folder }}"
+            user: "{{ matrix_server_instagram_user }}"
+
+          - path: "{{ matrix_server_twitter_volumes_data.local_folder }}"
+            user: "{{ matrix_server_twitter_user }}"
   tags:
     - compose_file
     - matrix_server_compose_file
@@ -134,20 +150,3 @@
       mode: 0644
     with_items: "{{ matrix_server_python_plugins }}"
   tags: matrix_python_plugins
-
-- block:
-  - include_tasks: fix_permissions.yml
-    vars:
-      items: "{{ [
-        (matrix_server_telegram_volumes_data, matrix_server_telegram_user),
-        (matrix_server_whatsapp_volumes_data, matrix_server_whatsapp_user),
-        (matrix_server_signal_volumes_data, matrix_server_signal_user),
-        (matrix_server_signald_volumes_data, matrix_server_signal_user),
-        (matrix_server_instagram_volumes_data, matrix_server_instagram_user),
-        (matrix_server_twitter_volumes_data, matrix_server_twitter_user)
-         ] | volumes_to_permissions }}"
-  tags:
-    - fix_permissions
-    - matrix_server_fix_permissions
-    - compose_file
-    - matrix_server_compose_file

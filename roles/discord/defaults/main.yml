@@ -11,9 +11,3 @@ anastassios_updater_volumes_data:
   name:         anastassios_updater_data
   local_folder: "{{ root_dirs_discord }}/anastassios_updater-data"
   mount:        /data
-
-discord_folders_permissions:
-  - folder: "{{ root_dirs_discord }}/config"
-    user: "{{ music_bot_uid }}"
-  - folder: "{{ anastassios_updater_volumes_data.local_folder }}"
-    user: "{{ music_bot_uid }}"

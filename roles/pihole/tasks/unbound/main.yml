@@ -3,7 +3,7 @@
     path: "{{ folder }}"
     state: directory
     owner: "{{ unbound_user }}"
-    group: "{{ user }}"
+    group: "{{ unbound_user }}"
   loop:
     - "{{ unbound_volumes_main.local_folder }}"
     - "{{ unbound_volumes_main.local_folder }}/var"
@@ -15,7 +15,7 @@
     src: "unbound/{{ file }}"
     dest: "{{ unbound_volumes_main.local_folder }}/{{ file }}"
     owner: "{{ unbound_user }}"
-    group: "{{ user }}"
+    group: "{{ unbound_user }}"
   loop:
     - unbound.conf
     - a-records.conf
@@ -35,7 +35,7 @@
     url: https://www.internic.net/domain/named.root
     dest: "{{ unbound_volumes_main.local_folder }}/var/root.hints"
     owner: "{{ unbound_user }}"
-    group: "{{ user }}"
+    group: "{{ unbound_user }}"
 
 - name: Copy logrotate file
   template:

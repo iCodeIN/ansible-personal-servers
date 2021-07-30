@@ -5,6 +5,8 @@ zigbee2mqtt_volumes_config:
 
 mosquitto_ipv4: 172.16.22.28
 
+mosquitto_user: 1883
+
 mosquitto_volumes_data:
   name: mosquitto-data
   local_folder: "{{ root_dirs_home_automation }}/mosquitto-data"

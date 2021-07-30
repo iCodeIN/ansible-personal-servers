@@ -1,13 +1,21 @@
 - block:
   - include_tasks: standard_service.yml
     vars:
-      usr: "{{ user }}"
-      root_dir: "{{ root_dirs_home_automation }}"
+      root_dir:
+        path: "{{ root_dirs_home_automation }}"
+        user: "{{ user }}"
       dirs:
-        - "{{ zigbee2mqtt_volumes_config.local_folder }}"
-        - "{{ mosquitto_volumes_data.local_folder }}"
-        - "{{ mosquitto_volumes_log.local_folder }}"
-        - "{{ home_assistant_volumes_config.local_folder }}"
+        - path: "{{ zigbee2mqtt_volumes_config.local_folder }}"
+          user: "{{ user }}"
+
+        - path: "{{ mosquitto_volumes_data.local_folder }}"
+          user: "{{ mosquitto_user }}"
+
+        - path: "{{ mosquitto_volumes_log.local_folder }}"
+          user: "{{ mosquitto_user }}"
+
+        - path: "{{ home_assistant_volumes_config.local_folder }}"
+          user: "{{ user }}"
   tags:
     - compose_file
     - home_automation_compose_file

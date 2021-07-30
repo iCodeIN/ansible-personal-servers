@@ -2,11 +2,10 @@
 {% import 'docker/volumes.jinja2' as dv with context -%}
 {% import 'docker/network.jinja2' as dn with context -%}
 
-{# Unfortunately, the resource cost vs benefit is not justified for these #}
-{# 'netdata.yml', #}
-{# 'container_management.yml' #}
 {% set services = [
   'docker_update.yml',
+  'netdata.yml',
+  'container_management.yml'
 ] %}
 
 version: '3'
@@ -17,9 +16,7 @@ services:
 
 {{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
 
-{#
 {% set vols = [
   portainer_volumes_data
 ] %}
 {{ dv.volumes_declaration(vols) }}
-#}

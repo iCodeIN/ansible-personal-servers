@@ -1,22 +1,18 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ music_bot_user }}"
-        root_dir: "{{ root_dirs_discord }}"
+        root_dir:
+          path: "{{ root_dirs_discord }}"
+          user: "{{ music_bot_user }}"
         dirs:
-          - "{{ anastassios_updater_volumes_data.local_folder }}"
+          - path: "{{ anastassios_updater_volumes_data.local_folder }}"
+            user: "{{ music_bot_uid }}"
+
+          - path: "{{ root_dirs_discord }}/config"
+            user: "{{ music_bot_uid }}"
   tags:
     - compose_file
     - discord_compose_file
 
 - include_tasks: music_bot.yml
 - include_tasks: among_us_server.yml
-
-- block:
-    - include_tasks: fix_permissions.yml
-      vars:
-        items: "{{ discord_folders_permissions }}"
-  tags:
-    - fix_permissions
-    - compose_file
-    - discord_compose_file

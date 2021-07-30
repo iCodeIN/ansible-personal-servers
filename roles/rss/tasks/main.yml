@@ -1,20 +1,18 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ user }}"
-        root_dir: "{{ root_dirs_rss }}"
+        root_dir:
+          path: "{{ root_dirs_rss }}"
+          user: "{{ user }}"
         dirs:
-          - "{{ freshrss_volumes_data.local_folder }}"
-          - "{{ freshrss_volumes_extensions.local_folder }}"
-          - "{{ rss_db_volumes_data.local_folder }}"
+          - path: "{{ freshrss_volumes_data.local_folder }}"
+            user: "{{ freshrss_user }}"
+
+          - path: "{{ freshrss_volumes_extensions.local_folder }}"
+            user: "{{ freshrss_user }}"
+
+          - path: "{{ rss_db_volumes_data.local_folder }}"
+            user: "{{ rss_db_user }}"
   tags:
     - compose_file
     - rss_compose_file
-
-- block:
-    - include_tasks: fix_permissions.yml
-      vars:
-        items: "{{ [ (freshrss_volumes_data,       freshrss_user),
-                     (freshrss_volumes_extensions, freshrss_user),
-                     (rss_db_volumes_data,         rss_db_user) ] | volumes_to_permissions }}"
-  tags: fix_permissions

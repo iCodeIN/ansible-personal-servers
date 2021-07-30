@@ -8,15 +8,28 @@
 - block:
   - include_tasks: standard_service.yml
     vars:
-      usr: "1000"
-      root_dir: "{{ root_dirs_proxy }}"
+      root_dir:
+        path: "{{ root_dirs_proxy }}"
+        user: "{{ proxy_container_user }}"
       dirs:
-        - "{{ traefik_volumes_dynamic_conf.local_folder }}"
-        - "{{ traefik_volumes_certificates.local_folder }}"
-        - "{{ authelia_volumes_config.local_folder }}"
-        - "{{ authelia_volumes_data.local_folder }}"
-        - "{{ static_data_volumes_data.local_folder }}"
-        - "{{ proxy_db_volumes_data.local_folder }}"
+        - path: "{{ traefik_volumes_dynamic_conf.local_folder }}"
+          user: "{{ proxy_container_user }}"
+
+        - path: "{{ traefik_volumes_certificates.local_folder }}"
+          user: "{{ proxy_container_user }}"
+
+        - path: "{{ authelia_volumes_config.local_folder }}"
+          user: "{{ proxy_container_user }}"
+
+        - path: "{{ authelia_volumes_data.local_folder }}"
+          user: "{{ proxy_container_user }}"
+
+        - path: "{{ static_data_volumes_data.local_folder }}"
+          user: "{{ proxy_container_user }}"
+
+        - path: "{{ proxy_db_volumes_data.local_folder }}"
+          user: "{{ proxy_db_container_user }}"
+          group: "{{ proxy_db_container_group }}"
   tags:
     - compose_file
     - proxy_compose_file
@@ -66,14 +79,3 @@
     - tls
     - ssl
   when: not is_dev
-
-- block:
-  - include_tasks: fix_permissions.yml
-    vars:
-      items: "{{ [
-        (proxy_db_volumes_data, '999'),
-         ] | volumes_to_permissions }}"
-  tags:
-    - fix_permissions
-    - compose_file
-    - proxy_compose_file

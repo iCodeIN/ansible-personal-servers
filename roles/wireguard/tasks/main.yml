@@ -1,10 +1,12 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ user }}"
-        root_dir: "{{ root_dirs_wireguard }}"
+        root_dir:
+          path: "{{ root_dirs_wireguard }}"
+          user: "{{ user }}"
         dirs:
-          - "{{ wireguard_volumes_config.local_folder }}"
+          - path: "{{ wireguard_volumes_config.local_folder }}"
+            user: "{{ user }}"
   tags:
     - compose_file
     - wireguard_compose_file

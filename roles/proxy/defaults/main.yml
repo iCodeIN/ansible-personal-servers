@@ -1,3 +1,5 @@
+proxy_container_user: 1000
+
 traefik_lets_encrypt_resolver_name: "{{ letsencrypt_resolver_name }}"
 traefik_lets_encrypt_email: anastassios.martakos@outlook.com
 
@@ -51,6 +53,9 @@ tls_self_signed_cert_request_dir: "{{ traefik_volumes_certificates.local_folder 
 
 proxy_db_name: proxy
 proxy_db_container_name: proxy_db
+
+proxy_db_container_user: 999
+proxy_db_container_group: 998
 
 proxy_db_volumes_data:
   name:         proxy_db_data

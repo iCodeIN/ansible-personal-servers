@@ -1,12 +1,12 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ user }}"
-        root_dir: "{{ root_dirs_maintenance }}"
+        root_dir:
+          path: "{{ root_dirs_maintenance }}"
+          user: "{{ user }}"
         dirs:
-          - "{{ duplicati_volumes_config.local_folder }}"
-          - "{{ duplicati_volumes_backup_target_home_user.local_folder }}"
-          - "{{ portainer_volumes_data.local_folder }}"
+          - path: "{{ portainer_volumes_data.local_folder }}"
+            user: "{{ portainer_user }}"
   tags:
     - compose_file
     - maintenance_compose_file
@@ -25,13 +25,3 @@
 - block:
   - include_tasks: backup_helper.yml
   tags: backup_helper
-
-- block:
-    - include_tasks: fix_permissions.yml
-      vars:
-        items: "{{ maintenance_folders_permissions }}"
-  tags:
-    - fix_permissions
-    - maintenance_fix_permissions
-    - compose_file
-    - maintenance_compose_file

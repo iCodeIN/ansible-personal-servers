@@ -29,6 +29,9 @@ grafana_volumes_data:
 grafana_db_name: grafana
 grafana_db_container_name: grafana_db
 
+grafana_db_container_user: 999
+grafana_db_container_group: 1000
+
 grafana_db_volumes_data:
   name:         grafana_db_data
   local_folder: "{{ root_dirs_datastore }}/grafana-db-data"

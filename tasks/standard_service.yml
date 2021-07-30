@@ -1,40 +1,53 @@
 #
 # IN
 #
+#   interface Directory
+#   {
+#       user: string;
+#       group: string?;
+#       path: string;
+#   }
+#
 #   required:
-#     usr: string
-#     root_dir: string
+#     root_dir: Directory
 #
 #   optional:
 #     grp: string
-#     dirs: string[]
+#     dirs: Directory[]
 #
 
 - set_fact:
-    grp: "{{ usr }}"
-  when: grp is not defined
+    root_dir_user: "{{ root_dir.user }}"
+    root_dir_group: "{{ root_dir.group if 'group' in root_dir else root_dir.user }}"
+
+#- debug:
+#    msg:
+#      - "{{ dirs }}"
+#      - "{{ root_dir }}"
+#      - "{{ root_dir_user }}"
+#      - "{{ root_dir_group }}"
 
 - name: Create root folder
   file:
-    path: "{{ root_dir }}"
+    path: "{{ root_dir.path }}"
     state: directory
-    owner: "{{ usr }}"
-    group: "{{ grp }}"
+    owner: "{{ root_dir_user }}"
+    group: "{{ root_dir_group }}"
 
 - name: Create project folders
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
-    owner: "{{ usr }}"
-    group: "{{ grp }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.group if 'group' in item else item.user }}"
   with_items: "{{ dirs }}"
   when: dirs is defined
 
 - name: Copy docker-compose file
   template:
     src: docker-compose.yml
-    dest: "{{ root_dir }}"
-    owner: "{{ usr }}"
-    group: "{{ grp }}"
-    mode: 0644
+    dest: "{{ root_dir.path }}"
+    owner: "{{ root_dir_user }}"
+    group: "{{ root_dir_group }}"
+    mode: "0644"
   tags: compose_file

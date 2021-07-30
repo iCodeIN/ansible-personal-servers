@@ -1,10 +1,12 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ user }}"
-        root_dir: "{{ root_dirs_jupyter }}"
+        root_dir:
+          path: "{{ root_dirs_jupyter }}"
+          user: "{{ user }}"
         dirs:
-          - "{{ jupyter_volumes_data.local_folder }}"
+          - path: "{{ jupyter_volumes_data.local_folder }}"
+            user: "{{ jupyter_uid }}"
   tags: compose_file
 
 - name: Copy docker files
@@ -19,9 +21,3 @@
   tags:
     - compose_file
     - docker_file
-
-- block:
-    - include_tasks: fix_permissions.yml
-      vars:
-        items: "{{ [ (jupyter_volumes_data, jupyter_uid) ] | volumes_to_permissions }}"
-  tags: fix_permissions

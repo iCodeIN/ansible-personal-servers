@@ -8,18 +8,38 @@
 - block:
     - include_tasks: standard_service.yml
       vars:
-        usr: "{{ user }}"
-        root_dir: "{{ root_dirs_datastore }}"
+        root_dir:
+          path: "{{ root_dirs_datastore }}"
+          user: "{{ user }}"
         dirs:
-          - "{{ influxdb_volumes_data.local_folder }}"
-          - "{{ chronograf_volumes_data.local_folder }}"
-          - "{{ kapacitor_volumes_data.local_folder }}"
-          - "{{ grafana_volumes_data.local_folder }}"
-          - "{{ grafana_db_volumes_data.local_folder }}"
-          - "{{ registry_volumes_data.local_folder }}"
-          - "{{ registry_volumes_certificates.local_folder }}"
-          - "{{ redis_volumes_data.local_folder }}"
-          - "{{ prometheus_volumes_data.local_folder }}"
+          - path: "{{ influxdb_volumes_data.local_folder }}"
+            user: "{{ user }}"
+
+          - path: "{{ chronograf_volumes_data.local_folder }}"
+            user: "{{ user }}"
+
+          - path: "{{ kapacitor_volumes_data.local_folder }}"
+            user: "{{ user }}"
+
+          - path: "{{ grafana_volumes_data.local_folder }}"
+            user: "{{ user }}"
+
+          - path: "{{ grafana_db_volumes_data.local_folder }}"
+            user: "{{ grafana_db_container_user }}"
+            group: "{{ grafana_db_container_group }}"
+
+          - path: "{{ registry_volumes_data.local_folder }}"
+            user: "{{ registry_user }}"
+
+          - path: "{{ registry_volumes_certificates.local_folder }}"
+            user: "{{ registry_user }}"
+
+          - path: "{{ redis_volumes_data.local_folder }}"
+            user: "{{ redis_user }}"
+
+          - path: "{{ prometheus_volumes_data.local_folder }}"
+            user: "{{ prometheus_user }}"
+            group: "{{ user }}"
   tags:
     - compose_file
     - datastore_compose_file
@@ -128,18 +148,3 @@
       csr_path: "{{ registry_tls_csr }}"
       pem_path: "{{ registry_tls_crt }}"
   tags: docker_registry_tls
-
-- block:
-  - include_tasks: fix_permissions.yml
-    vars:
-      items: "{{ [ (registry_volumes_data,         registry_user),
-                   (registry_volumes_certificates, registry_user),
-                   (redis_volumes_data,            redis_user),
-                   (prometheus_volumes_data,       prometheus_user, user)
-                   ] | volumes_to_permissions }}"
-  tags:
-    - fix_permissions
-    - datastore_fix_permissions
-    - compose_file
-    - datastore_compose_file
-    - grafana_config
