@@ -34,3 +34,5 @@
   tags: docker_daemon_config
 
 - meta: flush_handlers
+
+- include: local-persist-plugin.yml

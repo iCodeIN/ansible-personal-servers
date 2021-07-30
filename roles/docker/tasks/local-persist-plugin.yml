@@ -1,0 +1,12 @@
+- set_fact:
+    local_persist_installed: "{{ 'docker-volume-local-persist.service' in ansible_facts.services }}"
+
+- name: Install local-persist docker volume plugin
+  shell: curl -fsSL https://raw.githubusercontent.com/MatchbookLab/local-persist/master/scripts/install.sh | sudo bash
+  when: not local_persist_installed
+
+- name: Enable local-persist docker volume plugin
+  systemd:
+    name: docker-volume-local-persist.service
+    state: started
+    enabled: yes

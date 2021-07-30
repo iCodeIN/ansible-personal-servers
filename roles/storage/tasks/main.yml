@@ -6,7 +6,7 @@
   vars:
     packages:
       - zfsutils-linux
-      - nfs-kernel-server
+      # - nfs-kernel-server
       - samba
   tags: zfs_packages
 

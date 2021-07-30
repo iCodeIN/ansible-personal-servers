@@ -9,7 +9,7 @@ volumes:
   {{ volumes_mapping(vols)|indent(width = 2) -}}
 {% endmacro %}
 
-{% macro volumes_declaration(vols) %}
+{% macro __named_bind_volumes_declaration(vols) %}
 volumes:
 {% for volume in vols %}
   {{ volume.name }}:
@@ -19,6 +19,20 @@ volumes:
       device: {{ volume.local_folder }}
       o: bind
 {% endfor %}
+{% endmacro %}
+
+{% macro __local_persist_volumes_declaration(vols) %}
+volumes:
+{% for volume in vols %}
+  {{ volume.name }}:
+    driver: local-persist
+    driver_opts:
+      mountpoint: {{ volume.local_folder }}
+{% endfor %}
+{% endmacro %}
+
+{% macro volumes_declaration(vols) %}
+{{ __local_persist_volumes_declaration(vols) }}
 {% endmacro %}
 
 {% macro datetime_mapping() %}

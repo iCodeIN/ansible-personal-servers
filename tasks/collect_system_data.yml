@@ -13,6 +13,8 @@
   register: arch_raw
   changed_when: False
 
+- service_facts:
+
 - package_facts:
     manager: auto
 
