@@ -1,0 +1,16 @@
+- name: Create OneDriver installation folder
+  file:
+    path: "{{ onedrive_installation_dir }}"
+    state: directory
+
+- name: Copy sync onedrive script
+  template:
+    src: sync_onedrive.sh
+    dest: "{{ onedrive_full_path }}"
+    mode: 0755
+
+- name: Copy sync onedrive cronjob
+  template:
+    src: sync_onedrive
+    dest: /etc/cron.d/sync_onedrive
+    mode: 0644

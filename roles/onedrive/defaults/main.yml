@@ -1,0 +1,7 @@
+onedrive_installation_dir: /opt/onedrive
+onedrive_binary_name: sync_onedrive.sh
+onedrive_full_path: "{{ onedrive_installation_dir }}/{{ onedrive_binary_name }}"
+
+onedrive_data_dir: /zfs/onedrive
+
+onedrive_container_name: onedrive-sync
