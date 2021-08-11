@@ -1,4 +1,4 @@
-host_public_interface: eth0
+host_public_interface: enp5s0
 host_ipv4: 192.168.1.128
 host_ipv6: 2a02:120b:2c06:57d0::abcf
 # my swisscom router supports SLAAC only, meaning that if you turn on IPv6

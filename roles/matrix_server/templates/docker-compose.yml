@@ -166,7 +166,7 @@ docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-ta
 
   signald:
     container_name: signald
-    image: docker.io/finn/signald:{{ 'latest' if is_dev else 'aarch64-latest' }}
+    image: docker.io/finn/signald:{{ 'latest' if not is_rpi else 'aarch64-latest' }}
     user: '{{ matrix_server_signal_user_id }}'
     {{ dv.volumes_section_complete(vols_signald)|indent(width = 4) }}
     {{ synapse_nets()|indent(width = 4) }}

@@ -1,0 +1,13 @@
+- name: Create snapshot directory
+  file:
+    path: "{{ backup.declaration.mount }}"
+    recurse: yes
+    state: directory
+
+- name: Copy backup scripts
+  include_tasks: copy_backup_script.yml
+  loop:
+    - post-backup
+    - pre-backup
+  loop_control:
+    loop_var: file

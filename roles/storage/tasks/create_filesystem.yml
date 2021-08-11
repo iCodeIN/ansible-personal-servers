@@ -7,7 +7,7 @@
 
 - zfs:
     name: "{{ zfs_pool_name }}/{{ item.name }}"
-    extra_zfs_properties: "{{ item.properites }}"
+    extra_zfs_properties: "{{ item.properties }}"
     state: present
   tags:
     - zfs_pools

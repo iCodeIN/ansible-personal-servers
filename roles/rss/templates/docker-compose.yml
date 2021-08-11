@@ -10,7 +10,7 @@
 version: "3"
 services:
   rss:
-    image: {{ 'freshrss/freshrss:latest' if is_dev else 'freshrss/freshrss:arm' }}
+    image: {{ 'freshrss/freshrss:latest' if not is_rpi else 'freshrss/freshrss:arm' }}
     container_name: freshrss
     {{ lookup('traefik', { 'service_name': 'rss', 'renderers': { 'redirect': { "old_path": "/rss/api", "new_path": "/rss/api/" } } })|indent(width = 4) }}
     environment:

@@ -1,18 +1,26 @@
-zfs_devices_prod: []
-
-zfs_devices_dev:
+zfs_devices_prod:
+  - /dev/sda
+  - /dev/sdb
   - /dev/sdc
   - /dev/sdd
   - /dev/sde
   - /dev/sdf
   - /dev/sdg
   - /dev/sdh
-  - /dev/sdi
-  - /dev/sdj
-  - /dev/sdk
-  - /dev/sdl
-  - /dev/sdm
-  - /dev/sdn
+
+zfs_devices_dev:
+  - /dev/sdc
+  - /dev/sdd
+  # - /dev/sde
+  # - /dev/sdf
+  # - /dev/sdg
+  # - /dev/sdh
+  # - /dev/sdi
+  # - /dev/sdj
+  # - /dev/sdk
+  # - /dev/sdl
+  # - /dev/sdm
+  # - /dev/sdn
 
 zfs_devices: "{{ zfs_devices_dev if is_dev else zfs_devices_prod }}"
 
@@ -33,3 +41,10 @@ zfs_file_systems:
       # sharesmb: on
       canmount: on
       mountpoint: /zfs/user
+  - name: onedrive
+    mountpoint: /zfs/onedrive
+    properties:
+      # sharenfs: "rw=@192.168.0.0/24"
+      # sharesmb: on
+      canmount: on
+      mountpoint: /zfs/onedrive

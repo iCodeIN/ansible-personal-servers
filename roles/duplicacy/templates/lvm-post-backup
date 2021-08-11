@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+{% set snapshot = backup.declaration %}
+
+umount {{ snapshot.mount }}
+lvremove -y {{ snapshot.vg }}/{{ snapshot.snapshot_name }}

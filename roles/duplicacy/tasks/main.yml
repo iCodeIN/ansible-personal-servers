@@ -21,3 +21,9 @@
     state: started
     daemon_reload: yes
     enabled: yes
+
+- name: Copy Duplicacy scripts
+  include_tasks: process_backup_scripts.yml
+  loop: "{{ duplicacy_backups }}"
+  loop_control:
+    loop_var: backup

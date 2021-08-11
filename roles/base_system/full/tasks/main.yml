@@ -39,6 +39,7 @@
       - smartmontools
       - jq
       - nload
+      - fuse
   tags: base_packages
 
 - name: Install pip packages
@@ -80,8 +81,8 @@
     line: "set bell-style none"
   tags: bell_beep
 
-- include_tasks: tools.yml
-  tags: tools
+# - include_tasks: tools.yml
+#   tags: tools
 
 - name: Update and upgrade packages
   apt:
@@ -100,6 +101,7 @@
     state: directory
 
 - include: users.yml
+  tags: fuse
 
 - name: stop and disable systemd-resolved
   service:
@@ -107,6 +109,13 @@
     state: stopped
     enabled: no
   tags: network
+
+- name: Allow root to use the fuse mounts
+  lineinfile:
+    path: /etc/fuse.conf
+    regexp: '^(#)?allow_root'
+    line: "allow_root"
+  tags: fuse
 
 - block:
     - name: Setup dev environment

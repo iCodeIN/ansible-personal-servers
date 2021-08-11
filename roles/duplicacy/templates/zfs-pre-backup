@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+{% set snapshot = backup.declaration %}
+
+zfs snapshot {{ snapshot.snapshot_name }}
+mount -t zfs {{ snapshot.snapshot_name }} {{ snapshot.mount }}

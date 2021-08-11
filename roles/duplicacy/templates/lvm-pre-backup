@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+{% set snapshot = backup.declaration %}
+
+lvcreate -l100%FREE -s -n {{ snapshot.snapshot_name }} {{ snapshot.vg }}/{{ snapshot.lv }}
+mount {{ snapshot.vg }}/{{ snapshot.snapshot_name }} {{ snapshot.mount }}
+

@@ -23,7 +23,6 @@ services:
       {{ network_names_datastore }}:
     {{ dm.common()|indent(width = 4) }}
 
-{#
   prometheus:
     image: quay.io/prometheus/prometheus:latest
     {{ lookup('traefik', { 'service_name': 'prometheus', 'domain': dns_sub_domains_prometheus,  'port': 9090, 'use_dns_root': True })|indent(width = 4) }}
@@ -51,13 +50,13 @@ services:
     dm.autoarch(
       'carlpett/influxdb_stats_exporter:latest',
       dm.private_image('carlpett/influxdb_stats_exporter')))|indent(width = 2) }}
+    {{ dm.journald_logging()|indent(width = 4) }}
     container_name: influxdb_stats_exporter
     command:
       - '--influx.url=http://influxdb:8086'
-      - '--ssl.skip-verify=true'
+      # - '--ssl.skip-verify=true'
     networks:
         {{ network_names_datastore }}:
-#}
 
 ################################################################################
 ################################################################################
@@ -187,6 +186,47 @@ services:
     networks:
       - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}
+
+################################################################################
+################################################################################
+
+#
+# Elastic Stack
+#
+
+# Filebeat
+#   Collects all logs and sends them to logstash
+#   Docker, Traefik, etc
+
+{#{{ dm.service('filebeat', '')|indent(width = 2) }}#}
+
+# Logstash
+#   Analysises the data and stores them in ES for analytics
+
+{#{{ dm.service('logstash', '')|indent(width = 2) }}#}
+
+# Elasticsearch
+#   Data mining and analytics
+
+{#
+  {{ dm.service('elasticsearch', 'docker.elastic.co/elasticsearch/elasticsearch:7.14.0')|indent(width = 2) }}
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-cluster
+      - cluster.initial_master_nodes=elasticsearch
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#}
+
+# Kibana
+#   Data visualization
+
+{#
+  {{ dm.service('kibana', 'docker.elastic.co/kibana/kibana:7.14.0')|indent(width = 2) }}
+    environment:
+      SERVER_NAME: kibana.example.org
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+#}
 
 ################################################################################
 ################################################################################

@@ -1,0 +1,14 @@
+- set_fact:
+    dest: "{{ duplicacy_repo_base }}/{{ backup.index }}/{{ duplicacy_script_dir }}"
+
+- name: Create Duplicacy script directory
+  file:
+    path: "{{ dest }}"
+    recurse: yes
+    state: directory
+
+- name: Copy backup script
+  template:
+    src: "{{ backup.type }}-{{ file }}"
+    dest: "{{ dest }}/{{ file }}"
+    mode: 0755

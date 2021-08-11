@@ -5,3 +5,34 @@ duplicacy_download_url: https://acrosync.com/duplicacy-web/duplicacy_web_linux_x
 
 duplicacy_user: root
 duplicacy_group: root
+
+duplicacy_lvm_snapshot_system:
+  vg: /dev/vg-main
+  lv: lv-system
+  snapshot_name: system-snaphot
+  mount: /snapshots/lvm/system
+
+duplicacy_zfs_snapshot_onedrive:
+  snapshot_name: rdpool/onedrive@backup
+  mount: /snapshots/zfs/onedrive
+
+duplicacy_zfs_snapshot_user:
+  snapshot_name: rdpool/user@backup
+  mount: /snapshots/zfs/user
+
+duplicacy_repo_base: /root/.duplicacy-web/repositories/localhost
+duplicacy_script_dir: .duplicacy/scripts
+
+duplicacy_backups:
+  - index: 0
+    declaration: "{{ duplicacy_lvm_snapshot_system }}"
+    type: lvm
+  - index: 1
+    declaration: "{{ duplicacy_lvm_snapshot_system }}"
+    type: lvm
+  - index: 2
+    declaration: "{{ duplicacy_zfs_snapshot_onedrive }}"
+    type: zfs
+  - index: 3
+    declaration: "{{ duplicacy_zfs_snapshot_user }}"
+    type: zfs
