@@ -16,8 +16,8 @@ class Model:
   name: str = ''
   vendor: str = ''
   product: str = ''
-  powered: float = 0.0
-  uptime: float = 0.0
+  powered: int = 0
+  uptime: int = 0
   temp1: float = 0.0
   temp2: float = 0.0
   fan: float = 0.0
@@ -73,7 +73,7 @@ def run(binary: str) -> None:
 
   tags = f"component=psu,name={model.name},vendor={model.vendor},product={model.product}"
 
-  send(f"system,{tags} powered={model.powered},uptime={model.uptime},temp1={model.temp1},temp2={model.temp2}")
+  send(f"system,{tags} powered={int(model.powered)}i,uptime={int(model.uptime)}i,temp1={model.temp1},temp2={model.temp2}")
   send(f"system,{tags},unit=rpm fan={model.fan}")
   send(f"system,{tags},unit=amps output0={model.output1['amps']},output1={model.output1['amps']},output2={model.output2['amps']}")
   send(f"system,{tags},unit=volts supply={model.supply},output0={model.output1['volts']},output1={model.output1['volts']},output2={model.output2['volts']}")
