@@ -23,7 +23,7 @@ appservice:
     port: 29330
     # The maximum body size of appservice API requests (from the homeserver) in mebibytes
     # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
-    max_body_size: 1
+    max_body_size: 8
 
     # The full URI to the database. Only Postgres is currently supported.
     database: {{ matrix_server_bridge_db_string_fragment }}{{ matrix_server_db_instagram_name }}
@@ -91,7 +91,7 @@ bridge:
     # Whether or not to update the m.direct account data event when double puppeting is enabled.
     # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
     # and is therefore prone to race conditions.
-    sync_direct_chat_list: true
+    sync_direct_chat_list: false
     # Allow using double puppeting from any server with a valid client .well-known file.
     double_puppet_allow_discovery: false
     # Servers to allow double puppeting from, even if double_puppet_allow_discovery is false.
@@ -117,14 +117,14 @@ bridge:
         invite_own_puppet: true
         # Maximum number of messages to backfill initially.
         # Set to 0 to disable backfilling when creating portal.
-        initial_limit: 10000
+        initial_limit: 9223372036854775802
         # Maximum number of messages to backfill if messages were missed while
         # the bridge was disconnected.
         # Set to 0 to disable backfilling missed messages.
-        missed_limit: 10000
+        missed_limit: 9223372036854775802
         # If using double puppeting, should notifications be disabled
         # while the initial backfill is in progress?
-        disable_notifications: false
+        disable_notifications: true
     periodic_reconnect:
         # Interval in seconds in which to automatically reconnect all users.
         # This can be used to automatically mitigate the bug where Instagram stops sending messages.
@@ -161,7 +161,7 @@ bridge:
     # been sent to Instagram.
     delivery_receipts: true
     # Whether or not delivery errors should be reported as messages in the Matrix room.
-    delivery_error_reports: false
+    delivery_error_reports: true
     # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
     # This field will automatically be changed back to false after it,
     # except if the config file is not writable.
