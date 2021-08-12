@@ -82,3 +82,8 @@ influxdb_dbs:
   - "{{ prometheus_user_influxdb_name }}"
 
 grafana_dbs_excludes_traefik: "(Query(`db=telegraf`) || Query(`db=graphite`) || Query(`db=ouroboros`) || Query(`db=traefik`) || Query(`db={{ prometheus_user_influxdb_name }}`))"
+
+psu_stats_interval: 10
+
+corsairmi_installation_path: /opt/corsairmi
+corsairmi_binary: "{{ corsairmi_installation_path }}/corsairmi"

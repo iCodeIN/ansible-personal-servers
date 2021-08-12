@@ -1,0 +1,16 @@
+[Unit]
+Description=Collect PSU stats and send them to Telegraf
+
+Wants=network.target
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+
+ExecStart={{ root_dirs_datastore }}/psu_stats.py {{ corsairmi_binary }} {{ psu_stats_interval }}
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

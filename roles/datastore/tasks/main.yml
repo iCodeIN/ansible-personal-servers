@@ -44,6 +44,15 @@
     - compose_file
     - datastore_compose_file
 
+- name: Install pip dependencies
+  pip:
+    name: [ "influxdb", "requests", "requests" ]
+    state: latest
+    executable: pip3
+  tags:
+    - influxdb_init
+    - stats_scripts
+
 - name: Send rsyslog logs to telegraf
   template:
     src: "80-telegraf.conf"
@@ -58,13 +67,6 @@
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
-
-    block_start_string: "|%"
-    block_end_string: "%|"
-
-    variable_start_string: "||"
-    variable_end_string: "||"
-
   with_items:
     - telegraf.conf
     - influxdb.conf
@@ -98,6 +100,19 @@
     mode: 0644
   tags: prometheus_config
 
+- name: Clone corsairmi
+  git:
+    repo: 'https://github.com/notaz/corsairmi.git'
+    dest: "{{ corsairmi_installation_path }}"
+  when: not is_dev
+  tags: corsairmi
+
+- name: Compile corsairmi
+  make:
+    chdir: "{{ corsairmi_installation_path }}"
+  when: not is_dev
+  tags: corsairmi
+
 - name: Copy stats scripts
   template:
     src: "{{ item }}"
@@ -106,8 +121,33 @@
     group: "{{ user }}"
     mode: 0755
   with_items:
-    - gather_stats.sh
-  tags: datastore_config
+    - rpi_system_stats.sh
+    - psu_stats.py
+  tags:
+    - datastore_config
+    - datastore_stats_scripts
+  register: stats_scripts
+
+- name: Copy psu stats service
+  template:
+    src: psu-stats.service
+    dest: /etc/systemd/system/psu-stats.service
+    mode: 0644
+  tags:
+    - datastore_config
+    - datastore_stats_scripts
+    - datastore_stats_services
+
+- name: Start psu stats service
+  systemd:
+    name: psu-stats.service
+    state: started
+    daemon_reload: yes
+    enabled: yes
+  tags:
+    - datastore_config
+    - datastore_stats_scripts
+    - datastore_stats_services
 
 - name: Install packages
   apt:
@@ -123,12 +163,6 @@
   tags: syslog_interceptor
 
 - block:
-  - name: Install ansible dependencies
-    pip:
-      name: [ "influxdb", "requests" ]
-      state: latest
-      executable: pip3
-
   - include_tasks: docker/start_stack.yml
     vars:
       dir: "{{ root_dirs_datastore }}"
