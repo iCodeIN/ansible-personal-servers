@@ -1,1 +1,1 @@
-0 */1 * * * root {{ onedrive_full_path }}
+0 2,12,20 * * * root {{ onedrive_full_path }}

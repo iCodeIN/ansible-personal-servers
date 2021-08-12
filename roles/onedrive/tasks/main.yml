@@ -14,3 +14,4 @@
     src: sync_onedrive
     dest: /etc/cron.d/sync_onedrive
     mode: 0644
+  tags: onedrive_cronjob
