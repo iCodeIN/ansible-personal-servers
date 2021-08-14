@@ -9,8 +9,11 @@ version: '3'
 
 {% set vols = pihole_vols + unbound_vols %}
 
-{% set nets = [
+
+{#
   discovery_network,
+#}
+{% set nets = [
   datastore_network,
   unbound_networks,
   pihole_networks
@@ -22,9 +25,13 @@ services:
     container_name: {{ pihole_name }}
     entrypoint: {{ pihole_volumes_main.mount }}startup.sh
     {{ lookup('traefik',
+      { 'service_name': 'pihole', 'port': pihole_web_admin_port, 'use_internal': True })|indent(width = 4) }}
+{#
+    {{ lookup('traefik',
       { 'service_name': 'pihole', 'port': pihole_web_admin_port, 'use_internal': True },
       { 'service_name': 'pihole', 'protocol': 'tcp', 'port': 53, 'entrypoints': [ 'dns_tcp' ] },
       { 'service_name': 'pihole', 'protocol': 'udp', 'port': 53, 'entrypoints': [ 'dns_udp' ] })|indent(width = 4) }}
+#}
     dns:
       - 127.0.0.1
       - 1.1.1.1
@@ -35,13 +42,18 @@ services:
       DNS1: {{ unbound_ipv4 }}#53
       DNS2: "no"
       WEB_PORT: {{ pihole_web_admin_port }}
+      ServerIP: {{ traefik_networks.v4.gateway }}
+{#
 {% if host_supports_v6 and pihole_networks.v6.enable %}
       IPv6: "True"
       ServerIPv6: {{ pihole_ipv6 }}
 {% endif %}
+#}
       DNSMASQ_LISTENING: all
       DNSMASQ_USER: {{ pihole_dnsmasq_user }}
     {{ dv.volumes_section_complete(pihole_vols)|indent(width = 4) }}
+    network_mode: host
+{#
     networks:
       {{ network_names_datastore }}:
       {{ network_names_discovery }}:
@@ -51,6 +63,7 @@ services:
         ipv6_address: {{ pihole_ipv6 }}
 {%      endif %}
       {{ unbound_networks.name }}:
+#}
     cap_add:
       # Allows FTLDNS binding to TCP/UDP sockets below 1024 (specifically DNS service on port 53)
       - CAP_NET_BIND_SERVICE
@@ -65,8 +78,10 @@ services:
       # https://github.com/pi-hole/docker-pi-hole/issues/734
       - CAP_SYS_PTRACE
     {{ dm.common()|indent(width = 4) }}
+{#
     depends_on:
       - dhcphelper
+#}
 
   # https://github.com/eko/pihole-exporter
   # https://grafana.com/grafana/dashboards/10176
@@ -80,6 +95,7 @@ services:
       {{ network_names_datastore }}:
       {{ pihole_networks.name }}:
 
+{#
   # https://docs.pi-hole.net/docker/dhcp/
   # https://discourse.pi-hole.net/t/dhcp-with-docker-compose-and-bridge-networking/17038
   dhcphelper:
@@ -90,6 +106,7 @@ services:
       - NET_ADMIN
     {{ dm.disable_auto_update_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
+#}
 
   unbound:
     container_name: {{ unbound_name }}

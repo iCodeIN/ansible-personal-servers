@@ -39,8 +39,11 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entryPoints.among_us.address=:22023/udp"
+
+{#
       - "--entryPoints.dns_tcp.address=:53"
       - "--entryPoints.dns_udp.address=:53/udp"
+#}
 
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
@@ -67,12 +70,15 @@ services:
       - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.dnschallenge.provider=digitalocean"
       - "--certificatesresolvers.{{ traefik_lets_encrypt_resolver_name }}.acme.dnschallenge.delaybeforecheck=0"
 #}
+
+{#
+        (53,'tcp'), (53,'udp')
+#}
 {% endif %}
     {{ dn.map_ports([
         (80,), (443,),
         (8080,),
-        (22023,'udp'),
-        (53,'tcp'), (53,'udp') ])|indent(width = 4) }}
+        (22023,'udp') ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_traefik)|indent(width = 4) }}
       {{ dv.mount_docker_socket() }}
     {{ dm.common()|indent(width = 4) }}
@@ -82,7 +88,7 @@ services:
       - {{ network_names_datastore }}
     extra_hosts:
       # https://docs.traefik.io/providers/docker/#host-networking
-      - "host.docker.internal:172.17.0.1"
+      - "host.docker.internal:{{ traefik_networks.v4.gateway }}"
 
   {{ ds.postgres(
     proxy_db_container_name,
