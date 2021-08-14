@@ -5,7 +5,7 @@ docker container inspect {{ onedrive_container_name }} > /dev/null 2> /dev/null 
     --name {{ onedrive_container_name }} \
     -v {{ onedrive_installation_dir }}/rclone:/config/rclone \
     -v {{ onedrive_data_dir }}:/data \
-    rclone/rclone copy -P \
+    rclone/rclone sync \
       --checkers=28 \
       --transfers=28 \
       onedrive:/ /data
