@@ -25,6 +25,7 @@ matrix_server_db_whatsapp_name: whatsapp
 matrix_server_db_signal_name: signal
 matrix_server_db_instagram_name: instagram
 matrix_server_db_twitter_name: twitter
+matrix_server_db_facebook_name: facebook
 
 matrix_server_db_volumes_data:
   name:         matrix_db_data
@@ -126,3 +127,20 @@ ms_vol_bridge_twitter:
 
 matrix_server_twitter_container_name: 'mautrixtwitter'
 matrix_server_twitter_user: '1337'
+
+################################################################################
+# Facebook Bridge
+################################################################################
+
+matrix_server_facebook_volumes_data:
+  name:         matrix_facebook_data
+  local_folder: "{{ root_dirs_matrix_server }}/facebook-data"
+  mount:        /data
+
+ms_vol_bridge_facebook:
+  name:         "{{ matrix_server_facebook_volumes_data.name }}"
+  local_folder: "{{ matrix_server_facebook_volumes_data.local_folder }}"
+  mount:        /facebook-data
+
+matrix_server_facebook_container_name: 'mautrixfacebook'
+matrix_server_facebook_user: '1337'

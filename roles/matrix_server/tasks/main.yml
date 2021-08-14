@@ -28,6 +28,9 @@
 
           - path: "{{ matrix_server_twitter_volumes_data.local_folder }}"
             user: "{{ matrix_server_twitter_user }}"
+
+          - path: "{{ matrix_server_facebook_volumes_data.local_folder }}"
+            user: "{{ matrix_server_facebook_user }}"
   tags:
     - compose_file
     - matrix_server_compose_file
@@ -132,6 +135,20 @@
   tags:
     - matrix_server_config
     - matrix_server_twitter
+
+- name: Copy facebook bridge configs
+  template:
+    src: "{{ item }}"
+    dest: "{{ matrix_server_facebook_volumes_data.local_folder }}/{{ item | replace('facebook-', '') }}"
+    owner: "{{ matrix_server_facebook_user }}"
+    group: "{{ matrix_server_facebook_user }}"
+    mode: 0644
+  loop:
+    - facebook-config.yaml
+    - facebook-registration.yaml
+  tags:
+    - matrix_server_config
+    - matrix_server_facebook
 
 - block:
   - name: Create python plugin folder

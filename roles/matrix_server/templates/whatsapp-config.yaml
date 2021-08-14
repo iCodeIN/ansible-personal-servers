@@ -233,8 +233,7 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        '*': 'relaybot'
-        '{{ dns_public_root }}': 'full'
+        '{{ dns_public_root }}': 'user'
         '@realmar:{{ dns_public_root }}': 'admin'
 
 {% raw %}

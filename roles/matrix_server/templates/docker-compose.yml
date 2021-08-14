@@ -10,14 +10,16 @@
 {% set vols_instagram = [ matrix_server_instagram_volumes_data ] %}
 {% set vols_twitter = [ matrix_server_twitter_volumes_data ] %}
 {% set vols_whatsapp = [ matrix_server_whatsapp_volumes_data ] %}
+{% set vols_facebook = [ matrix_server_facebook_volumes_data ] %}
 
-{% set vols_bridges = vols_telegram + vols_signal + vols_instagram + vols_twitter + vols_whatsapp %}
+{% set vols_bridges = vols_telegram + vols_signal + vols_instagram + vols_twitter + vols_whatsapp + vols_facebook %}
 {% set vols_bridges_synapse_mounts = [
   ms_vol_bridge_telegram,
   ms_vol_bridge_signal,
   ms_vol_bridge_instagram,
   ms_vol_bridge_twitter,
-  ms_vol_bridge_whatsapp ] %}
+  ms_vol_bridge_whatsapp,
+  ms_vol_bridge_facebook ] %}
 
 {% set vols_all = vols_matrix_server + vols_db + vols_bridges + vols_signald %}
 
@@ -42,7 +44,11 @@
   'whatsapp': {
     'container_name': matrix_server_whatsapp_container_name,
     'vols': vols_whatsapp
-  }
+  },
+  'facebook': {
+    'container_name': matrix_server_facebook_container_name,
+    'vols': vols_facebook
+  },
 } %}
 
 {% macro synapse_nets_list() %}
@@ -61,7 +67,7 @@ mautrix_{{ name }}:
 {% if 'user' in mautrix_ref[name] %}
   user: '{{ mautrix_ref[name].user }}'
 {% endif %}
-  image: dock.mau.dev/tulir/mautrix-{{ name }}:latest
+  image: dock.mau.dev/mautrix/{{ name }}:latest
   {{ dv.volumes_section_complete(mautrix_ref[name].vols)|indent(width = 2) }}
   {{ synapse_nets()|indent(width = 2) }}
   {{ dm.journald_logging()|indent(width = 2) }}
@@ -157,6 +163,8 @@ docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-ta
   {{ mautrix('instagram')|indent(width = 2) }}
 
   {{ mautrix('twitter')|indent(width = 2) }}
+
+  {{ mautrix('facebook')|indent(width = 2) }}
 
   {{ mautrix('signal',
     {

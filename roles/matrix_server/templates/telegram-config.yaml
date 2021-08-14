@@ -391,7 +391,6 @@ bridge:
     #     mxid - Specific user
     permissions:
         '*': 'relaybot'
-        #'public.example.com': 'user'
         '{{ dns_public_root }}': 'full'
         '@realmar:{{ dns_public_root }}': 'admin'
 
