@@ -253,6 +253,11 @@ def add_cors(methods: str, originlist: str, allowheaders: Optional[str] = None) 
     return labels
 
 
+@local_mw
+def headers(mapping: Dict[str, str]) -> List[str]:
+    return [f"headers.{key}={value}" for key, value in mapping.items()]
+
+
 ################################################################################
 ################################################################################
 

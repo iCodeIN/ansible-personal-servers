@@ -1,0 +1,87 @@
+{% import 'docker/network.jinja2' as dn with context -%}
+{% import 'docker/misc.jinja2' as dm with context -%}
+{% import 'docker/services.jinja2' as ds with context -%}
+{% import 'docker/volumes.jinja2' as dv with context -%}
+
+{% set vols_n8n = [ workflow_automation_volumes_data ] %}
+{% set vols_n8n_db = [ workflow_automation_db_volumes_data ] %}
+
+{% macro n8n(name, cli_args, renderer) %}
+{{ dm.service(name, 'n8nio/n8n:latest') }}
+  {{ dm.journald_logging()|indent(width = 2) }}
+  command:
+{% for arg in cli_args %}
+    - {{ arg }}
+{% endfor %}
+  environment:
+    N8N_ENCRYPTION_KEY: '{{ workflow_automation_encryption_password | pw }}'
+
+    N8N_METRICS: 'true'
+    N8N_METRICS_PREFIX: n8n_
+
+    # N8N_LOG_LEVEL: debug
+    N8N_LOG_OUTPUT: console
+
+    EXECUTIONS_MODE: queue
+
+    QUEUE_BULL_PREFIX: n8n_
+    QUEUE_BULL_REDIS_HOST: {{ redis_container_name }}
+    QUEUE_BULL_REDIS_PORT: 6379
+    QUEUE_BULL_REDIS_DB: 2
+
+    DB_TYPE: postgresdb
+    DB_POSTGRESDB_DATABASE: {{ workflow_automation_db_name }}
+    DB_POSTGRESDB_HOST: {{ workflow_automation_db_container_name }}
+    DB_POSTGRESDB_USER: {{ workflow_automation_db_user }}
+    DB_POSTGRESDB_PASSWORD: '{{ workflow_automation_db_password | pw }}'
+
+    TZ: {{ timezone }}
+  {{ renderer()|indent(width = 2) }}
+{% endmacro %}
+
+{% macro server_renderer() %}
+container_name: {{ workflow_automation_container_name }}
+{{ lookup('traefik', {
+  'service_name': 'n8n',
+  'domain': dns_sub_domains_n8n,
+  'use_dns_root': True,
+  'port': workflow_automation_port,
+  'renderers': {
+    'headers' : {
+      'mapping': {
+        'browserXSSFilter': 'true',
+        'contentTypeNosniff': 'true'
+      } } } }) }}
+{{ dv.volumes_section_complete(vols_n8n) }}
+{{ dn.discovery_network_section() }}
+  {{ network_names_datastore }}:
+  n8n:
+{% endmacro %}
+
+{% macro worker_renderer() %}
+networks:
+  {{ network_names_datastore }}:
+  n8n:
+{% endmacro %}
+
+version: "3"
+services:
+  {{ n8n('n8n_server', [ 'n8n', 'start' ], server_renderer)|indent(width = 2) }}
+
+{% for i in range(workflow_automation_worker_count) %}
+  {{ n8n('n8n_worker_' + i|string, [ 'n8n', 'worker' ], worker_renderer)|indent(width = 2) }}
+{% endfor %}
+
+  {{ ds.postgres(
+    workflow_automation_db_container_name,
+    workflow_automation_db_user,
+    workflow_automation_db_password,
+    workflow_automation_db_name,
+    workflow_automation_db_volumes_data)|indent(width = 2) }}
+    networks:
+      n8n:
+
+{{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
+  n8n:
+
+{{ dv.volumes_declaration(vols_n8n + vols_n8n_db) }}

@@ -2463,7 +2463,7 @@ redis:
   # Optional host and port to use to connect to redis. Defaults to
   # localhost and 6379
   #
-  host: redis
+  host: {{ redis_container_name }}
   port: 6379
 
   # Optional password if configured on the Redis instance

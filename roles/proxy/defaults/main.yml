@@ -54,8 +54,8 @@ tls_self_signed_cert_request_dir: "{{ traefik_volumes_certificates.local_folder 
 proxy_db_name: proxy
 proxy_db_container_name: proxy_db
 
-proxy_db_container_user: 999
-proxy_db_container_group: 998
+proxy_db_container_user: "{{ postresql_container_user }}"
+proxy_db_container_group: "{{ postresql_container_group }}"
 
 proxy_db_volumes_data:
   name:         proxy_db_data

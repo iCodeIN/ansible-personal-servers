@@ -25,6 +25,7 @@
     - { role: personal_website, tags: realmar_net }
     - { role: home_automation, tags: home_automation }
     - { role: matrix_server, tags: matrix_server }
+    - { role: workflow_automation, tags: workflow_automation }
     - { role: onedrive, tags: onedrive }
 
   #post_tasks:

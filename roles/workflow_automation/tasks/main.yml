@@ -1,0 +1,16 @@
+- block:
+    - include_tasks: standard_service.yml
+      vars:
+        root_dir:
+          path: "{{ root_dirs_workflow_automation }}"
+          user: "{{ user_id }}"
+        dirs:
+          - path: "{{ workflow_automation_volumes_data.local_folder }}"
+            user: "{{ user_id }}"
+
+          - path: "{{ workflow_automation_db_volumes_data.local_folder }}"
+            user: "{{ postresql_container_user }}"
+            group: "{{ postresql_container_group }}"
+  tags:
+    - compose_file
+    - workflow_automation_compose_file

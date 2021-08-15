@@ -1,0 +1,17 @@
+workflow_automation_container_name: n8n
+workflow_automation_port: 5678
+
+workflow_automation_volumes_data:
+  name:         n8n_db_data
+  local_folder: "{{ root_dirs_workflow_automation }}/n8n-data"
+  mount:        /home/node/.n8n
+
+workflow_automation_db_container_name: n8n_db
+workflow_automation_db_name: n8n
+
+workflow_automation_db_volumes_data:
+  name:         workflow_automation_db_data
+  local_folder: "{{ root_dirs_workflow_automation }}/db-data"
+  mount:        "{{ postgresql_data_dir }}"
+
+workflow_automation_worker_count: 3
