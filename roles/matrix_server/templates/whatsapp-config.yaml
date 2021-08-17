@@ -112,12 +112,12 @@ bridge:
     aggressive_reconnect: false
     # Maximum number of seconds to wait for chats to be sent at startup.
     # If this is too low and you have lots of chats, it could cause backfilling to fail.
-    chat_list_wait: 30
+    chat_list_wait: 220
     # Maximum number of seconds to wait to sync portals before force unlocking message processing.
     # If this is too low and you have lots of chats, it could cause backfilling to fail.
-    portal_sync_wait: 600
-    user_message_buffer: 1024
-    portal_message_buffer: 128
+    portal_sync_wait: 1200
+    user_message_buffer: 8192
+    portal_message_buffer: 8192
 
     # Whether or not to send call start/end notices to Matrix.
     call_notices:
@@ -150,7 +150,7 @@ bridge:
     # over both recovery_chat_sync_limit and initial_chat_sync_count.
     # Default is 3 days = 259200 seconds
     #sync_max_chat_age: 259200
-    sync_max_chat_age: 9223372036854775802
+    sync_max_chat_age: 9999999999
 
     # Whether or not to sync with custom puppets to receive EDUs that
     # are not normally sent to appservices.
@@ -158,7 +158,7 @@ bridge:
     # Whether or not to update the m.direct account data event when double puppeting is enabled.
     # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
     # and is therefore prone to race conditions.
-    sync_direct_chat_list: false
+    sync_direct_chat_list: true
     # When double puppeting is enabled, users can use `!wa toggle` to change whether or not
     # presence and read receipts are bridged. These settings set the default values.
     # Existing users won't be affected when these are changed.
