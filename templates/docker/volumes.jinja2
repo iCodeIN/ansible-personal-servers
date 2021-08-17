@@ -44,10 +44,12 @@ volumes:
 - /var/run/docker.sock:/var/run/docker.sock:ro
 {% endmacro %}
 
-{% macro volumes_section_complete(vols) %}
+{% macro volumes_section_complete(vols, no_date_time=False) %}
 {% if vols is not defined %}
 {% set vols = [] %}
 {% endif %}
 {{ volumes_mapping_full(vols) }}
+{% if not no_date_time %}
   {{ datetime_mapping()|indent(width = 2) -}}
+{% endif %}
 {% endmacro %}

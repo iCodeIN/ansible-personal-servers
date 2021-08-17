@@ -19,7 +19,7 @@
     N8N_METRICS: 'true'
     N8N_METRICS_PREFIX: n8n_
 
-    # N8N_LOG_LEVEL: debug
+    N8N_LOG_LEVEL: debug
     N8N_LOG_OUTPUT: console
 
     EXECUTIONS_MODE: queue
@@ -35,6 +35,7 @@
     DB_POSTGRESDB_USER: {{ workflow_automation_db_user }}
     DB_POSTGRESDB_PASSWORD: '{{ workflow_automation_db_password | pw }}'
 
+    GENERIC_TIMEZONE: {{ timezone }}
     TZ: {{ timezone }}
   {{ renderer()|indent(width = 2) }}
 {% endmacro %}
