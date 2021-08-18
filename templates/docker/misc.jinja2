@@ -57,6 +57,7 @@ logging:
 
 
 {% macro journald_logging() %}
+{#
 logging:
   driver: journald
   options:
@@ -64,6 +65,7 @@ logging:
 {% raw %}
     tag: "{{.Name}}/{{.ID}}"
 {% endraw %}
+#}
 {% endmacro %}
 
 {% macro autoarch(amd64, aarch64) %}{% if is_dev or not is_rpi %}{{ amd64 }}{% else %}{{ aarch64 }}{% endif %}{% endmacro %}

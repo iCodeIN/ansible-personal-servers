@@ -10,6 +10,8 @@
 {% set vols_registry = [ registry_volumes_data, registry_volumes_certificates ] %}
 {% set vols_redis = [ redis_volumes_data ] %}
 {% set vols_prometheus = [ prometheus_volumes_data ] %}
+{% set vols_vector = [ vector_volumes_data ] %}
+{% set vols_loki = [ loki_volumes_data, loki_volumes_wal ] %}
 
 version: "3"
 services:
@@ -175,6 +177,7 @@ services:
 ################################################################################
 ################################################################################
 
+{#
   syslog_interceptor:
     image: {{ dm.private_image('syslog_interceptor') }}
     container_name: syslog_interceptor
@@ -186,6 +189,30 @@ services:
     networks:
       - {{ network_names_datastore }}
     {{ dm.common()|indent(width = 4) }}
+#}
+
+################################################################################
+################################################################################
+
+  {{ dm.service('vector', 'timberio/vector:latest-debian')|indent(width = 2) }}
+    {{ dn.map_ports([ (8383,), (vector_syslog_port,) ])|indent(width = 4) }}
+    {{ dv.volumes_section_complete(vols_vector)|indent(width = 4) }}
+      {{ dv.mount_docker_socket() }}
+      - {{ root_dirs_datastore }}/vector.toml:/etc/vector/vector.toml:ro
+    # environment:
+    #   LOG: debug
+    networks:
+      - {{ network_names_datastore }}
+
+  {{ dm.service('loki', 'grafana/loki:2.3.0')|indent(width = 2) }}
+    {{ dn.map_ports([ (3100,) ])|indent(width = 4) }}
+    command:
+      - -config.file=/etc/loki/local-config.yaml
+      # - -log.level=debug
+    networks:
+      - {{ network_names_datastore }}
+    {{ dv.volumes_section_complete(vols_loki)|indent(width = 4) }}
+      - {{ root_dirs_datastore }}/loki-local-config.yaml:/etc/loki/local-config.yaml
 
 ################################################################################
 ################################################################################
@@ -240,4 +267,6 @@ services:
                           vols_grafana_db +
                           vols_registry +
                           vols_redis +
-                          vols_prometheus) }}
+                          vols_prometheus +
+                          vols_vector +
+                          vols_loki) }}

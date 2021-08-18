@@ -87,3 +87,22 @@ psu_stats_interval: 10
 
 corsairmi_installation_path: /opt/corsairmi
 corsairmi_binary: "{{ corsairmi_installation_path }}/corsairmi"
+
+vector_syslog_port: 6512
+
+vector_volumes_data:
+  name:         vector_data
+  local_folder: "{{ root_dirs_datastore }}/vector-data"
+  mount:        /var/lib/vector
+
+loki_endpoint: http://loki:3100
+
+loki_volumes_data:
+  name:         loki_data
+  local_folder: "{{ root_dirs_datastore }}/loki-data"
+  mount:        /data/loki
+
+loki_volumes_wal:
+  name:         loki_wal
+  local_folder: "{{ root_dirs_datastore }}/loki-wal"
+  mount:        /data/wal

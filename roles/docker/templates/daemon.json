@@ -1,24 +1,42 @@
 {#
- # https://docs.docker.com/config/containers/logging/syslog/
- # https://docs.docker.com/config/containers/logging/configure/
- #}
-{
+  https://docs.docker.com/config/containers/logging/syslog/
+  https://docs.docker.com/config/containers/logging/configure/
+#}
+
 {#
   Reduce CPU and RAM usage and also make high number of ports mappable without filling all the RAM
   https://github.com/moby/moby/issues/11185
   https://github.com/moby/moby/issues/14856
   https://stackoverflow.com/questions/44413816/how-to-disable-userland-proxy-for-docker-compose
 #}
+
+{
   "userland-proxy": true,
-  "insecure-registries": [ "{{ private_docker_registry }}" ],
+  "insecure-registries": [ "{{ private_docker_registry }}" ]
+}
+
+{#
   "log-driver": "syslog",
   "log-opts": {
     "mode": "non-blocking",
     "syslog-address": "udp://127.0.0.1:6514",
     "syslog-format": "rfc5424",
+#}
 {#  "syslog-facility": "daemon", #}
+{#
 {% raw %}
     "tag": "{{.Name}}/{{.ID}}"
 {% endraw %}
   }
-}
+#}
+
+{#
+  "log-driver": "loki",
+  "log-opts": {
+      "mode": "non-blocking",
+      "loki-url": "http://localhost:3100/loki/api/v1/push",
+      "loki-batch-size": "200",
+      "loki-max-backoff": "800ms",
+      "loki-retries": "2"
+  }
+#}

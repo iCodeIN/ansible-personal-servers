@@ -40,6 +40,18 @@
           - path: "{{ prometheus_volumes_data.local_folder }}"
             user: "{{ prometheus_user }}"
             group: "{{ user }}"
+
+          - path: "{{ vector_volumes_data.local_folder }}"
+            user: "{{ user }}"
+            group: "{{ user }}"
+
+          - path: "{{ loki_volumes_data.local_folder }}"
+            user: "10001"
+            group: "10001"
+
+          - path: "{{ loki_volumes_wal.local_folder }}"
+            user: "10001"
+            group: "10001"
   tags:
     - compose_file
     - datastore_compose_file
@@ -53,12 +65,33 @@
     - influxdb_init
     - stats_scripts
 
-- name: Send rsyslog logs to telegraf
+- name: Do not send rsyslog logs to telegraf
+  file:
+    path: "80-telegraf.conf"
+    state: absent
+  notify: restart rsyslog
+  tags: logging_config
+
+- name: Send rsyslog logs to vector
   template:
-    src: "80-telegraf.conf"
-    dest: "/etc/rsyslog.d/80-telegraf.conf"
+    src: "90-vector.conf"
+    dest: "/etc/rsyslog.d/90-vector.conf"
     mode: 0644
   notify: restart rsyslog
+  tags: logging_config
+
+- name: Copy logging configs
+  template:
+    src: "{{ item }}"
+    dest: "{{ root_dirs_datastore }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - vector.toml
+    - loki-local-config.yaml
+  tags:
+    - logging_config
+    - vector_config
+    - loki_config
 
 - name: Copy configs
   template:
