@@ -33,6 +33,7 @@
         - "{{ root_dirs_jupyter }}"
         - "{{ root_dirs_personal_website }}"
         - "{{ root_dirs_wireguard }}"
+        - "{{ root_dirs_workflow_automation }}"
 
     #- name: Running command
     #  shell: "{{ command }}"
