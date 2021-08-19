@@ -87,10 +87,7 @@ services:
   # https://grafana.com/grafana/dashboards/10176
   {{ dm.service('prometheus_exporter', 'ekofr/pihole-exporter:latest')|indent(width = 2) }}
     container_name: {{ pihole_prometheus_exporter_container_name }}
-    environment:
-      PIHOLE_HOSTNAME: {{ pihole_ipv4 }}
-      PORT: {{ pihole_prometheus_exporter_port }}
-      INTERVAL: 30s
+    command: "./pihole-exporter -pihole_hostname {{ traefik_networks.v4.gateway }} -pihole_port {{ pihole_web_admin_port }} -port {{ pihole_prometheus_exporter_port }} -interval 30s"
     networks:
       {{ network_names_datastore }}:
       {{ pihole_networks.name }}:
