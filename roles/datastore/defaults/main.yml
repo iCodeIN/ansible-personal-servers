@@ -81,7 +81,7 @@ influxdb_dbs:
   - traefik
   - "{{ prometheus_user_influxdb_name }}"
 
-grafana_dbs_excludes_traefik: "(Query(`db=telegraf`) || Query(`db=graphite`) || Query(`db=ouroboros`) || Query(`db=traefik`) || Query(`db={{ prometheus_user_influxdb_name }}`))"
+grafana_dbs_excludes_traefik: "(Query(`db=telegraf`) || Query(`db=graphite`) || Query(`db=ouroboros`) || Query(`db=traefik`) || Query(`db={{ prometheus_user_influxdb_name }}`) || PathPrefix(`/grafana/api/datasources/proxy/11/loki`))"
 
 psu_stats_interval: 10
 
