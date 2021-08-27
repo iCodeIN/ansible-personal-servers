@@ -52,6 +52,10 @@
           - path: "{{ loki_volumes_wal.local_folder }}"
             user: "10001"
             group: "10001"
+
+          # - path: "{{ elastic_config_dir }}"
+          #   user: "{{ user }}"
+          #   group: "{{ user }}"
   tags:
     - compose_file
     - datastore_compose_file
@@ -72,10 +76,10 @@
   notify: restart rsyslog
   tags: logging_config
 
-- name: Send rsyslog logs to vector
+- name: Forward rsyslog logs
   template:
-    src: "90-vector.conf"
-    dest: "/etc/rsyslog.d/90-vector.conf"
+    src: "98-forwarding.conf"
+    dest: "/etc/rsyslog.d/98-forwarding.conf"
     mode: 0644
   notify: restart rsyslog
   tags: logging_config
@@ -92,6 +96,20 @@
     - logging_config
     - vector_config
     - loki_config
+
+# - name: Copy elastic configs
+#   template:
+#     src: "elastic/{{ item }}"
+#     dest: "{{ elastic_config_dir }}/{{ item }}"
+#     owner: "{{ user }}"
+#     group: "{{ user }}"
+#     mode: 0644
+#   with_items:
+#     - filebeat.yml
+#     - logstash.conf
+#   tags:
+#     - datastore_config
+#     - elastic_config
 
 - name: Copy configs
   template:

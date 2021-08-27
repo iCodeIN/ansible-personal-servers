@@ -21,8 +21,7 @@ services:
     container_name: {{ redis_container_name }}
     command: [ "redis-server", "--appendonly", "yes" ]
     {{ dv.volumes_section_complete(vols_redis)|indent(width = 4) }}
-    networks:
-      {{ network_names_datastore }}:
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
   prometheus:
@@ -30,8 +29,7 @@ services:
     {{ lookup('traefik', { 'service_name': 'prometheus', 'domain': dns_sub_domains_prometheus,  'port': 9090, 'use_dns_root': True })|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_prometheus)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    networks:
-      {{ network_names_datastore }}:
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
   {{ dm.service('node_exporter', 'quay.io/prometheus/node-exporter:latest')|indent(width = 2) }}
@@ -57,8 +55,7 @@ services:
     command:
       - '--influx.url=http://influxdb:8086'
       # - '--ssl.skip-verify=true'
-    networks:
-        {{ network_names_datastore }}:
+    {{ dn.datastore_network_section()|indent(width = 4) }}
 
 ################################################################################
 ################################################################################
@@ -72,8 +69,7 @@ services:
     {{ dn.map_ports([ (5000,) ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_registry)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/registry_config.yml:/etc/docker/registry/config.yml:ro
-    networks:
-      {{ network_names_datastore }}:
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
   docker_registry_ui:
@@ -81,8 +77,7 @@ services:
     environment:
       REGISTRY_URL: https://{{ private_docker_registry }}
     {{ lookup('traefik', { 'domain': dns_internal_root, 'service_name': 'docker_registry_ui', 'path': '/registry' })|indent(width = 4) }}
-    networks:
-      - {{ network_names_discovery }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
 
 ################################################################################
 ################################################################################
@@ -96,8 +91,7 @@ services:
       {{ dv.mount_docker_socket() }}
     # syslog
     {{ dn.map_ports([ (6518, 6514, "udp"), (8186,) ])|indent(width = 4) }}
-    networks:
-      {{ network_names_datastore }}:
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
   influxdb:
@@ -106,8 +100,7 @@ services:
     {{ dv.volumes_section_complete(vols_influxdb)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/influxdb.conf:/etc/influxdb/influxdb.conf:ro
     {{ dn.map_ports([ (8086,) ])|indent(width = 4) }}
-    networks:
-      {{ network_names_datastore }}:
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
   chronograf:
@@ -122,9 +115,7 @@ services:
 {% if is_dev %}
     {{ dn.map_ports([ (8888,) ])|indent(width = 4) }}
 {% endif %}
-    networks:
-      - {{ network_names_discovery }}
-      - {{ network_names_datastore }}
+    {{ dn.network_section([ discovery_network, datastore_network ])|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
   kapacitor:
@@ -132,8 +123,7 @@ services:
     container_name: kapacitor
     {{ dv.volumes_section_complete(vols_kapacitor)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/kapacitor.conf:/etc/kapacitor/kapacitor.conf:ro
-    networks:
-      - {{ network_names_datastore }}
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
 ################################################################################
@@ -147,8 +137,7 @@ services:
       POSTGRES_PASSWORD: '{{ grafana_db_password|pw }}'
       POSTGRES_DB: {{ grafana_db_name }}
     {{ dv.volumes_section_complete(vols_grafana_db)|indent(width = 4) }}
-    networks:
-      - {{ network_names_datastore }}
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
   grafana:
@@ -167,9 +156,7 @@ services:
 {% if is_dev %}
     {{ dn.map_ports([ (3000,) ])|indent(width = 4) }}
 {% endif %}
-    networks:
-      - {{ network_names_discovery }}
-      - {{ network_names_datastore }}
+    {{ dn.network_section([ discovery_network, datastore_network ])|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
     depends_on:
       - grafana_db
@@ -201,16 +188,14 @@ services:
       - {{ root_dirs_datastore }}/vector.toml:/etc/vector/vector.toml:ro
     # environment:
     #   LOG: debug
-    networks:
-      - {{ network_names_datastore }}
+    {{ dn.datastore_network_section()|indent(width = 4) }}
 
   {{ dm.service('loki', 'grafana/loki:2.3.0')|indent(width = 2) }}
     {{ dn.map_ports([ (3100,) ])|indent(width = 4) }}
     command:
       - -config.file=/etc/loki/local-config.yaml
       # - -log.level=debug
-    networks:
-      - {{ network_names_datastore }}
+    {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_loki)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/loki-local-config.yaml:/etc/loki/local-config.yaml
 
@@ -225,12 +210,28 @@ services:
 #   Collects all logs and sends them to logstash
 #   Docker, Traefik, etc
 
-{#{{ dm.service('filebeat', '')|indent(width = 2) }}#}
+
+{#
+  {{ dm.service('filebeat', 'docker.elastic.co/beats/filebeat:7.14.0')|indent(width = 2) }}
+    user: root
+    command: -e -strict.perms=false -E output.elasticsearch.hosts=["elasticsearch:9200"]
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+      - {{ elastic_config_dir }}/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    {{ dn.datastore_network_section()|indent(width = 4) }}
+#}
 
 # Logstash
 #   Analysises the data and stores them in ES for analytics
 
-{#{{ dm.service('logstash', '')|indent(width = 2) }}#}
+
+{#
+  {{ dm.service('logstash', 'docker.elastic.co/logstash/logstash:7.14.0')|indent(width = 2) }}
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+      - {{ elastic_config_dir }}/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    {{ dn.datastore_network_section()|indent(width = 4) }}
+#}
 
 # Elasticsearch
 #   Data mining and analytics
@@ -238,11 +239,9 @@ services:
 {#
   {{ dm.service('elasticsearch', 'docker.elastic.co/elasticsearch/elasticsearch:7.14.0')|indent(width = 2) }}
     environment:
-      - node.name=elasticsearch
-      - cluster.name=es-cluster
-      - cluster.initial_master_nodes=elasticsearch
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2024m -Xmx2024m"
+    {{ dn.datastore_network_section()|indent(width = 4) }}
 #}
 
 # Kibana
@@ -250,8 +249,14 @@ services:
 
 {#
   {{ dm.service('kibana', 'docker.elastic.co/kibana/kibana:7.14.0')|indent(width = 2) }}
+    {{ lookup('traefik', {
+      'service_name': 'kibana',
+      'domain': dns_sub_domains_kibana,
+      'use_dns_root': True,
+      'port': 5601 })|indent(width = 4) }}
+    {{ dn.network_section([ discovery_network, datastore_network ])|indent(width = 4) }}
     environment:
-      SERVER_NAME: kibana.example.org
+      SERVER_NAME: kibana.realmar.net
       ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
 #}
 

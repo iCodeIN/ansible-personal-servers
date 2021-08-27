@@ -21,12 +21,41 @@
 
 version: "3.3"
 services:
+
+{#
+  {{ dm.service('jeager', 'jaegertracing/all-in-one:1.25')|indent(width = 2) }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+    {{ dn.map_ports([
+      (5775, 'udp'),
+      (6831, 'udp'),
+      (6832, 'udp'),
+      (5778,),
+      (16686,),
+      (14268,),
+      (14250,),
+      (9411,) ])|indent(width = 4) }}
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: :9411
+#}
+
   traefik:
     image: traefik:latest
     container_name: traefik
     command:
       - "--log.level={{ 'INFO' if is_dev else  'WARN' }}"
+{#    - "--log.format=json" #}
       - "--accesslog=true"
+
+{#
+      - "--tracing.jaeger=true"
+      - "--tracing.jaeger.samplingServerURL=http://jeager:5778/sampling"
+      - "--tracing.jaeger.samplingType=const"
+      - "--tracing.jaeger.samplingParam=1.0"
+      - "--tracing.jaeger.localAgentHostPort=jeager:6831"
+      - "--tracing.jaeger.propagation=jaeger"
+      - "--tracing.jaeger.traceContextHeaderName=realmar-jaeger"
+#}
 
       - "--providers.docker=true"
       - "--providers.docker.network={{ network_names_discovery }}"

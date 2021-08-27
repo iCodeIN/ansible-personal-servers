@@ -42,6 +42,7 @@ dns_sub_domains_prometheus: "prometheus.{{ dns_public_root }}"
 dns_sub_domains_jobbernetes: "jobbernetes.{{ dns_public_root }}"
 dns_sub_domains_backup: "backup.{{ dns_public_root }}"
 dns_sub_domains_n8n: "n8n.{{ dns_public_root }}"
+# dns_sub_domains_kibana: "kibana.{{ dns_public_root }}"
 
 all_dns:
   - "{{ dns_public_root }}"
@@ -53,6 +54,7 @@ all_dns:
   - "{{ dns_sub_domains_jobbernetes }}"
   - "{{ dns_sub_domains_backup }}"
   - "{{ dns_sub_domains_n8n }}"
+  # - "{{ dns_sub_domains_kibana }}"
 
 letsencrypt_resolver_name: lets_encrypt
 

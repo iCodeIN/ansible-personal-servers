@@ -27,9 +27,24 @@ networks:
 {{ networks_declaration([ discovery_network ]) }}
 {% endmacro %}
 
-{% macro discovery_network_section() %}
+{% macro network_section(nets) %}
 networks:
-  {{ network_names_discovery }}:
+{% for net in nets %}
+{% set cls_name = net.__class__.__name__ %}
+{% if "str" in cls_name or "AnsibleUnicode" in cls_name %}
+  {{ net }}:
+{% else %}
+  {{ net.name }}:
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+{% macro discovery_network_section() %}
+{{ network_section([ network_names_discovery ]) }}
+{% endmacro %}
+
+{% macro datastore_network_section() %}
+{{ network_section([ network_names_datastore ]) }}
 {% endmacro %}
 
 {#

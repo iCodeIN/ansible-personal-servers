@@ -6,6 +6,8 @@ datastore_networks:
     gateway:    172.16.80.1
   name: "{{ network_names_datastore }}"
 
+telegraf_syslog_port: 6518
+
 influxdb_volumes_data:
   name:         influxdb_data
   local_folder: "{{ root_dirs_datastore }}/influxdb-data"
@@ -106,3 +108,7 @@ loki_volumes_wal:
   name:         loki_wal
   local_folder: "{{ root_dirs_datastore }}/loki-wal"
   mount:        /data/wal
+
+filebeat_syslog_port: 6812
+
+# elastic_config_dir: "{{ root_dirs_datastore }}/elastic-config"
