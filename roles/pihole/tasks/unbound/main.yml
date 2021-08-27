@@ -29,6 +29,7 @@
     src: unbound/download_unbound_root_hints
     dest: /etc/cron.d/download_unbound_root_hints
     mode: 0644
+  tags: unbount_root_hints
 
 - name: Download root.hints
   get_url:
@@ -36,6 +37,7 @@
     dest: "{{ unbound_volumes_main.local_folder }}/var/root.hints"
     owner: "{{ unbound_user }}"
     group: "{{ unbound_user }}"
+  tags: unbount_root_hints
 
 - name: Copy logrotate file
   template:
