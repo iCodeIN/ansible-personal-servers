@@ -2,3 +2,5 @@ postgresql_data_dir: /var/lib/postgresql/data
 
 postresql_container_user: 999
 postresql_container_group: 999
+
+collect_stats: "{{ 'nostats' not in ansible_run_tags }}"

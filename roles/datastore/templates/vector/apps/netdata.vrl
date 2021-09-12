@@ -1,0 +1,6 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+if .application == "netdata" {
+  .data, err = parse_regex(.message, r'(?P<timestamp>.+):\s(?P<id>.+):\s(?P<status_code>.+)\s\'\[(?P<host_source>[^\]]+)\]:(?P<pid>[^\']+)\'\s\'(?P<type>[^\']+)\'(\s(?P<message>[^$]+))?')
+  {{ vrl.process_msg_err(True)|indent(width = 2) }}
+}

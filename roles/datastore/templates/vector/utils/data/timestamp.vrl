@@ -1,0 +1,18 @@
+if .data.time != null {
+  .timestamp = del(.data.time)
+} else if .data.timestamp != null {
+  .timestamp = del(.data.timestamp)
+} else if .data.ts != null && is_timestamp(.data.ts) {
+  .timestamp = del(.data.ts)
+}
+
+if is_timestamp(.timestamp) == false {
+  ts, err = to_timestamp(.timestamp)
+  if err == null {
+    .timestamp = ts
+  }
+}
+
+if .timestamp != null {
+  .data.original_timestamp = .timestamp
+}

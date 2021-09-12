@@ -1,0 +1,58 @@
+{% macro python_logging(name) %}
+# Python logging configuration.
+#
+# See section 16.7.2 of the Python documentation for more info:
+# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+logging:
+    version: 1
+    formatters:
+        colored:
+            (): {{ name }}.util.ColorFormatter
+            format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
+        normal:
+            format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
+        easyparse:
+            format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+    handlers:
+        # file:
+        #     class: logging.handlers.RotatingFileHandler
+        #     formatter: normal
+        #     filename: ./mautrix-telegram.log
+        #     maxBytes: 10485760
+        #     backupCount: 10
+        console:
+            class: logging.StreamHandler
+            formatter: easyparse
+    loggers:
+        mau:
+            level: DEBUG
+        telethon:
+            level: INFO
+        paho:
+            level: INFO
+        aiohttp:
+            level: INFO
+    root:
+        level: DEBUG
+        handlers: [ console ]
+{% endmacro %}
+
+{% macro go_logging() %}
+# Logging config.
+logging:
+    # The directory for log files. Will be created if not found.
+    directory: ./logs
+    # Available variables: .Date for the file date and .Index for different log files on the same day.
+{% raw %}
+    file_name_format: "{{.Date}}-{{.Index}}.log"
+{% endraw %}
+    # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
+    file_date_format: 2006-01-02
+    # Log file permissions.
+    file_mode: 0600
+    # Timestamp format for log entries in the Go time format.
+    timestamp_format: Jan _2, 2006 15:04:05
+    # Minimum severity for log messages.
+    # Options: debug, info, warn, error, fatal
+    print_level: debug
+{% endmacro %}

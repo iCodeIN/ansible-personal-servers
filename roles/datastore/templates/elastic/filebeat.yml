@@ -3,11 +3,13 @@ filebeat.config:
     path: ${path.config}/modules.d/*.yml
     reload.enabled: false
 
+{#
 filebeat.inputs:
   - type: syslog
     format: rfc5424
     protocol.tcp:
       host: "localhost:{{ filebeat_syslog_port }}"
+#}
 
 filebeat.autodiscover:
   providers:
@@ -19,6 +21,6 @@ processors:
 
 output.logstash:
   hosts:
-    - "logstash:5044"
+    - "vector:5044"
 
 output.elasticsearch.enabled: false

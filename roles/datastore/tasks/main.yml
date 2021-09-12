@@ -45,6 +45,10 @@
             user: "{{ user }}"
             group: "{{ user }}"
 
+          - path: "{{ vector_volumes_scripts.local_folder }}"
+            user: "{{ user }}"
+            group: "{{ user }}"
+
           - path: "{{ loki_volumes_data.local_folder }}"
             user: "10001"
             group: "10001"
@@ -52,6 +56,14 @@
           - path: "{{ loki_volumes_wal.local_folder }}"
             user: "10001"
             group: "10001"
+
+          - path: "{{ fluent_bit_volumes_data.local_folder }}"
+            user: "{{ user }}"
+            group: "{{ user }}"
+
+          # - path: "{{ mongodb_volumes_data.local_folder }}"
+          #   user: "{{ mongodb_user }}"
+          #   group: "{{ mongodb_user }}"
 
           # - path: "{{ elastic_config_dir }}"
           #   user: "{{ user }}"
@@ -90,12 +102,37 @@
     dest: "{{ root_dirs_datastore }}/{{ item }}"
     mode: 0644
   with_items:
-    - vector.toml
+    # - fluentd.conf
+    - fluent-bit.conf
+    # - promtail.yaml
     - loki-local-config.yaml
   tags:
     - logging_config
-    - vector_config
+    - fluentd_config
+    - promtail_config
     - loki_config
+
+- name: Copy jsonnet vector configs
+  copy:
+    content: "{{ lookup('jsonnet', 'templates/vector/vector.jsonnet') }}"
+    dest: "{{ root_dirs_datastore }}/vector.json"
+    mode: 0644
+  tags:
+    - logging_config
+    - vector_config
+    #- vector_config_jsonnet
+  # notify: restart vector service
+
+- name: Copy vector VRL scripts
+  template:
+    src: "{{ item }}"
+    dest: "{{ vector_volumes_scripts.local_folder }}"
+    mode: 0644
+  with_fileglob:
+    - ../templates/vector/scripts/*
+  tags:
+    - logging_config
+    - vector_config
 
 # - name: Copy elastic configs
 #   template:
@@ -106,10 +143,11 @@
 #     mode: 0644
 #   with_items:
 #     - filebeat.yml
-#     - logstash.conf
+#     #- logstash.conf
 #   tags:
 #     - datastore_config
 #     - elastic_config
+#     - logging_config
 
 - name: Copy configs
   template:

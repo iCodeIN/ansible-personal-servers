@@ -243,7 +243,7 @@ def fix_wss() -> List[str]:
 @local_mw
 def add_cors(methods: str, originlist: str, allowheaders: Optional[str] = None) -> List[str]:
     labels = [
-        f'headers.accesscontrolallowmethods={methods}'
+        f'headers.accesscontrolallowmethods={methods}',
         f'headers.accesscontrolalloworiginlist={originlist}'
     ]
 

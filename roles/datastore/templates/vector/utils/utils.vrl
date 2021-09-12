@@ -1,0 +1,11 @@
+{% macro process_err(origin_field, log = False) %}
+if err == null {
+  del({{ origin_field }})
+}{#{% if log %} else {
+  log(err, level: "warn")
+}{% endif %}#}
+{% endmacro %}
+
+{% macro process_msg_err(log = False) %}
+{{ process_err('.message', log) }}
+{% endmacro %}

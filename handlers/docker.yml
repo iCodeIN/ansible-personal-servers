@@ -19,3 +19,9 @@
   args:
     chdir: "{{ root_dirs_pihole }}"
   ignore_errors: yes # yeet
+
+- name: restart vector service
+  shell: "docker-compose restart vector"
+  args:
+    chdir: "{{ root_dirs_datastore }}"
+  ignore_errors: yes # yeet

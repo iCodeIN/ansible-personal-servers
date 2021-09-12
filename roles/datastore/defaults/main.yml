@@ -82,6 +82,7 @@ influxdb_dbs:
   - ouroboros
   - traefik
   - "{{ prometheus_user_influxdb_name }}"
+  - "{{ vector_influxdb_database_name }}"
 
 grafana_dbs_excludes_traefik: "(Query(`db=telegraf`) || Query(`db=graphite`) || Query(`db=ouroboros`) || Query(`db=traefik`) || Query(`db={{ prometheus_user_influxdb_name }}`) || PathPrefix(`/grafana/api/datasources/proxy/11/loki`))"
 
@@ -90,14 +91,29 @@ psu_stats_interval: 10
 corsairmi_installation_path: /opt/corsairmi
 corsairmi_binary: "{{ corsairmi_installation_path }}/corsairmi"
 
+vector_api_port: 8686
 vector_syslog_port: 6512
+# vector_fluent_port: 24224
 
 vector_volumes_data:
   name:         vector_data
   local_folder: "{{ root_dirs_datastore }}/vector-data"
   mount:        /var/lib/vector
 
-loki_endpoint: http://loki:3100
+vector_volumes_scripts:
+  name:         vector_scripts
+  local_folder: "{{ root_dirs_datastore }}/vector-scripts"
+  mount:        /opt/vector/scripts
+
+vector_scripts_dir: "{{ vector_volumes_scripts.mount  }}"
+
+vector_log_path: /opt/var/log
+
+vector_influxdb_database_name: vector
+
+loki_host: loki
+loki_port: 3100
+loki_endpoint: http://{{ loki_host }}:{{ loki_port }}
 
 loki_volumes_data:
   name:         loki_data
@@ -109,6 +125,22 @@ loki_volumes_wal:
   local_folder: "{{ root_dirs_datastore }}/loki-wal"
   mount:        /data/wal
 
-filebeat_syslog_port: 6812
+# filebeat_syslog_port: 6812
 
 # elastic_config_dir: "{{ root_dirs_datastore }}/elastic-config"
+
+# fluentd_port: 24224
+
+fluent_bit_tcp_input_port: 5170
+
+fluent_bit_volumes_data:
+  name:         fluent_bit_data
+  local_folder: "{{ root_dirs_datastore }}/fluent_bit-data"
+  mount:        /var/log/flb-storage
+
+# mongodb_user: 999
+
+# mongodb_volumes_data:
+#   name:         mongodb_data
+#   local_folder: "{{ root_dirs_datastore }}/mongodb-data"
+#   mount:        /data/db

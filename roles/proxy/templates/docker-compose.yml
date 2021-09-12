@@ -44,7 +44,8 @@ services:
     container_name: traefik
     command:
       - "--log.level={{ 'INFO' if is_dev else  'WARN' }}"
-{#    - "--log.format=json" #}
+      - "--log.format=json"
+      - "--accesslog.format=json"
       - "--accesslog=true"
 
 {#

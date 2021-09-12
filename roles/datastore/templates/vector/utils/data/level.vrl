@@ -1,0 +1,12 @@
+if .data.lvl != null {
+  .data.level = del(.data.lvl)
+}
+
+if .data.level != null {
+  .level = del(.data.level)
+  level, err = downcase(.level)
+
+  if err == null {
+    .level = level
+  }
+}

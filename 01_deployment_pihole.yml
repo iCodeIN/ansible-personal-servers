@@ -1,5 +1,5 @@
 - hosts: all
-  gather_facts: yes
+  gather_facts: "{{ 'nostats' not in ansible_run_tags }}"
   remote_user: root
   debugger: on_failed
 

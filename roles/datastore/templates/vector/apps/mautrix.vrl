@@ -1,0 +1,15 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+if starts_with(.application, "mautrix") {
+  if .application == "mautrix_whatsapp" {
+    .data, err = parse_regex(.message, r'\[(?P<timestamp>.+)\]\s\[(?P<component>[^/]+)/(?P<name>[^/]+)/(?P<level>[^\]]+)\]\sreq\s#(?P<request_number>\d+):\s(?P<http_method>[^\s]+)\s(?P<http_url>[^\s]+)(\s(?P<http_payload>[^$]+))?')
+    {{ vrl.process_msg_err()|indent(width = 4) }}
+    if err != null {
+      .data, err = parse_regex(.message, r'\[(?P<timestamp>.+)\]\s\[(?P<component>[^/]+)/(?P<name>[^/]+)/(?P<level>[^\]]+)\]\s(?P<message>.+)')
+      {{ vrl.process_msg_err()|indent(width = 6) }}
+    }
+  } else {
+    .data, err = parse_regex(.message, r'(?P<timestamp>.+) - (?P<level>.+) - (?P<name>.+) - (?P<message>.+)')
+    {{ vrl.process_msg_err()|indent(width = 4) }}
+  }
+}

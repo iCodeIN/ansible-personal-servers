@@ -1,0 +1,35 @@
+server:
+  http_listen_port: 9686
+  grpc_listen_port: 9282
+
+positions:
+  filename: /tmp/positions.yaml
+
+client:
+  url: http://loki:3100/api/prom/push
+
+scrape_configs:
+  - job_name: syslog
+    syslog:
+      # TCP address to listen on. Has the format of "host:port".
+      listen_address: 0.0.0.0:6518
+
+      # The idle timeout for tcp syslog connections, default is 120 seconds.
+      # idle_timeout: <duration>
+
+      # Whether to convert syslog structured data to labels.
+      # A structured data entry of [example@99999 test="yes"] would become
+      # the label "__syslog_message_sd_example_99999_test" with the value "yes".
+      label_structured_data: true
+
+      # Label map to add to every log message.
+      # labels:
+      #   [ <labelname>: <labelvalue> ... ]
+
+      # Whether Promtail should pass on the timestamp from the incoming syslog message.
+      # When false, or if no timestamp is present on the syslog message, Promtail will assign the current timestamp to the log when it was processed.
+      # Default is false
+      use_incoming_timestamp: true
+
+      # Sets the maximum limit to the length of syslog messages
+      # max_message_length: <int>

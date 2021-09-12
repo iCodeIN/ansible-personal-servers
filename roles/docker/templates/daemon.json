@@ -12,8 +12,44 @@
 
 {
   "userland-proxy": true,
-  "insecure-registries": [ "{{ private_docker_registry }}" ]
+  "insecure-registries": [ "{{ private_docker_registry }}" ],
+
+  "log-driver": "json-file",
+  "log-opts": {
+    "labels-regex": "^(com|org|git|io)",
+    "max-size": "10m",
+    "max-file": "3",
+    "compress": "true"
+  }
 }
+
+{#
+  "log-driver": "syslog",
+  "log-opts": {
+    "mode": "non-blocking",
+    "syslog-address": "udp://127.0.0.1:{{ vector_syslog_port }}",
+    "syslog-format": "rfc5424",
+    "labels-regex": "^(com|org|git|io)"
+  }
+#}
+
+{#
+"log-driver": "fluentd",
+  "log-opts": {
+    "fluentd-address": "tcp://127.0.0.1:{{ fluentd_port }}",
+    "labels-regex": "^(com|org|git|io)",
+    "fluentd-async": "true",
+    "fluentd-retry-wait": "800ms",
+    "fluentd-max-retries": "8"
+  }
+#}
+
+{#
+  "log-driver": "local",
+  "log-opts": {
+    "max-size": "20m"
+  }
+#}
 
 {#
   "log-driver": "syslog",

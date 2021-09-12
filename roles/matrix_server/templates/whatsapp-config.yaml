@@ -258,20 +258,5 @@ bridge:
             m.location: "<b>{{ .Sender.Displayname }}</b> sent a location"
 {% endraw %}
 
-{% raw %}
-# Logging config.
-logging:
-    # The directory for log files. Will be created if not found.
-    directory: ./logs
-    # Available variables: .Date for the file date and .Index for different log files on the same day.
-    file_name_format: "{{.Date}}-{{.Index}}.log"
-    # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
-    file_date_format: 2006-01-02
-    # Log file permissions.
-    file_mode: 0600
-    # Timestamp format for log entries in the Go time format.
-    timestamp_format: Jan _2, 2006 15:04:05
-    # Minimum severity for log messages.
-    # Options: debug, info, warn, error, fatal
-    print_level: debug
-{% endraw %}
+{% import 'mautrix.jinja2' as mx with context -%}
+{{ mx.go_logging() }}

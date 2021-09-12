@@ -1,0 +1,9 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+if .application == "synapse" {
+  .data, err = parse_regex(.message, r'(?P<timestamp>.+) - (?P<name>.+) - (?P<lineno>.+) - (?P<level>.+) - (?P<request>.+) - (?P<message>.+)')
+  {{ vrl.process_msg_err()|indent(width = 2) }}
+} else if starts_with(.application, "matrix_server_well_known") {
+  .data, err = parse_nginx_log(.message, format: "combined")
+  {{ vrl.process_msg_err()|indent(width = 2) }}
+}

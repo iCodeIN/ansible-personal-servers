@@ -1,0 +1,12 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+if .application == "unbound" {
+  # Normal
+  .data, err = parse_regex(.message, r'\[(?P<timestamp>\d+)\]\s.+\s(?P<level>\w+):\s(?P<client>[^\s]+)\s(?P<request>[^\s]+)\s(?P<type>\w+)\s(?P<direction>\w+)(\s(?P<message>.+))?')
+  {{ vrl.process_msg_err(True)|indent(width = 2) }}
+  if err != null {
+    # Static PTR
+    .data, err = parse_regex(.message, r'\[(?P<timestamp>\d+)\]\s.+\s(?P<level>\w+):\s(?P<client>[^\s]+\s\w+[^@]+@\d+)\s(?P<request>.+\.)\s(?P<type>\w+)\s(?P<direction>\w+)')
+    {{ vrl.process_msg_err(True)|indent(width = 4) }}
+  }
+}

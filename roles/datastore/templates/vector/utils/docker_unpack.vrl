@@ -1,0 +1,21 @@
+# Unpack docker JSON log
+if err != null {
+  log("Unable to parse JSON: " + err, level: "error")
+  .parse_error = err
+} else {
+  del(.message)
+  ., err = merge(., parsed)
+
+  if err != null {
+    log("Unable merge parsed: " + err, level: "error")
+    .parsed = parsed
+  }
+
+  .message = del(.log)
+  .labels = del(.attrs)
+}
+
+.application = .labels."com.docker.compose.service"
+.container_host = del(.host)
+.compose_service = .labels."com.docker.compose.service"
+.compose_project = .labels."com.docker.compose.project"

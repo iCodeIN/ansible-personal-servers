@@ -1,0 +1,13 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+if .application == "vector" {
+  .data, err = parse_regex(.message, r'(?P<timestamp>\w+\s?\d{2}\s?\d{2}:\d{2}:\d{2}\.\d{3})\s+(?P<level>[^\s]+) ((?P<component>.+)\{(?P<kvp>.+)\}:\s?)?(?P<message>.+)')
+  {{ vrl.process_msg_err()|indent(width = 2) }}
+  if err == null {
+    kvp, err = parse_key_value(.data.kvp)
+    {{ vrl.process_err('.data.kvp')|indent(width = 4) }}
+    if err == null {
+      .data, err = merge(.data, kvp)
+    }
+  }
+}

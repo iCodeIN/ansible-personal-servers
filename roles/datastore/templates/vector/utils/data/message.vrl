@@ -1,0 +1,5 @@
+if .data.msg != null {
+  .message = del(.data.msg)
+} else if .data.message != null {
+  .message = del(.data.message)
+}

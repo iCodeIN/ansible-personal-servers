@@ -1,0 +1,10 @@
+.data = del(.)
+
+.application = del(.data.appname)
+.level = del(.data.severity)
+.message = del(.data.message)
+.timestamp = del(.data.timestamp)
+.host = del(.data.hostname)
+
+.vector_type = "syslog"
+.category = "syslog"

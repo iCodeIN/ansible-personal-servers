@@ -490,35 +490,5 @@ telegram:
         username: ''
         password: ''
 
-# Python logging configuration.
-#
-# See section 16.7.2 of the Python documentation for more info:
-# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
-logging:
-    version: 1
-    formatters:
-        colored:
-            (): mautrix_telegram.util.ColorFormatter
-            format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
-        normal:
-            format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
-    handlers:
-        file:
-            class: logging.handlers.RotatingFileHandler
-            formatter: normal
-            filename: ./mautrix-telegram.log
-            maxBytes: 10485760
-            backupCount: 10
-        console:
-            class: logging.StreamHandler
-            formatter: colored
-    loggers:
-        mau:
-            level: DEBUG
-        telethon:
-            level: INFO
-        aiohttp:
-            level: INFO
-    root:
-        level: DEBUG
-        handlers: [file, console]
+{% import 'mautrix.jinja2' as mx with context -%}
+{{ mx.python_logging('mautrix_telegram') }}

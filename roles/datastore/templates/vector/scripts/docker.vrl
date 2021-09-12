@@ -1,0 +1,43 @@
+{% import "utils.jinja2" as utils with context -%}
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+parsed, err = parse_json(.message)
+
+{{ utils.include("vector/utils/docker_unpack.vrl") }}
+
+{#
+#}
+if .message != null {
+  {% for app in [ "synapse", "mautrix", "netdata", "unbound", "vector" ] %}
+  {{ utils.include("vector/apps/" + app + ".vrl")|indent(width = 2) }}
+  {% endfor %}
+}
+
+if .message != null {
+  .data, err = parse_json(.message)
+  {{ vrl.process_msg_err()|indent(width = 2) }}
+
+{#
+#}
+  if err != null {
+    {{ utils.include("vector/apps/influxdb.vrl") }}
+
+    .data, err = parse_key_value(.message)
+    {{ vrl.process_msg_err()|indent(width = 4) }}
+  }
+}
+
+if .data != null {
+  {{ utils.include("vector/utils/data/level.vrl")|indent(width = 2) }}
+  {{ utils.include("vector/utils/data/message.vrl")|indent(width = 2) }}
+  {{ utils.include("vector/utils/data/timestamp.vrl")|indent(width = 2) }}
+}
+
+{#
+#}
+if .message != null {
+  msg, err = strip_whitespace(.message)
+  if err == null {
+    .message = msg
+  }
+}

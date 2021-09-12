@@ -10,8 +10,10 @@
 {% set vols_registry = [ registry_volumes_data, registry_volumes_certificates ] %}
 {% set vols_redis = [ redis_volumes_data ] %}
 {% set vols_prometheus = [ prometheus_volumes_data ] %}
-{% set vols_vector = [ vector_volumes_data ] %}
+{% set vols_vector = [ vector_volumes_data, vector_volumes_scripts ] %}
 {% set vols_loki = [ loki_volumes_data, loki_volumes_wal ] %}
+{% set vols_fluent_bit = [ fluent_bit_volumes_data ] %}
+{# {% set vols_mongodb = [ mongodb_volumes_data ] %} #}
 
 version: "3"
 services:
@@ -181,14 +183,51 @@ services:
 ################################################################################
 ################################################################################
 
+
+{#
+  {{ dm.service('fluentd', 'fluent/fluentd:edge')|indent(width = 2) }}
+    {{ dn.map_ports([(fluentd_port,) ])|indent(width = 4) }}
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+      - {{ root_dirs_datastore }}/fluentd.conf:/fluentd/etc/fluentd.conf:ro
+    {{ dn.datastore_network_section()|indent(width = 4) }}
+    {{ dm.json_logging()|indent(width = 4) }}
+    environment:
+      FLUENTD_CONF: fluentd.conf
+#}
+
+{#  {{ dn.map_ports([(fluentd_port,) ])|indent(width = 4) }} #}
+  {{ dm.service('fluent-bit', 'fluent/fluent-bit:1.8')|indent(width = 2) }}
+    {{ dv.volumes_section_complete(vols_fluent_bit)|indent(width = 4) }}
+      - {{ root_dirs_datastore }}/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    {{ dn.datastore_network_section()|indent(width = 4) }}
+    {{ dm.json_logging()|indent(width = 4) }}
+
+{#
+  {{ dm.service('promtail', 'grafana/promtail:latest')|indent(width = 2) }}
+    command: -config.file /etc/promtail/promtail.conf
+    {{ dn.datastore_network_section()|indent(width = 4) }}
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+      - {{ root_dirs_datastore }}/promtail.yaml:/etc/promtail/promtail.conf:ro
+#}
+
   {{ dm.service('vector', 'timberio/vector:latest-debian')|indent(width = 2) }}
-    {{ dn.map_ports([ (8383,), (vector_syslog_port,) ])|indent(width = 4) }}
+    command: --config /etc/vector/vector.json
+    {{ lookup('traefik', {
+      'service_name': 'vector',
+      'domain': dns_sub_domains_vector,
+      'use_dns_root': True,
+      'port': vector_api_port,
+      'use_auth': True })|indent(width = 4) }}
+    {{ dn.map_ports([ (vector_syslog_port,'udp') ])|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_vector)|indent(width = 4) }}
       {{ dv.mount_docker_socket() }}
-      - {{ root_dirs_datastore }}/vector.toml:/etc/vector/vector.toml:ro
+      - {{ root_dirs_datastore }}/vector.json:/etc/vector/vector.json:ro
+      - /var/log:{{ vector_log_path }}:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
     # environment:
-    #   LOG: debug
+    #   VECTOR_WATCH_CONFIG: /etc/vector/vector.toml
     {{ dn.datastore_network_section()|indent(width = 4) }}
+    {{ dm.json_logging()|indent(width = 4) }}
 
   {{ dm.service('loki', 'grafana/loki:2.3.0')|indent(width = 2) }}
     {{ dn.map_ports([ (3100,) ])|indent(width = 4) }}
@@ -198,6 +237,13 @@ services:
     {{ dn.datastore_network_section()|indent(width = 4) }}
     {{ dv.volumes_section_complete(vols_loki)|indent(width = 4) }}
       - {{ root_dirs_datastore }}/loki-local-config.yaml:/etc/loki/local-config.yaml
+
+{#
+  {{ dm.service('mongodb', 'mongo:latest')|indent(width = 2) }}
+    {{ dn.map_ports([ (27017,) ])|indent(width = 4) }}
+    {{ dn.datastore_network_section()|indent(width = 4) }}
+    {{ dv.volumes_section_complete(vols_mongodb)|indent(width = 4) }}
+#}
 
 ################################################################################
 ################################################################################
@@ -210,21 +256,19 @@ services:
 #   Collects all logs and sends them to logstash
 #   Docker, Traefik, etc
 
-
 {#
   {{ dm.service('filebeat', 'docker.elastic.co/beats/filebeat:7.14.0')|indent(width = 2) }}
     user: root
-    command: -e -strict.perms=false -E output.elasticsearch.hosts=["elasticsearch:9200"]
+    command: -e -strict.perms=false
     {{ dv.volumes_section_complete()|indent(width = 4) }}
+      {{ dv.mount_docker_socket() }}
       - {{ elastic_config_dir }}/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     {{ dn.datastore_network_section()|indent(width = 4) }}
 #}
 
 # Logstash
 #   Analysises the data and stores them in ES for analytics
-
 
 {#
   {{ dm.service('logstash', 'docker.elastic.co/logstash/logstash:7.14.0')|indent(width = 2) }}
@@ -274,4 +318,9 @@ services:
                           vols_redis +
                           vols_prometheus +
                           vols_vector +
-                          vols_loki) }}
+                          vols_loki +
+                          vols_fluent_bit) }}
+
+{#
+                          vols_mongodb
+#}
