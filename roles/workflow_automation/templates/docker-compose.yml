@@ -19,7 +19,7 @@
     N8N_METRICS: 'true'
     N8N_METRICS_PREFIX: n8n_
 
-    N8N_LOG_LEVEL: debug
+    N8N_LOG_LEVEL: info
     N8N_LOG_OUTPUT: console
 
     EXECUTIONS_MODE: queue

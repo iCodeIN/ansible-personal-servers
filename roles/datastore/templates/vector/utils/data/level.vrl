@@ -1,12 +1,42 @@
-if .data.lvl != null {
-  .data.level = del(.data.lvl)
+if is_null(.level) {
+  if is_null(.data.lvl) == false {
+    .data.level = del(.data.lvl)
+  }
+
+  if is_null(.data.level) == false {
+    .level = del(.data.level)
+    level, err = downcase(.level)
+
+    if err == null {
+      .level = level
+    }
+  }
 }
 
-if .data.level != null {
-  .level = del(.data.level)
-  level, err = downcase(.level)
-
-  if err == null {
-    .level = level
+if is_null(.level) && is_null(.message) == false && is_string(.message) {
+  {% for tuple in [
+    ("alert", "critical"),
+    ("crit", "critical"),
+    ("critical", "critical"),
+    ("dbug", "debug"),
+    ("debug", "debug"),
+    ("emerg", "critical"),
+    ("eror", "error"),
+    ("err", "error"),
+    ("error", "error"),
+    ("fatal", "critical"),
+    ("info", "info"),
+    ("information", "info"),
+    ("informational", "info"),
+    ("notice", "info"),
+    ("trace", "trace"),
+    ("warn", "warning"),
+    ("warning", "warning")
+  ] %}
+  {% set search = tuple[0] %}
+  {% set level = tuple[1] %}
+  {% if loop.index == 1 %}if{% else %} } else if{% endif %} contains(.message, "{{ search }}", case_sensitive: false) {
+    .level = "{{ level }}"
+  {% endfor %}
   }
 }

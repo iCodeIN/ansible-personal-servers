@@ -1,5 +1,5 @@
-if .data.msg != null {
+if is_null(.data.msg) == false {
   .message = del(.data.msg)
-} else if .data.message != null {
+} else if is_null(.data.message) == false {
   .message = del(.data.message)
 }

@@ -1,0 +1,8 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+.data, err = parse_regex(.message, r'(?P<timestamp>\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s(?P<message>.+)')
+{{ vrl.process_msg_err() }}
+
+if is_null(err) {
+  .data.level = "info"
+}

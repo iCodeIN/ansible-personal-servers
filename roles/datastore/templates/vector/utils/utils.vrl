@@ -1,5 +1,5 @@
 {% macro process_err(origin_field, log = False) %}
-if err == null {
+if is_null(err) {
   del({{ origin_field }})
 }{#{% if log %} else {
   log(err, level: "warn")
@@ -8,4 +8,32 @@ if err == null {
 
 {% macro process_msg_err(log = False) %}
 {{ process_err('.message', log) }}
+{% endmacro %}
+
+{% macro parse_key_value() %}
+.data, err = parse_key_value(.message)
+{{ process_msg_err() }}
+{% endmacro %}
+
+{% macro try_parse_int(field) %}
+if is_string(.data.{{ field }}) {
+  {{ field }}, err = to_int(.data.{{ field }})
+  if is_null(err) {
+    .data.{{ field }} = {{ field }}
+  }
+}
+{% endmacro %}
+
+{% macro parse_http_status() %}
+{{ try_parse_int('status')|indent(width = 2) }}
+
+if is_integer(.data.status) {
+  if .data.status >= 500 && .data.status <= 599 {
+    .data.level = "error"
+  } else if .data.status >= 400 && .data.status <= 499 {
+    .data.level = "warning"
+  } else {
+    .data.level = "info"
+  }
+}
 {% endmacro %}

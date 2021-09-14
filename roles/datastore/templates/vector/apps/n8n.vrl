@@ -1,0 +1,19 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+.message, _err = replace(.message, r'[^ -~]+', "", count: -1)
+
+.data, err = parse_regex(.message, r'^(?P<timestamp>.+)\s\|\s\[\d{2}m(?P<level>.+)\[\d{2}m\s+\|\s\[\d{2}m(?P<message>.+)\[\d{2}m\s(?P<details>.+)$')
+{{ vrl.process_msg_err() }}
+
+if is_null(err) && is_null(.data.details) == false {
+  parsed, err = parse_json(.data.details)
+  {{ vrl.process_err('.data.details')|indent(width = 2) }}
+
+  if is_null(err) {
+    .data, _err = merge(.data, parsed)
+  }
+}
+
+if .data.level == "verbose" {
+  .data.level = "debug"
+}

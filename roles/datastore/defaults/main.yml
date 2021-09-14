@@ -144,3 +144,8 @@ fluent_bit_volumes_data:
 #   name:         mongodb_data
 #   local_folder: "{{ root_dirs_datastore }}/mongodb-data"
 #   mount:        /data/db
+
+maxmind_volumes_data:
+  name:         maxmind_data
+  local_folder: "{{ root_dirs_datastore }}/maxmind-data"
+  mount:        /usr/share/GeoIP

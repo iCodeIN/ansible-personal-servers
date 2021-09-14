@@ -1,8 +1,12 @@
 local tpl(str) = std.native('ansible_expr')(str);
 
+// base
+
 local Component(name) = {
   name: name,
 };
+
+// pipelines
 
 local Pipeline = {
   sources: [],
@@ -38,15 +42,7 @@ local File(name, files, script=null) = Pipeline {
   ],
 };
 
-local fix3057 = Component('loki_absolute_sink_fix3057') {
-  type: 'coercer',
-  inputs: ['absolute_sink_*'],
-  // avoid https://github.com/timberio/vector/issues/3057
-
-  types: {
-    timestamp: 'timestamp|%F',
-  },
-};
+// sinks
 
 local loki_sink = Component('loki_sink') {
   type: 'loki',
@@ -141,7 +137,7 @@ local socket_sink = Component('socket_sink') {
   },
 };
 
-local elasticsearch = Component('elasticsearch') {
+local elasticsearch_sink = Component('elasticsearch_sink') {
   type: 'elasticsearch',
   inputs: ['absolute_sink_*'],
   bulk_action: 'create',
@@ -160,9 +156,11 @@ local elasticsearch = Component('elasticsearch') {
   },
 };
 
+// transforms
+
 local sanity_corrections = Component('absolute_sink_sanity_corrections') {
   type: 'remap',
-  inputs: ['sink_*'],
+  inputs: ['except_traefik', 'geo_ip'],
   file: tpl('{{ vector_scripts_dir }}/ensure_sanity.vrl'),
 };
 
@@ -187,18 +185,66 @@ local pipelines = [
     ],
   },
   File('dmesg', [tpl('{{ vector_log_path }}/dmesg')]),
-  File('docker_logs', ['/var/lib/docker/containers/**/*.log'], 'docker.vrl'),
-  /* {
-  transforms+: [
-  Component('sink_docker_geoip_enrich') {
-  type = "geoip"
-  inputs = [ "my-source-or-transform-id" ]
-  database = "/path/to/GeoLite2-City.mmdb"
-  source = "ip_address"
-  target = "geoip"
+  File('docker_logs', ['/var/lib/docker/containers/**/*.log'], 'docker.vrl') {
+    transforms+: [
+      Component('only_traefik') {
+        type: 'filter',
+        inputs: ['sink_*'],
+        condition: '.application == "traefik"',
+      },
+
+      Component('except_traefik') {
+        type: 'filter',
+        inputs: ['sink_*'],
+        condition: '.application != "traefik"',
+      },
+
+      Component('geo_ip') {
+        type: 'geoip',
+        inputs: ['only_traefik'],
+        database: tpl('{{ maxmind_volumes_data.mount }}/GeoLite2-City.mmdb'),
+        source: 'data.ClientHost',
+        target: 'geoip',
+      },
+    ],
   },
-  ],
-  }*/
+  Pipeline {
+    transforms: [
+      Component('geo_ip_to_metric') {
+        metric:: function(name) {
+          field: 'geoip',
+          name: name + '_total',
+          namespace: 'geoip',
+          type: 'counter',
+
+          labels: {
+            [name]: '{{ ' + name + ' }}',
+          },
+        },
+
+        type: 'log_to_metric',
+        inputs: ['geo_ip'],
+
+        metrics: [
+          self.metric('city_name'),
+          self.metric('continent_code'),
+          self.metric('country_code'),
+          self.metric('latitude'),
+          self.metric('longitude'),
+          self.metric('post_code'),
+          self.metric('timezone'),
+        ],
+      },
+    ],
+    sinks: [
+      Component('prometheus_sink') {
+        type: 'prometheus_exporter',
+        inputs: ['geo_ip_to_metric'],
+        address: '0.0.0.0:9898',
+        default_namespace: 'service',
+      },
+    ],
+  },
 ];
 
 //
@@ -207,8 +253,16 @@ local pipelines = [
 
 local make(arr) = std.prune(std.flattenArrays(arr));
 
-local sinks_ = make([[socket_sink], /*[elasticsearch],*/ std.flattenArrays([x.sinks for x in pipelines])]);
-local transforms_ = make([[sanity_corrections], /*[fix3057],*/ std.flattenArrays([x.transforms for x in pipelines])]);
+local sinks_ = make([
+  [socket_sink],
+  std.flattenArrays([x.sinks for x in pipelines]),
+]);
+
+local transforms_ = make([
+  [sanity_corrections],
+  std.flattenArrays([x.transforms for x in pipelines]),
+]);
+
 local sources_ = make([x.sources for x in pipelines]);
 
 //

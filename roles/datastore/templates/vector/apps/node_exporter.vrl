@@ -1,0 +1,3 @@
+{% import "vector/utils/utils.vrl" as vrl with context -%}
+
+{{ vrl.parse_key_value()|indent(width = 2) }}

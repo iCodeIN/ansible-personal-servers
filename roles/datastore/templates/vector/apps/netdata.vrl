@@ -1,6 +1,11 @@
 {% import "vector/utils/utils.vrl" as vrl with context -%}
 
-if .application == "netdata" {
-  .data, err = parse_regex(.message, r'(?P<timestamp>.+):\s(?P<id>.+):\s(?P<status_code>.+)\s\'\[(?P<host_source>[^\]]+)\]:(?P<pid>[^\']+)\'\s\'(?P<type>[^\']+)\'(\s(?P<message>[^$]+))?')
-  {{ vrl.process_msg_err(True)|indent(width = 2) }}
+.data, err = parse_regex(.message, r'(?P<timestamp>[^\s]+\s[^\s]+):\s(?P<id01>\d+):\s(?P<id02>\d+)\s\'(?P<client>[^\']+)\'\s\'(?P<action>[^\']+)\'(\s\(sent/all\s=\s(?P<sent_bytes>\d+)/(?P<all_bytes>\d+)\sbytes\s(?P<precentage_compression>[^,]+),\sprep/sent/total\s=\s(?P<prep_time>[^/]+)/(?P<sent_time>[^/]+)/(?P<total_time>[^\s]+)\sms\)\s(?P<status>\d+)\s\'(?P<url>[^\']+)\')?')
+{{ vrl.process_msg_err()|indent(width = 2) }}
+
+if is_null(err) == false {
+  .data, err = parse_regex(.message, r'(?P<timestamp>[^\s]+\s[^\s]+):\s(?P<plugin>(\w+|[^:]+)):?\s(?P<level>\w+)\s?:\s(?P<message>.+)')
+  {{ vrl.process_msg_err()|indent(width = 2) }}
+} else {
+  .level = "info"
 }

@@ -1,8 +1,8 @@
-if .data.time != null {
+if is_null(.data.time) == false {
   .timestamp = del(.data.time)
-} else if .data.timestamp != null {
+} else if is_null(.data.timestamp) == false {
   .timestamp = del(.data.timestamp)
-} else if .data.ts != null && is_timestamp(.data.ts) {
+} else if is_null(.data.ts) == false && is_timestamp(.data.ts) {
   .timestamp = del(.data.ts)
 }
 
@@ -13,6 +13,6 @@ if is_timestamp(.timestamp) == false {
   }
 }
 
-if .timestamp != null {
+if is_null(.timestamp) == false {
   .data.original_timestamp = .timestamp
 }

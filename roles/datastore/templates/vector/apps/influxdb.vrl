@@ -1,28 +1,11 @@
 {% import "vector/utils/utils.vrl" as vrl with context -%}
 
-{% macro try_parse_int(field) %}
-{{ field }}, err = to_int(.data.{{ field }})
+.data, err = parse_regex(.message, r'\[httpd\]\s(?P<ips>.+)\s(?P<identity>.+)\s(?P<user>.+)\s\[(?P<timestamp>[^\]]+)\]\s\\?"(?P<method>[^\s]+)\s(?P<path>[^\s]+)\s(?P<protocol>[^"]+)\\?"\s(?P<status>[^\s]+)\s(?P<response_size>[^\s]+)\s\\?"(?P<referrer>[^"]+)\\?"\s\\?"(?P<useragent>[^"]+)\\?"\s(?P<request_id>[^\s]+)\s(?P<response_time>[^$]+)')
+# .data, err = parse_regex(.message, r'\[httpd\]\s(?P<ips>.+)\s-\s-\s\[(?P<timestamp>[^\]]+)\]\s"(?P<method>[^\s]+)\s(?P<path>[^\s]+)\s(?P<protocol>[^"]+)"\s(?P<status>[^\s]+)\s(?P<response_size>[^\s]+)\s"(?P<referrer>[^"]+)"\s"(?P<useragent>[^"]+)"\s(?P<request_id>[^\s]+)\s(?P<response_time>[^$]+)')
+{{ vrl.process_msg_err()|indent(width = 2) }}
+
 if is_null(err) {
-  .data.{{ field }} = {{ field }}
-}
-{% endmacro %}
-
-if .application == "influxdb" {
-  .data, err = parse_regex(.message, r'(?P<ips>.+)\s-\s-\s\[(?P<timestamp>[^\]]+)\]\s"(?P<method>[^\s]+)\s(?P<path>[^\s]+)\s(?P<protocol>[^"]+)"\s(?P<status>[^\s]+)\s(?P<response_size>[^\s]+)\s"(?P<referrer>[^"]+)"\s"(?P<useragent>[^"]+)"\s(?P<request_id>[^\s]+)\s(?P<response_time>[^$]+)$')
-  {{ vrl.process_msg_err()|indent(width = 2) }}
-
-  {{ try_parse_int('response_size')|indent(width = 2) }}
-  {{ try_parse_int('response_time')|indent(width = 2) }}
-
-  {{ try_parse_int('status')|indent(width = 2) }}
-
-  if is_null(err) {
-    if .data.status >= 500 && .data.status <= 599 {
-      .data.level = "error"
-    } else if .data.status >= 400 && .data.status <= 499 {
-      .data.level = "warning"
-    } else {
-      .data.level = "info"
-    }
-  }
+  {{ vrl.try_parse_int('response_size')|indent(width = 2) }}
+  {{ vrl.try_parse_int('response_time')|indent(width = 2) }}
+  {{ vrl.parse_http_status()|indent(width = 2) }}
 }

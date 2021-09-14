@@ -2,6 +2,7 @@
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
 
+{% set vols_maxmind = [ maxmind_volumes_data ] %}
 {% set vols_influxdb = [ influxdb_volumes_data ] %}
 {% set vols_chronograf = [ chronograf_volumes_data ] %}
 {% set vols_kapacitor = [ kapacitor_volumes_data ] %}
@@ -10,7 +11,7 @@
 {% set vols_registry = [ registry_volumes_data, registry_volumes_certificates ] %}
 {% set vols_redis = [ redis_volumes_data ] %}
 {% set vols_prometheus = [ prometheus_volumes_data ] %}
-{% set vols_vector = [ vector_volumes_data, vector_volumes_scripts ] %}
+{% set vols_vector = [ vector_volumes_data, vector_volumes_scripts ] + vols_maxmind %}
 {% set vols_loki = [ loki_volumes_data, loki_volumes_wal ] %}
 {% set vols_fluent_bit = [ fluent_bit_volumes_data ] %}
 {# {% set vols_mongodb = [ mongodb_volumes_data ] %} #}
@@ -245,6 +246,14 @@ services:
     {{ dv.volumes_section_complete(vols_mongodb)|indent(width = 4) }}
 #}
 
+  {{ dm.service('maxmind_geoipupdate', 'maxmindinc/geoipupdate:latest')|indent(width = 2) }}
+    {{ dv.volumes_section_complete(vols_maxmind)|indent(width = 4) }}
+    environment:
+      GEOIPUPDATE_FREQUENCY: "2"
+      GEOIPUPDATE_ACCOUNT_ID: "{{ maxmind_account_id }}"
+      GEOIPUPDATE_LICENSE_KEY: "{{ maxmind_license_key }}"
+      GEOIPUPDATE_EDITION_IDS: "GeoLite2-City"
+
 ################################################################################
 ################################################################################
 
@@ -319,7 +328,8 @@ services:
                           vols_prometheus +
                           vols_vector +
                           vols_loki +
-                          vols_fluent_bit) }}
+                          vols_fluent_bit +
+                          vols_maxmind) }}
 
 {#
                           vols_mongodb

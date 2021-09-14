@@ -61,6 +61,10 @@
             user: "{{ user }}"
             group: "{{ user }}"
 
+          - path: "{{ maxmind_volumes_data.local_folder }}"
+            user: "{{ user }}"
+            group: "{{ user }}"
+
           # - path: "{{ mongodb_volumes_data.local_folder }}"
           #   user: "{{ mongodb_user }}"
           #   group: "{{ mongodb_user }}"
@@ -113,8 +117,8 @@
     - loki_config
 
 - name: Copy jsonnet vector configs
-  copy:
-    content: "{{ lookup('jsonnet', 'templates/vector/vector.jsonnet') }}"
+  jsonnet:
+    src: "vector/vector.jsonnet"
     dest: "{{ root_dirs_datastore }}/vector.json"
     mode: 0644
   tags:
@@ -133,6 +137,7 @@
   tags:
     - logging_config
     - vector_config
+    - vector_scripts
 
 # - name: Copy elastic configs
 #   template:

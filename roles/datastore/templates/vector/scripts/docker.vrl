@@ -5,36 +5,66 @@ parsed, err = parse_json(.message)
 
 {{ utils.include("vector/utils/docker_unpack.vrl") }}
 
-{#
-#}
+{%- macro pipeline_cmp(app) -%}
+{%- if app|length == 1 -%}
+.application == "{{ app[0] }}"
+{%- else -%}
+starts_with(.application, "{{ app[0] }}")
+{%- endif -%}
+{%- endmacro -%}
+
+{% macro pipeline(apps) %}
+{% if apps|length > 0 %}
+if {{ pipeline_cmp(apps[0]) }} {
+  {{ utils.include("vector/apps/" + apps[0][0] + ".vrl")|indent(width = 2) }}
+{% if apps|length > 1 %}
+{% for app in apps[1:] %}
+} else if {{ pipeline_cmp(app) }} {
+  {{ utils.include("vector/apps/" + app[0] + ".vrl")|indent(width = 2) }}
+{% endfor %}
+{% endif %}
+}
+{% endif %}
+{% endmacro %}
+
 if .message != null {
-  {% for app in [ "synapse", "mautrix", "netdata", "unbound", "vector" ] %}
-  {{ utils.include("vector/apps/" + app + ".vrl")|indent(width = 2) }}
-  {% endfor %}
+  {{ pipeline([
+    ("node_exporter",),
+    ("synapse",),
+    ("mautrix", True),
+    ("well_known",),
+    ("mautrix",),
+    ("netdata",),
+    ("unbound",),
+    ("n8n", True),
+    ("prometheus_exporter",),
+    ("vector",) ])|indent(width = 2) }}
 }
 
 if .message != null {
-  .data, err = parse_json(.message)
-  {{ vrl.process_msg_err()|indent(width = 2) }}
+  is_json = false
+  if starts_with(.message, "{") {
+    .data, err = parse_json(.message)
+    {{ vrl.process_msg_err()|indent(width = 4) }}
 
-{#
-#}
-  if err != null {
+    is_json = is_null(err)
+  }
+
+  if is_json == false {
     {{ utils.include("vector/apps/influxdb.vrl") }}
 
-    .data, err = parse_key_value(.message)
-    {{ vrl.process_msg_err()|indent(width = 4) }}
+    if .application != "influxdb" && starts_with(.application, "n8n") == false {
+      {{ vrl.parse_key_value()|indent(width = 6) }}
+    }
   }
 }
 
 if .data != null {
-  {{ utils.include("vector/utils/data/level.vrl")|indent(width = 2) }}
-  {{ utils.include("vector/utils/data/message.vrl")|indent(width = 2) }}
   {{ utils.include("vector/utils/data/timestamp.vrl")|indent(width = 2) }}
+  {{ utils.include("vector/utils/data/message.vrl")|indent(width = 2) }}
+  {{ utils.include("vector/utils/data/level.vrl")|indent(width = 2) }}
 }
 
-{#
-#}
 if .message != null {
   msg, err = strip_whitespace(.message)
   if err == null {
