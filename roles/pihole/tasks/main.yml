@@ -6,3 +6,5 @@
     - compose_file
     - pihole_compose_file
     - unbount_root_hints
+    - pihole_conf
+    - unbound_conf
