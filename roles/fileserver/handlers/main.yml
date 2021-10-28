@@ -2,3 +2,6 @@
   service:
     name: smbd
     state: restarted
+
+- name: reload nfs
+  shell:  exportfs -rav

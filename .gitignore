@@ -5,3 +5,4 @@
 .venv
 *.vdi
 *.pyc
+tmp

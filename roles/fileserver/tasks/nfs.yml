@@ -1,0 +1,22 @@
+- name: Install packages
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: yes
+  vars:
+    packages:
+      - nfs-common
+      - nfs-kernel-server
+
+- name: Deploy exports config
+  template:
+    src: exports
+    dest: /etc/exports
+  notify: reload nfs
+  tags: fileserver_config
+
+- name: start and enable nfs-server services
+  service:
+    name: nfs-server
+    state: started
+    enabled: yes
