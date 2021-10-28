@@ -62,4 +62,6 @@
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
-  tags: ha_config
+  tags:
+    - ha_config
+    - only_ha_config

@@ -18,5 +18,10 @@ influxdb:
   max_retries: 8
   default_measurement: state
 
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - {{ traefik_networks.v4.subnet }}
+
 logger:
   default: info
