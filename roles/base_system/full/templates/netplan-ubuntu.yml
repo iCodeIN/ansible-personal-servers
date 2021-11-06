@@ -30,3 +30,10 @@ network:
           - "2606:4700:4700::1111"
           - "2606:4700:4700::1001"
 {% endif %}
+
+{% if not is_dev %}
+    {{ host_10g_interface }}:
+      dhcp4: false
+      addresses:
+        - {{ host_10g_ipv4 }}/{{ host_10g_ipv4_prefix }}
+{% endif %}

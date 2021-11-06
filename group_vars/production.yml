@@ -1,6 +1,11 @@
 host_public_interface: enp5s0
 host_ipv4: 192.168.1.128
 host_ipv6: 2a02:120b:2c06:57d0::abcf
+
+host_10g_interface: enp9s0
+host_10g_ipv4: 192.168.2.8
+host_10g_ipv4_prefix: 24
+
 # my swisscom router supports SLAAC only, meaning that if you turn on IPv6
 # you are forced to use SLAAC, no other configurations are possible. There is
 # no point in doing IPv6 at this time... For example I want to assign an IPv6
