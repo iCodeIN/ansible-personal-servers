@@ -280,7 +280,8 @@ bridge:
         # The first time a takeout is used, the user has to manually approve it from a different
         # device. If initial_limit or missed_limit are higher than this value, the bridge will ask
         # the user to accept the takeout after logging in before syncing any chats.
-        takeout_limit: -1
+        # takeout_limit: -1
+        takeout_limit: 9999999999999
         # Maximum number of messages to backfill initially.
         # Set to 0 to disable backfilling when creating portal, or -1 to disable the limit.
         #
