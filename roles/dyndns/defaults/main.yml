@@ -1,0 +1,4 @@
+noip_volumes_config:
+  name: main_config
+  local_folder: "{{ root_dirs_dyndns }}/noip-config"
+  mount: /config

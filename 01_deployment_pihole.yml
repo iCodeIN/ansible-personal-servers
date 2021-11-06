@@ -14,6 +14,7 @@
     - { role: duplicacy, tags: [ duplicacy, backup, base ] }
     - { role: docker, tags: [ docker, containers, base ] }
 
+    - { role: dyndns, tags: dyndns }
     - { role: proxy, tags: proxy }
     - { role: datastore, tags: datastore }
     - { role: pihole, tags: pihole }

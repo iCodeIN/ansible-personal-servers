@@ -19,6 +19,7 @@ root_dirs_datastore: "{{ application_root }}/datastore"
 root_dirs_matrix_server: "{{ application_root }}/matrix_server"
 root_dirs_wireguard: "{{ application_root }}/wireguard"
 root_dirs_workflow_automation: "{{ application_root }}/workflow_automation"
+root_dirs_dyndns: "{{ application_root }}/dyndns"
 
 # ZHAW
 root_dirs_zhaw_iot1: "{{ application_root }}/zhaw_iot1"

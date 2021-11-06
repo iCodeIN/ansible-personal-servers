@@ -1,0 +1,12 @@
+{% import 'docker/volumes.jinja2' as dv with context -%}
+{% import 'docker/misc.jinja2' as dm with context -%}
+{% import 'docker/network.jinja2' as dn with context -%}
+
+{% set noip_vols = [ noip_volumes_config ] %}
+
+version: "3"
+services:
+  {{ dm.service('noip', 'coppit/no-ip:latest')|indent(width = 2) }}
+    {{ dv.volumes_section_complete(noip_vols)|indent(width = 4) }}
+
+{{ dv.volumes_declaration(noip_vols) }}

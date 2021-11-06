@@ -1,0 +1,23 @@
+- block:
+    - include_tasks: standard_service.yml
+      vars:
+        root_dir:
+          path: "{{ root_dirs_dyndns }}"
+          user: "{{ user }}"
+        dirs:
+          - path: "{{ noip_volumes_config.local_folder }}"
+            user: "{{ user }}"
+  tags:
+    - compose_file
+    - dyndns_compose_file
+
+- name: Copy noip config
+  template:
+    src: noip.conf
+    dest: "{{ noip_volumes_config.local_folder  }}/noip.conf"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+  tags:
+    - dyndns_config
+    - noip_config
