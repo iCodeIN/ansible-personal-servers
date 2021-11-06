@@ -1,3 +1,7 @@
 fileserver_share_user: smbrealmar
+
 fileserver_share_name: data
 fileserver_share_path: /zfs/user
+
+fileserver_steam_share_name: steam
+fileserver_steam_share_path: /zfs/steam

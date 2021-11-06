@@ -1,1 +1,2 @@
 - include: nfs.yml
+- include: samba.yml

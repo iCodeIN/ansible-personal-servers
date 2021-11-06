@@ -20,7 +20,9 @@
     src: custom_smb.conf
     dest: /etc/samba/custom_smb.conf
   notify: restart smbd
-  tags: fileserver_config
+  tags:
+    - fileserver_config
+    - samba_config
 
 - name: Create samba user
   include_tasks: create_user.yml
@@ -52,3 +54,4 @@
   with_items:
     - smbd
     - nmbd
+  tags: enable_samba

@@ -13,10 +13,13 @@
     src: exports
     dest: /etc/exports
   notify: reload nfs
-  tags: fileserver_config
+  tags:
+    - fileserver_config
+    - nfs_config
 
 - name: start and enable nfs-server services
   service:
     name: nfs-server
     state: started
     enabled: yes
+  tags: enable_nfs
