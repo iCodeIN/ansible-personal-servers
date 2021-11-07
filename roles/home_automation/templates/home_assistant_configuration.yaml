@@ -10,6 +10,8 @@ default_config:
   script: !include scripts.yaml
   scene: !include scenes.yaml
 
+automation: !include automations.yaml
+
 influxdb:
   host: influxdb
   port: 8086

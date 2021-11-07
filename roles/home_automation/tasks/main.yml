@@ -65,3 +65,12 @@
   tags:
     - ha_config
     - only_ha_config
+
+- block:
+  - include_tasks: rsync.yml
+    vars:
+      src: "wol-processor"
+      dest: "{{ root_dirs_home_automation }}"
+  tags:
+    - ha_config
+    - wol_processor

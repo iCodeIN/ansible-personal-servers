@@ -43,6 +43,12 @@ services:
     {{ dv.volumes_section_complete(home_assistant_vols)|indent(width = 4) }}
     {{ dm.common()|indent(width = 4) }}
 
+  wol-processor:
+    build: wol-processor
+    network_mode: host
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+    {{ dm.common()|indent(width = 4) }}
+
 {{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
   mqtt:
 
