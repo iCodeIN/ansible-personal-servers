@@ -29,6 +29,28 @@ services:
     {{ dm.common()|indent(width = 4) }}
 #}
 
+{#
+  {{ dm.service('whatsmyip', 'pklaus/whatsmyip:latest')|indent(width = 2) }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+    {{ lookup('traefik', {
+      'service_name': 'whatsmyip',
+      'port': 8080,
+      'path': '/ip',
+      'use_auth': False })|indent(width = 4) }}
+#}
+
+  {{ dm.service('whatsmyip', 'nginx:latest')|indent(width = 2) }}
+    {{ dn.discovery_network_section()|indent(width = 4) }}
+    {{ dv.volumes_section_complete()|indent(width = 4) }}
+      - {{ root_dirs_discord }}/whatsmyip-nginx.conf:/etc/nginx/nginx.conf:ro
+    {{ lookup('traefik', {
+      'service_name': 'whatsmyip',
+      'port': 80,
+      'path': '/ip',
+      'use_auth': False })|indent(width = 4) }}
+
+{#
   {{ dm.service(
     'anastassios_updater',
     dm.private_image('anastassios_updater'))|indent(width = 2) }}
@@ -49,6 +71,7 @@ services:
     {{ dv.volumes_section_complete(anastassios_updater_vols)|indent(width = 4) }}
     {{ dn.discovery_network_section()|indent(width = 4) }}
     {{ dm.journald_logging()|indent(width = 4) }}
+#}
 
 {{ dn.discovery_networks_declaration() }}
 

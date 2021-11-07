@@ -14,5 +14,15 @@
     - compose_file
     - discord_compose_file
 
+
+- name: Copy nginx config
+  template:
+    src: nginx.conf
+    dest: "{{ root_dirs_discord }}/whatsmyip-nginx.conf"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+  tags: whatsmyip_config
+
 - include_tasks: music_bot.yml
 - include_tasks: among_us_server.yml
