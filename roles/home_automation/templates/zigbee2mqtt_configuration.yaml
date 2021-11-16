@@ -27,4 +27,10 @@ advanced:
 
 devices:
   '0x00158d0004445436':
-    friendly_name: 'aqara-temperature-humidity-sensor-01'
+    friendly_name: aqara-temperature-humidity-sensor-desk
+
+  '0x00158d000711084c':
+    friendly_name: aqara-temperature-humidity-sensor-bedroom
+
+  '0x00158d0007110b86':
+    friendly_name: 'aqara-temperature-humidity-sensor-balkony'

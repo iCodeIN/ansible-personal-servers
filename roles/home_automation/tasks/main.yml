@@ -27,7 +27,9 @@
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0644
-  tags: ha_config
+  tags:
+    - ha_config
+    - zigbee2mqtt_config
 
 - name: Copy eclipse-mosquitto configuration
   template:
