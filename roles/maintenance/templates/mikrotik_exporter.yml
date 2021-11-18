@@ -1,0 +1,17 @@
+{% import 'docker/volumes.jinja2' as dv with context -%}
+{% import 'docker/network.jinja2' as dn with context -%}
+{% import 'docker/misc.jinja2' as dm with context -%}
+
+{{ dm.service('mikrotik-exporter', 'nshttpd/mikrotik-exporter:1.0.11') }}
+  # command:
+  #   - "-address=192.168.1.1"
+  #   - "-device=main-router"
+  #   - "-user={{ maintenance_mikrotik_main_router_username }}"
+  #   - "-password={{ maintenance_mikrotik_main_router_password }}"
+  environment:
+    DEVICE: "main-router"
+    ADDRESS: "192.168.1.1"
+    USER: "{{ maintenance_mikrotik_main_router_username }}"
+    PASSWORD: "{{ maintenance_mikrotik_main_router_password }}"
+  {{ dv.volumes_section_complete()|indent(width = 2) }}
+  {{ dn.datastore_network_section()|indent(width = 2) }}
