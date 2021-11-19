@@ -36,3 +36,8 @@ backup_helper_exclude:
   - among_us
   - redis
   - zhaw
+
+mktxp_volumes_config:
+  name:         mktxp_config
+  local_folder: "{{ root_dirs_proxy }}/mktxp-config"
+  mount:        /root/mktxp

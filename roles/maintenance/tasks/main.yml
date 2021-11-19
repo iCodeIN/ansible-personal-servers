@@ -7,6 +7,8 @@
         dirs:
           - path: "{{ portainer_volumes_data.local_folder }}"
             user: "{{ portainer_user }}"
+          - path: "{{ mktxp_volumes_config.local_folder }}"
+            user: "{{ user }}"
   tags:
     - compose_file
     - maintenance_compose_file
@@ -20,7 +22,20 @@
     mode: 0644
   with_items:
     - netdata.conf
-  tags: maintenance_config
+  tags:
+    - maintenance_config
+    - netdata_config
+
+- name: Copy mktxp config
+  template:
+    src: "mktxp.conf"
+    dest: "{{ mktxp_volumes_config.local_folder }}/mktxp.conf"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+  tags:
+    - maintenance_config
+    - mktxp_config
 
 - block:
   - include_tasks: backup_helper.yml

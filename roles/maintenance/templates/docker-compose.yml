@@ -6,7 +6,8 @@
   'docker_update.yml',
   'netdata.yml',
   'container_management.yml',
-  'mikrotik_exporter.yml'
+  'mikrotik_exporter.yml',
+  'mktxp.yml'
 ] %}
 
 version: '3'
@@ -18,6 +19,7 @@ services:
 {{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
 
 {% set vols = [
-  portainer_volumes_data
+  portainer_volumes_data,
+  mktxp_volumes_config
 ] %}
 {{ dv.volumes_declaration(vols) }}

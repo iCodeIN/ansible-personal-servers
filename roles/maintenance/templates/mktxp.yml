@@ -1,0 +1,9 @@
+{% import 'docker/volumes.jinja2' as dv with context -%}
+{% import 'docker/network.jinja2' as dn with context -%}
+{% import 'docker/misc.jinja2' as dm with context -%}
+
+{% set vols_mktxp = [ mktxp_volumes_config ] %}
+
+{{ dm.service('mktxp', 'guenterbailey/mktxp:latest') }}
+  {{ dv.volumes_section_complete(vols_mktxp)|indent(width = 2) }}
+  {{ dn.datastore_network_section()|indent(width = 2) }}

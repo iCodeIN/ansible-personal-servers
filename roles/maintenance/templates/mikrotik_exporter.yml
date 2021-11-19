@@ -2,7 +2,7 @@
 {% import 'docker/network.jinja2' as dn with context -%}
 {% import 'docker/misc.jinja2' as dm with context -%}
 
-{{ dm.service('mikrotik-exporter', 'nshttpd/mikrotik-exporter:1.0.11') }}
+{{ dm.service('mikrotik-exporter', 'nshttpd/mikrotik-exporter:1.0.12-DEVEL') }}
   # command:
   #   - "-address=192.168.1.1"
   #   - "-device=main-router"
