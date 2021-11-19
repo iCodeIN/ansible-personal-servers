@@ -1,3 +1,4 @@
+import sys
 import json
 import random
 from paho.mqtt import client as mqtt_client
@@ -23,6 +24,7 @@ if __name__ == "__main__":
     client.connect(broker, port)
 
     def on_message(client, userdata, msg):
+      try:
         payload = msg.payload.decode()
         topic = msg.topic
 
@@ -32,6 +34,9 @@ if __name__ == "__main__":
 
         send_magic_packet(data['mac'],
                           interface=data['interface'])
+      except Exception as e:
+        print(e)
+        sys.exit(28)
 
     client.subscribe(topic)
     client.on_message = on_message
