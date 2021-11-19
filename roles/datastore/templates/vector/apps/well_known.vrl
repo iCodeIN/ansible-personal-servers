@@ -2,5 +2,3 @@
 
 .data, err = parse_nginx_log(.message, format: "combined")
 {{ vrl.process_msg_err()|indent(width = 2) }}
-
-{{ vrl.parse_http_status() }}

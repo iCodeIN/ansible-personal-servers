@@ -15,17 +15,21 @@ if is_null(err) {
 {{ process_msg_err() }}
 {% endmacro %}
 
-{% macro try_parse_int(field) %}
+{% macro try_parse_int(field, status_fallible = True) %}
 if is_string(.data.{{ field }}) {
+{% if status_fallible %}
   {{ field }}, err = to_int(.data.{{ field }})
   if is_null(err) {
     .data.{{ field }} = {{ field }}
   }
+{% else %}
+  .data.{{ field }} = to_int(.data.{{ field }})
+{% endif %}
 }
 {% endmacro %}
 
-{% macro parse_http_status() %}
-{{ try_parse_int('status')|indent(width = 2) }}
+{% macro parse_http_status(status_fallible = True) %}
+{{ try_parse_int('status', status_fallible)|indent(width = 2) }}
 
 if is_integer(.data.status) {
   if .data.status >= 500 && .data.status <= 599 {

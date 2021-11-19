@@ -1,5 +1,5 @@
 {% macro make_not_null(field, null_replacement = "not-available", log_incident = True) %}
-if .{{ field }} == null {
+if is_null(.{{ field }}) {
 {% if log_incident %}
   # log("Missing field in log data Field: {{ field }}. Log is still stored, however, the Loki labels will be wrong." + err, level: "error")
 {% endif %}

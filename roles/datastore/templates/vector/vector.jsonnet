@@ -88,7 +88,7 @@ local loki_sink = Component('loki_sink') {
   },
 };
 
-local influxdb_sink = Component('influxdb_sink') {
+local influxdb_logs_sink = Component('influxdb_logs_sink') {
   type: 'influxdb_logs',
   inputs: ['absolute_sink_*'],
   bucket: 'logs',
@@ -100,6 +100,15 @@ local influxdb_sink = Component('influxdb_sink') {
   encoding: {
     timestamp_format: 'rfc3339',
   },
+};
+
+local influxdb_metrics_sink = Component('influxdb_metrics_sink') {
+  type: 'influxdb_metrics',
+  inputs: ['absolute_metrics_*'],
+  bucket: 'metrics',
+  database: tpl('{{ vector_influxdb_database_name }}'),
+  endpoint: 'http://influxdb:8086/',
+  retention_policy_name: 'autogen',
 };
 
 local file_sink = Component('file_sink') {
@@ -208,7 +217,115 @@ local pipelines = [
       },
     ],
   },
+
   Pipeline {
+    transforms: [
+      Component('absolute_metrics_geo_ip_to_metric') {
+
+        type: 'log_to_metric',
+        inputs: ['geo_ip'],
+
+        metrics: [{
+          field: 'geoip',
+          name: 'geoip',
+          namespace: 'service',
+          type: 'set',
+
+          tags: {
+            city_name: '{{ geoip.city_name }}',
+            continent_code: '{{ geoip.continent_code }}',
+            country_code: '{{ geoip.country_code }}',
+            latitude: '{{ geoip.latitude }}',
+            longitude: '{{ geoip.longitude }}',
+            post_code: '{{ geoip.post_code }}',
+            timezone: '{{ geoip.timezone }}',
+          },
+        }],
+      },
+      /*metric:: function(name) {
+        field: 'geoip',
+        name: name + '_total',
+        namespace: 'geoip',
+        type: 'counter',
+
+        tags: {
+          [name]: '{{ geoip.' + name + ' }}',
+        },
+      },
+
+      type: 'log_to_metric',
+      inputs: ['geo_ip'],
+
+      metrics: [
+        self.metric('city_name'),
+        self.metric('continent_code'),
+        self.metric('country_code'),
+        self.metric('latitude'),
+        self.metric('longitude'),
+        self.metric('post_code'),
+        self.metric('timezone'),
+      ],
+      },*/
+      /*type: 'log_to_metric',
+      inputs: ['geo_ip'],
+
+      metrics: [{
+        field: 'geoip',
+        name: 'geoip_total',
+        namespace: 'service',
+        type: 'counter',
+
+        tags: {
+          city_name: '{{ geoip.city_name }}',
+          continent_code: '{{ geoip.continent_code }}',
+          country_code: '{{ geoip.country_code }}',
+          latitude: '{{ geoip.latitude }}',
+          longitude: '{{ geoip.longitude }}',
+          post_code: '{{ geoip.post_code }}',
+          timezone: '{{ geoip.timezone }}',
+        },
+      }],
+      },*/
+    ],
+
+    sinks: [
+      Component('socket-testi') {
+        type: 'influxdb_metrics',
+        inputs: ['absolute_metrics_geo_ip_to_metric'],
+        bucket: 'metrics',
+        database: tpl('{{ vector_influxdb_database_name }}'),
+        // endpoint: 'http://192.168.1.168:8080/influxdb',
+        endpoint: 'http://mf:8080/influxdb',
+        retention_policy_name: 'autogen',
+      },
+
+      /*Component('socket-testi') {
+        type: 'http',
+        inputs: ['absolute_metrics_geo_ip_to_metric'],
+        uri: 'https://192.168.1.128:9898/',
+        compression: 'none',
+
+        encoding: {
+          codec: 'json',
+          timestamp_format: 'rfc3339',
+        },
+      },*/
+
+      /*Component('socket-testi') {
+        type: 'socket',
+        inputs: ['absolute_metrics_geo_ip_to_metric'],
+        address: tpl('mf:9292'),
+        mode: 'tcp',
+
+        encoding: {
+          codec: 'json',
+          timestamp_format: 'rfc3339',
+        },
+      },*/
+    ],
+  },
+
+  /*Pipeline {
     transforms: [
       Component('geo_ip_to_metric') {
         metric:: function(name) {
@@ -244,7 +361,7 @@ local pipelines = [
         default_namespace: 'service',
       },
     ],
-  },
+  },*/
 ];
 
 //
@@ -255,6 +372,7 @@ local make(arr) = std.prune(std.flattenArrays(arr));
 
 local sinks_ = make([
   [socket_sink],
+  [influxdb_metrics_sink],
   std.flattenArrays([x.sinks for x in pipelines]),
 ]);
 
