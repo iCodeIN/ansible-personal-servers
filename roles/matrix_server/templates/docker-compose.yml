@@ -62,16 +62,14 @@ networks:
 {% endmacro %}
 
 {% macro mautrix(name, more) %}
-mautrix_{{ name }}:
+{{ dm.service('mautrix_' + name, 'dock.mau.dev/mautrix/' + name + ':latest') }}
   container_name: {{ mautrix_ref[name].container_name }}
 {% if 'user' in mautrix_ref[name] %}
   user: '{{ mautrix_ref[name].user }}'
 {% endif %}
-  image: dock.mau.dev/mautrix/{{ name }}:latest
   {{ dv.volumes_section_complete(mautrix_ref[name].vols)|indent(width = 2) }}
   {{ synapse_nets()|indent(width = 2) }}
   {{ dm.journald_logging()|indent(width = 2) }}
-  {{ dm.common()|indent(width = 2) }}
   depends_on:
     - synapse
 {% if more is defined and more['depends_on'] %}
@@ -89,8 +87,7 @@ version: "3"
 services:
 
 {# https://github.com/matrix-org/synapse/tree/master/docker #}
-  synapse:
-    image: matrixdotorg/synapse:latest
+  {{ dm.service('synapse', 'matrixdotorg/synapse:latest')|indent(width = 2) }}
     container_name: synapse
     environment:
       UID: '{{ matrix_server_user }}'
@@ -109,7 +106,6 @@ services:
 {% endfor %}
     {{ dn.discovery_network_section()|indent(width = 4) }}
       {{ synapse_nets_list()|indent(width = 6) }}
-    {{ dm.common()|indent(width = 4) }}
     depends_on:
       - db
 
@@ -172,13 +168,11 @@ docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-ta
     })|indent(width = 2)
   }}
 
-  signald:
+  {{ dm.service('signald', 'docker.io/finn/signald:' + ('latest' if not is_rpi else 'aarch64-latest'))|indent(width = 2) }}
     container_name: signald
-    image: docker.io/finn/signald:{{ 'latest' if not is_rpi else 'aarch64-latest' }}
     user: '{{ matrix_server_signal_user_id }}'
     {{ dv.volumes_section_complete(vols_signald)|indent(width = 4) }}
     {{ synapse_nets()|indent(width = 4) }}
-    {{ dm.common()|indent(width = 4) }}
     depends_on:
       - synapse
 
@@ -186,8 +180,7 @@ docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-ta
 ################################################################################
 ################################################################################
 
-  db:
-    image: postgres:13
+  {{ dm.service('db', 'postgres:13')|indent(width = 2) }}
     environment:
       POSTGRES_USER: {{ matrix_server_db_user }}
       POSTGRES_PASSWORD: '{{ matrix_server_db_password }}'
@@ -196,20 +189,16 @@ docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-ta
       - {{ root_dirs_matrix_server }}/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro
     networks:
       {{ matrix_server_networks.name }}:
-    {{ dm.common()|indent(width = 4) }}
 
-  element_web:
-    image: 'bubuntux/element-web'
+  {{ dm.service('element_web', 'vectorim/element-web:latest')|indent(width = 2) }}
     {{ lookup('traefik', { 'service_name': 'element_web', 'domain': dns_sub_domains_element, 'use_dns_root': True, 'use_auth': False })|indent(width = 4) }}
     {{ dv.volumes_section_complete()|indent(width = 4) }}
-      - {{ root_dirs_matrix_server }}/element_web_config.json:/etc/element-web/config.json:ro
+      - {{ root_dirs_matrix_server }}/element_web_config.json:/app/config.json:ro
     {{ dn.discovery_network_section()|indent(width = 4) }}
-    {{ dm.common()|indent(width = 4) }}
     depends_on:
       - synapse
 
-  turnserver:
-    image: killua99/coturn:latest
+  {{ dm.service('turnserver', 'coturn/coturn:latest')|indent(width = 2) }}
     network_mode: host
     tmpfs:
       - /var/lib/coturn
@@ -217,10 +206,8 @@ docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-ta
       - {{ root_dirs_matrix_server }}/turnserver.conf:/etc/coturn/turnserver.conf
       - {{ global_cert_dir }}/realmar.net.crt:/opt/certificates/realmar.net.crt
       - {{ global_cert_dir }}/realmar.net.pem:/opt/certificates/realmar.net.pem
-    {{ dm.common()|indent(width = 4) }}
 
-  well_known:
-    image: nginx:latest
+  {{ dm.service('well_known', 'nginx:latest')|indent(width = 2) }}
     {{ lookup('traefik', { 'service_name': 'matrix_well_known', 'use_defaults': False, 'path': wk_path,
       'renderers': {
         'replace_path_regex': {
@@ -238,7 +225,6 @@ docker build -t turt2live/matrix-tag-manager . && docker tag turt2live/matrix-ta
       - {{ root_dirs_matrix_server }}/{{ file }}:/usr/share/nginx/html/{{ file }}:ro
 {% endfor %}
     {{ dn.discovery_network_section()|indent(width = 4) }}
-    {{ dm.common()|indent(width = 4) }}
 
 {{ dn.networks_declaration([ discovery_network, datastore_network ]) }}
   {{ matrix_server_networks.name }}:
